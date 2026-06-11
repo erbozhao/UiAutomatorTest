@@ -1,0 +1,116 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
+
+android {
+    compileSdk 36
+
+    namespace "com.bbtest"
+    buildFeatures {
+        buildConfig = true
+    }
+
+    defaultConfig {
+        applicationId "com.bbtest"
+        minSdkVersion 24
+        targetSdkVersion 36
+        versionCode 1
+        versionName "1.0"
+
+        testNamespace "com.bbtest.test"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('../bbtest-keystore.jks')        //证书存放目录
+            storePassword "123456"                          //密码
+            keyAlias "bbtest"                               //别名
+            keyPassword "123456"                            //密码(建议两个密码保持一致)
+        }
+
+        release {
+            storeFile file('../bbtest-keystore.jks')        //证书存放目录
+            storePassword "123456"                          //密码
+            keyAlias "bbtest"                               //别名
+            keyPassword "123456"                            //密码(建议两个密码保持一致)
+        }
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            def project = "bbtest"
+            //def date = new Date().format("yyyyMMddHHmmss" , TimeZone.getTimeZone("Asia/Shanghai"))
+            def date = new Date().format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT+08"))
+            if (variant.buildType.name.equals('debug')) {
+                outputFileName = "${project}.apk"
+            }
+            if (variant.buildType.name.equals('release')) {
+                outputFileName = "${project}_obfs.apk"
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            // 设置混淆
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 设置签名信息
+            signingConfig signingConfigs.debug
+            // 设置是否可调试
+            debuggable true
+        }
+
+        release {
+            // 设置混淆
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 设置签名信息
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    /* new for androidx.test */
+    implementation "com.google.guava:guava:" + rootProject.guavaVersion
+    implementation "androidx.annotation:annotation:" + rootProject.androidxAnnotationVersion
+//    implementation "com.android.support:support-compat:29.0.3"
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.core:core-ktx:1.13.1'
+    // Testing-only dependencies
+    androidTestImplementation 'androidx.test:core:' + rootProject.coreVersion
+    androidTestImplementation 'androidx.test.ext:junit:' + rootProject.extJUnitVersion
+    androidTestImplementation 'androidx.test:runner:' + rootProject.runnerVersion
+    androidTestImplementation 'androidx.test:rules:' + rootProject.rulesVersion
+    // UiAutomator Testing
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:' + rootProject.uiAutomatorVersion
+    androidTestImplementation 'org.hamcrest:hamcrest-integration:1.3'
+    androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
+    // Espresso Testing
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:' + rootProject.espressoVersion
+    // Apache Commons IO
+    implementation group: 'commons-io', name: 'commons-io', version: '2.22.0'
+
+    /* old for com.android.support.test*/
+//    implementation 'com.android.support:appcompat-v7:28.0.0';
+//    testImplementation 'junit:junit:4.12'
+//    implementation 'com.google.guava:guava:18.0'
+//    // Testing-only dependencies
+//    // Force usage of support annotations in the test app, since it is internally used by the runner module.
+//    androidTestImplementation 'com.android.support:support-annotations:28.0.0';
+//    androidTestImplementation 'com.android.support.test:runner:1.0.2';
+//    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+//    // UiAutomator Testing
+//    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3';
+//    androidTestImplementation 'org.hamcrest:hamcrest-integration:1.3'
+}

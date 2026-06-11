@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+<!--    &lt;!&ndash;读写文件需要权限&ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
+<!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
+<!--    &lt;!&ndash; android 11 文件管理权限&ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />-->
+<!--    &lt;!&ndash;获取网络流量等信息需要权限&ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
+<!--    <uses-permission-->
+<!--        android:name="android.permission.PACKAGE_USAGE_STATS"-->
+<!--        tools:ignore="ProtectedPermissions" />-->
+<!--    &lt;!&ndash;获取网络状态等信息需要全权限&ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />-->
+<!--    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />-->
+<!--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
+<!--    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />-->
+<!--    <uses-permission-->
+<!--        android:name="android.permission.WRITE_SETTINGS"-->
+<!--        tools:ignore="ProtectedPermissions" />-->
+<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
+<!--    &lt;!&ndash;android 9.0上使用前台服务，需要添加权限&ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />-->
+<!--    &lt;!&ndash;android 6.0以上忽略电池优化所需权限&ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />-->
+<!--    &lt;!&ndash; 读取手机IMEI的设备权限 &ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
+<!--    &lt;!&ndash; 调测试需此命令 &ndash;&gt;-->
+<!--    <permission-->
+<!--        android:name="android.permission.INTERACT_ACROSS_USERS_FULL"-->
+<!--        android:protectionLevel="signature" />-->
+
+    <instrumentation
+        android:name="androidx.test.runner.AndroidJUnitRunner"
+        android:targetPackage="com.bbtest.test" />
+
+    <!-- Android Q及以上默认false，申请后可读写系统中的文件 -->
+    <application
+        android:debuggable="true"
+        android:label="BBTest Test"
+        android:requestLegacyExternalStorage="true"
+        tools:replace="label" />
+</manifest>
