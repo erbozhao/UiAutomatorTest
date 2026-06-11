@@ -1,7 +1,7 @@
-package com.bbtest.perform.caton;
+package com.bbtest.perform.caton
 
-import android.os.Looper;
-import android.util.Printer;
+import android.os.Looper
+import android.util.Printer
 
 /**
  * 利用UI执行绪的Looper列印的日志匹配：
@@ -9,21 +9,20 @@ import android.util.Printer;
  * 2.如果设定了logging，会分别打印出”>>>>> Dispatching to “ 和”<<<<< Finished to “ 这样的日志，这样我们就可以通过两次log的时间差值，来计算dispatchMessage的执行时间，从而设定阈值判断是否发生了卡顿
  * 3.Looper的mLogging是私有的，并且提供了setMessageLogging(@Nullable Printer printer) 方法，所以我们可以自己实现一个Printer，在通过setMessageLogging()方法传入即可
  */
-public class BlockDetectByPrinter {
-    public static void start() {
-        Looper.getMainLooper().setMessageLogging(new Printer() {
-            private static final String START = ">>>>> Dispatching";
-            private static final String END = "<<<<< Finished";
+object BlockDetectByPrinter {
+    fun start() {
+        Looper.getMainLooper().setMessageLogging(object : Printer {
+            private val START = ">>>>> Dispatching"
+            private val END = "<<<<< Finished"
 
-            @Override
-            public void println(String x) {
+            override fun println(x: String) {
                 if (x.startsWith(START)) {
-                    LogMonitor.getInstance().startMonitor();
+                    LogMonitor.instance.startMonitor()
                 }
                 if (x.startsWith(END)) {
-                    LogMonitor.getInstance().removeMonitor();
+                    LogMonitor.instance.removeMonitor()
                 }
             }
-        });
+        })
     }
 }

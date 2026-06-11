@@ -1,37 +1,35 @@
-package com.bbtest.perform.caton;
+package com.bbtest.perform.caton
 
+import android.view.Choreographer
+import android.view.Choreographer.FrameCallback
+import java.util.concurrent.TimeUnit
 
-import android.view.Choreographer;
-
-import java.util.concurrent.TimeUnit;
-
-public class BlockDetectByChoreographer {
-    public static void start2() {
-        Choreographer.getInstance().postFrameCallback(new FPSFrameCallback(System.nanoTime()));
-        BlockDetectByPrinter.start();
+object BlockDetectByChoreographer {
+    fun start2() {
+        Choreographer.getInstance().postFrameCallback(FPSFrameCallback(System.nanoTime()))
+        BlockDetectByPrinter.start()
     }
 
-    public static void start() {
-        Choreographer.getInstance().postFrameCallback(new Choreographer.FrameCallback() {
-            long lastFrameTimeNanos = 0;
-            long currentFrameTimeNanos = 0;
+    fun start() {
+        Choreographer.getInstance().postFrameCallback(object : FrameCallback {
+            var lastFrameTimeNanos: Long = 0
+            var currentFrameTimeNanos: Long = 0
 
-            @Override
-            public void doFrame(long frameTimeNanos) {
-                if (lastFrameTimeNanos == 0) {
-                    lastFrameTimeNanos = frameTimeNanos;
+            override fun doFrame(frameTimeNanos: Long) {
+                if (lastFrameTimeNanos == 0L) {
+                    lastFrameTimeNanos = frameTimeNanos
                 }
-                currentFrameTimeNanos = frameTimeNanos;
-                long diffMs = TimeUnit.MILLISECONDS.convert(currentFrameTimeNanos - lastFrameTimeNanos, TimeUnit.NANOSECONDS);
+                currentFrameTimeNanos = frameTimeNanos
+                val diffMs = TimeUnit.MILLISECONDS.convert(currentFrameTimeNanos - lastFrameTimeNanos, TimeUnit.NANOSECONDS)
                 if (diffMs > 16.6f) {
-                    long droppedCount = (long) (diffMs / 16.6);
+                    val droppedCount = (diffMs / 16.6).toLong()
                 }
-                if (LogMonitor.getInstance().isMonitor()) {
-                    LogMonitor.getInstance().removeMonitor();
+                if (LogMonitor.instance.isMonitor) {
+                    LogMonitor.instance.removeMonitor()
                 }
-                LogMonitor.getInstance().startMonitor();
-                Choreographer.getInstance().postFrameCallback(this);
+                LogMonitor.instance.startMonitor()
+                Choreographer.getInstance().postFrameCallback(this)
             }
-        });
+        })
     }
 }

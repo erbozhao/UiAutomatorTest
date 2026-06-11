@@ -1,74 +1,78 @@
-package com.bbtest.stable;
+package com.bbtest.stable
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.SdkSuppress;
-
-import com.bbtest.common.BaseCommon;
-import com.bbtest.common.ShellCommon;
-import com.bbtest.stable.threads.RandomEventThread;
-import com.bbtest.tools.DeviceInfo;
-import com.bbtest.utils.CommonUtil;
-import com.bbtest.utils.FileUtil;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.io.File;
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
+import com.bbtest.common.BaseCommon
+import com.bbtest.common.ShellCommon.forceStopApp
+import com.bbtest.common.ShellCommon.getActivity
+import com.bbtest.stable.threads.RandomEventThread
+import com.bbtest.tools.DeviceInfo
+import com.bbtest.utils.CommonUtil.getCurTimeForFile
+import com.bbtest.utils.CommonUtil.getCurTimeForLog
+import com.bbtest.utils.CommonUtil.getExceptionMsg
+import com.bbtest.utils.FileUtil.createFile
+import com.bbtest.utils.FileUtil.createFolder
+import com.bbtest.utils.FileUtil.deleteFile
+import com.bbtest.utils.FileUtil.deleteFolder
+import com.bbtest.utils.FileUtil.readFile
+import com.bbtest.utils.FileUtil.writeStrToFile
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import java.io.File
 
 /**
  * @author onuszhao
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 18)
-public class MonkeyTestBak extends BaseCommon {
-
-    public File resultFolder = new File(rootFolder, "monkey");
-    public File monkeyFile = new File(resultFolder, "monkey.txt");
-    private File monkeyInfoFile = new File(downloadFile, "monkey.txt");
+class MonkeyTestBak : BaseCommon() {
+    var resultFolder: File = File(rootFolder, "monkey")
+    var monkeyFile: File = File(resultFolder, "monkey.txt")
+    private val monkeyInfoFile = File(downloadsDir, "monkey.txt")
 
     @Before
-    public void beforeTest() {
-        super.beforeTest();
+    public override fun beforeTest() {
+        super.beforeTest()
         // 初始化目录及文件
-        FileUtil.deleteFolder(resultFolder);
-        FileUtil.createFolder(resultFolder);
-        FileUtil.createFile(monkeyFile);
+        deleteFolder(resultFolder)
+        createFolder(resultFolder)
+        createFile(monkeyFile)
     }
 
     @Test
-    public void testMonkey() {
+    fun testMonkey() {
         try {
             // 获取设备信息
-            DeviceInfo deviceInfo = new DeviceInfo(device);
-            String model = deviceInfo.getModel();
+            val deviceInfo = DeviceInfo(device)
+            val model = deviceInfo.model
 
             // 初始化日志文件
-            File runLog = new File(resultFolder, "Runlog.txt");
-            FileUtil.createFile(runLog);
+            val runLog = File(resultFolder, "Runlog.txt")
+            createFile(runLog)
 
             // 获取需要跑的包相关信息
-            float runTime = 0.0f;
-            String pkgName = "";
-            String result = FileUtil.readFile(monkeyInfoFile);
-            String[] resultLines = result.split("\n");
-            for (String resultLine : resultLines) {
-                if (!resultLine.equals("")) {
-                    String[] resultLineParts = resultLine.trim().split(",");
-                    if (resultLineParts.length == 2) {
-                        runTime = Float.parseFloat(resultLineParts[0].trim());
-                        pkgName = resultLineParts[1].trim();
+            var runTime = 0.0f
+            var pkgName = ""
+            val result = readFile(monkeyInfoFile)
+            val resultLines = result.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            for (resultLine in resultLines) {
+                if (resultLine != "") {
+                    val resultLineParts = resultLine.trim { it <= ' ' }.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                    if (resultLineParts.size == 2) {
+                        runTime = resultLineParts[0].trim { it <= ' ' }.toFloat()
+                        pkgName = resultLineParts[1].trim { it <= ' ' }
                     }
-                    break;
+                    break
                 }
             }
-            if (runTime == 0 && pkgName.equals("")) {
-                runTime = 0.05f;
-                pkgName = "com.transsion.phoenix";
+            if (runTime == 0f && pkgName == "") {
+                runTime = 0.05f
+                pkgName = "com.transsion.phoenix"
             }
-            String activity = ShellCommon.getActivity(device, pkgName, runLog);
-            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  start:" + runTime + "," + pkgName + "\n", runLog);
+            val activity = getActivity(device, pkgName, runLog)
+            writeStrToFile(getCurTimeForLog() + "  start:" + runTime + "," + pkgName + "\n", runLog)
 
             //录制视频
 //            ScreenrecordThread screenrecordThread = new ScreenrecordThread(runTime, device, model, rootFolder, resultFolder);
@@ -87,8 +91,8 @@ public class MonkeyTestBak extends BaseCommon {
 //            }
 
             //模拟发起随机事件
-            RandomEventThread randomEventThread = new RandomEventThread(runTime, pkgName, activity, device, width, height, runLog);
-            randomEventThread.start();
+            val randomEventThread = RandomEventThread(runTime, pkgName, activity, device, width, height, runLog)
+            randomEventThread.start()
 
             //记录日志
 //            LogcatThread logcatThread = new LogcatThread(runTime, pkgName, device, model, resultFolder, null, screenrecordThread, randomEventThread, nativeFdThread);
@@ -99,9 +103,10 @@ public class MonkeyTestBak extends BaseCommon {
 //            dumpheapThread.start();
 
             // 等待模拟事件执行完成，并通知其他线程该结束了
-            randomEventThread.join();
-            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  randomEventThread end" + "\n", runLog);
-//            screenrecordThread.setIsTimeOver(true);
+            randomEventThread.join()
+            writeStrToFile(getCurTimeForLog() + "  randomEventThread end" + "\n", runLog)
+
+            //            screenrecordThread.setIsTimeOver(true);
 //            memoryThread.setIsTimeOver(true);
 //            if (nativeFdThread != null) {
 //                nativeFdThread.setIsTimeOver(true);
@@ -123,21 +128,20 @@ public class MonkeyTestBak extends BaseCommon {
 //            dumpheapThread.join();
 //            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  dumpheapThread end" + "\n", runLog);
             // dumpheap结束后，强制关闭app
-            ShellCommon.forceStopApp(device, pkgName, runLog);
+            forceStopApp(device, pkgName, runLog)
 
             // 若无异常,则删除文件
-            FileUtil.deleteFile(monkeyFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "MonkeyTest:Exception" + "\n", monkeyFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), monkeyFile);
-            screenshot(resultFolder + "/monkey_" + CommonUtil.getCurTimeForFile() + ".jpg");
+            deleteFile(monkeyFile)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile(getCurTimeForLog() + "MonkeyTest:Exception" + "\n", monkeyFile)
+            writeStrToFile(getExceptionMsg(e), monkeyFile)
+            screenshot(resultFolder.toString() + "/monkey_" + getCurTimeForFile() + ".jpg")
         }
     }
 
     @After
-    public void afterTest() {
-        super.afterTest();
+    public override fun afterTest() {
+        super.afterTest()
     }
-
 }

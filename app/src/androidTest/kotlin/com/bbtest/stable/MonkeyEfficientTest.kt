@@ -1,260 +1,262 @@
-package com.bbtest.stable;
+package com.bbtest.stable
 
-import android.text.TextUtils;
-
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.SdkSuppress;
-import androidx.test.uiautomator.UiObject2;
-
-import com.bbtest.common.MonkeyCommon;
-import com.bbtest.common.ShellCommon;
-import com.bbtest.utils.CommonUtil;
-import com.bbtest.utils.FileUtil;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.io.File;
-import java.util.List;
-import java.util.Random;
+import android.text.TextUtils
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
+import com.bbtest.common.MonkeyCommon
+import com.bbtest.common.ShellCommon.amStartApp
+import com.bbtest.common.ShellCommon.getActivities
+import com.bbtest.common.ShellCommon.isAppBackstage
+import com.bbtest.utils.CommonUtil
+import com.bbtest.utils.CommonUtil.getCurTimeForLog
+import com.bbtest.utils.FileUtil.createFile
+import com.bbtest.utils.FileUtil.createFolder
+import com.bbtest.utils.FileUtil.readFile
+import com.bbtest.utils.FileUtil.writeStrToFile
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import java.io.File
+import java.util.Random
 
 /**
  * @Author: onuszhao
  * @Date: 2021/1/8 11:37
  * @Description: 写长线程跑，容易被系统杀掉，且加入电池优化策略也没啥用，故切换至5分钟跑一次
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 18)
-public class MonkeyEfficientTest extends MonkeyCommon {
-    public File resultFolder = new File(rootFolder, "monkey");
-    public File monkeyFile = new File(resultFolder, "monkey.txt");
-    private File monkeyInfoFile = new File(downloadFile, "monkey.txt");
+class MonkeyEfficientTest : MonkeyCommon() {
+    var resultFolder: File = File(rootFolder, "monkey")
+    var monkeyFile: File = File(resultFolder, "monkey.txt")
+    private val monkeyInfoFile = File(downloadsDir, "monkey.txt")
 
-    private String pkgName = "";
-    private String activity = "";
+    private var pkgName = ""
+    private var activity = ""
+
     // 定义场景
-    private String scenes = "";
+    private var scenes = ""
+
     // 定义是否坐标点击
-    private boolean isPointClick = false;
+    private var isPointClick = false
 
     @Before
-    public void beforeTest() {
-        super.beforeTest();
+    public override fun beforeTest() {
+        super.beforeTest()
         // 初始化目录及文件
-        FileUtil.createFolder(resultFolder);
-        FileUtil.createFile(monkeyFile);
+        createFolder(resultFolder)
+        createFile(monkeyFile)
         // 获取需要跑的包相关信息
-        String testInfo = FileUtil.readFile(monkeyInfoFile).trim();
+        val testInfo = readFile(monkeyInfoFile).trim { it <= ' ' }
         if (TextUtils.isEmpty(testInfo)) {
-            pkgName = "com.transsion.phoenix";
-            scenes = "qb://home/feeds";
+            pkgName = "com.transsion.phoenix"
+            scenes = "qb://home/feeds"
         } else {
-            String[] testInfoParts = testInfo.split(",");
+            val testInfoParts = testInfo.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             // 默认包名
-            pkgName = testInfoParts[0];
+            pkgName = testInfoParts[0]
             if (TextUtils.isEmpty(pkgName)) {
-                pkgName = "com.transsion.phoenix";
+                pkgName = "com.transsion.phoenix"
             }
             // 默认场景：主页
-            if (testInfoParts.length >= 2) {
-                scenes = testInfoParts[1];
+            if (testInfoParts.size >= 2) {
+                scenes = testInfoParts[1]
             } else {
-                scenes = "qb://home/feeds";
+                scenes = "qb://home/feeds"
             }
             // 默认坐标点击
-            if (testInfoParts.length >= 3) {
+            if (testInfoParts.size >= 3) {
                 try {
-                    isPointClick = Boolean.parseBoolean(testInfoParts[2]);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    isPointClick = testInfoParts[2].toBoolean()
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }
         // 获取activity(解决一个应用存在多个主activity)
-        List<String> mainActivities = ShellCommon.getActivities(device, pkgName, null);
-        for (String mainActivity : mainActivities) {
-            ShellCommon.amStartApp(device, mainActivity, monkeyFile);
-            CommonUtil.sleep(5000);
-            if (!ShellCommon.isAppBackstage(device, pkgName)) {
-                activity = mainActivity;
-                break;
+        val mainActivities: List<String> = getActivities(device, pkgName, null)
+        for (mainActivity in mainActivities) {
+            amStartApp(device, mainActivity, monkeyFile)
+            CommonUtil.sleep(5000)
+            if (!isAppBackstage(device, pkgName)) {
+                activity = mainActivity
+                break
             }
         }
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  " + pkgName + "\n", monkeyFile);
+        writeStrToFile(getCurTimeForLog() + "  " + pkgName + "\n", monkeyFile)
     }
 
     @Test
-    public void testMonkey() {
-        scenes = "qb://mymusic"; // qb://camera,qb://bookmark,qb://download_add_link,qb://video/feedsvideo,qb://video/minivideo
-        startMonkey(3);
+    fun testMonkey() {
+        scenes = "qb://mymusic" // qb://camera,qb://bookmark,qb://download_add_link,qb://video/feedsvideo,qb://video/minivideo
+        startMonkey(3)
     }
 
     @Test
-    public void testMonkeyShort() {
-        startMonkey(1);
+    fun testMonkeyShort() {
+        startMonkey(1)
     }
 
     @Test
-    public void testMonkeyMedium() {
-        startMonkey(3);
+    fun testMonkeyMedium() {
+        startMonkey(3)
     }
 
     @Test
-    public void testMonkeyLong() {
-        startMonkey(5);
+    fun testMonkeyLong() {
+        startMonkey(5)
     }
 
-    private void startMonkey(long minute) {
+    private fun startMonkey(minute: Long) {
         try {
             /**
              * 初始化事件，控制概率
              */
-            List<String> events = initRandomEvent(60, 10, 8, 10, 8, 0, 0, 4, 0, 0);
+            val events: List<String> = initRandomEvent(60, 10, 8, 10, 8, 0, 0, 4, 0, 0)
 
             // 进入指定场景
-            gotoSscenes(scenes, monkeyFile);
+            gotoSscenes(scenes, monkeyFile)
 
-            if (scenes.equals("notification")) {
-                testNotification();
+            if (scenes == "notification") {
+                testNotification()
             } else {
                 // 网页通过点击坐标测试
                 if (scenes.startsWith("https://") || scenes.startsWith("http://")) {
-                    isPointClick = true;
+                    isPointClick = true
                 }
 
-                long startTime = System.currentTimeMillis();
-                long endTime = 0;
-                int preScenesNum = 0;
+                val startTime = System.currentTimeMillis()
+                var endTime: Long = 0
+                var preScenesNum = 0
                 while (true) {
                     //  先确认是否在前台
                     if (isAppBackstage(pkgName, monkeyFile)) {
                         //  再判断浏览器进程是否存在，并切到前台/启动浏览器
                         if (isProcessExist(pkgName, monkeyFile)) {
-                            startActivity(1000, activity, monkeyFile);
+                            startActivity(1000, activity, monkeyFile)
                         } else {
-                            startActivity(5000, activity, monkeyFile);
+                            startActivity(5000, activity, monkeyFile)
                         }
                     }
 
                     // 发起模拟事件
-                    String event = events.get(new Random().nextInt(events.size()));
-                    if (event.equals("click")) {
+                    val event = events.get(Random().nextInt(events.size))
+                    if (event == "click") {
                         if (isPointClick) {
-                            click(monkeyFile);
+                            click(monkeyFile)
                         } else {
-                            clickByUiObject(monkeyFile);
+                            clickByUiObject(monkeyFile)
                         }
-                    } else if (event.equals("swipeUp")) {
-                        swipeUp(monkeyFile);
-                    } else if (event.equals("swipeDown")) {
-                        swipeDown(monkeyFile);
-                    } else if (event.equals("swipeLeft")) {
-                        swipeLeft(monkeyFile);
-                    } else if (event.equals("swipeRight")) {
-                        swipeRight(monkeyFile);
-                    } else if (event.equals("longClick")) {
-                        longClick(monkeyFile);
+                    } else if (event == "swipeUp") {
+                        swipeUp(monkeyFile)
+                    } else if (event == "swipeDown") {
+                        swipeDown(monkeyFile)
+                    } else if (event == "swipeLeft") {
+                        swipeLeft(monkeyFile)
+                    } else if (event == "swipeRight") {
+                        swipeRight(monkeyFile)
+                    } else if (event == "longClick") {
+                        longClick(monkeyFile)
                     }
 
                     // 计算时间
-                    endTime = System.currentTimeMillis();
-                    long costTime = endTime - startTime;
+                    endTime = System.currentTimeMillis()
+                    val costTime = endTime - startTime
                     if (costTime > minute * 60 * 1000) {
-                        break;
+                        break
                     } else {
-                        int curScenesNum = 0;
+                        var curScenesNum = 0
                         if (isPointClick) {
-                            curScenesNum = (int) (costTime / (10 * 1000));
+                            curScenesNum = (costTime / (10 * 1000)).toInt()
                         } else {
-                            curScenesNum = (int) (costTime / (20 * 1000));
+                            curScenesNum = (costTime / (20 * 1000)).toInt()
                         }
                         if (curScenesNum > preScenesNum) {
                             // 进入指定场景
-                            gotoSscenes(scenes, monkeyFile);
-                            preScenesNum = curScenesNum;
+                            gotoSscenes(scenes, monkeyFile)
+                            preScenesNum = curScenesNum
                         }
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
-    private void testNotification() {
+    private fun testNotification() {
         // 常驻新闻通知
-        openNotification();
-        sleep(TIMEOUT_VERY_SHORT);
-        UiObject2 residentNews = waitUiObject2ByRes("com.transsion.phoenix:id/news_frame", TIMEOUT_MEDIUM);
+        openNotification()
+        sleep(TIMEOUT_VERY_SHORT.toLong())
+        val residentNews = waitUiObject2ByRes("com.transsion.phoenix:id/news_frame", TIMEOUT_MEDIUM.toLong())
         if (residentNews != null) {
-            swip(residentNews, "down");
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 newsPre = waitUiObject2ByRes("com.transsion.phoenix:id/news_pre", TIMEOUT_MEDIUM);
+            swip(residentNews, "down")
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val newsPre = waitUiObject2ByRes("com.transsion.phoenix:id/news_pre", TIMEOUT_MEDIUM.toLong())
             if (newsPre != null) {
-                newsPre.click();
-                sleep(TIMEOUT_VERY_SHORT);
+                newsPre.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            UiObject2 newsNext = waitUiObject2ByRes("com.transsion.phoenix:id/news_next", TIMEOUT_MEDIUM);
+            val newsNext = waitUiObject2ByRes("com.transsion.phoenix:id/news_next", TIMEOUT_MEDIUM.toLong())
             if (newsNext != null) {
-                newsNext.click();
-                sleep(TIMEOUT_VERY_SHORT);
+                newsNext.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            UiObject2 newsContent = waitUiObject2ByRes("com.transsion.phoenix:id/news_content", TIMEOUT_MEDIUM);
+            val newsContent = waitUiObject2ByRes("com.transsion.phoenix:id/news_content", TIMEOUT_MEDIUM.toLong())
             if (newsContent != null) {
-                newsContent.click();
-                sleep(TIMEOUT_SHORT);
+                newsContent.click()
+                sleep(TIMEOUT_SHORT.toLong())
             }
         }
         // 常驻清理通知
-        openNotification();
-        sleep(TIMEOUT_VERY_SHORT);
-        UiObject2 newWeatherContainer2 = waitUiObject2ByRes("com.transsion.phoenix:id/newWeatherContainer2", TIMEOUT_MEDIUM);
+        openNotification()
+        sleep(TIMEOUT_VERY_SHORT.toLong())
+        val newWeatherContainer2 = waitUiObject2ByRes("com.transsion.phoenix:id/newWeatherContainer2", TIMEOUT_MEDIUM.toLong())
         if (newWeatherContainer2 != null) {
-            newWeatherContainer2.click();
-            sleep(TIMEOUT_SHORT);
+            newWeatherContainer2.click()
+            sleep(TIMEOUT_SHORT.toLong())
         }
-        openNotification();
-        sleep(TIMEOUT_VERY_SHORT);
-        UiObject2 cleanContainer = waitUiObject2ByRes("com.transsion.phoenix:id/cleanContainer", TIMEOUT_MEDIUM);
+        openNotification()
+        sleep(TIMEOUT_VERY_SHORT.toLong())
+        val cleanContainer = waitUiObject2ByRes("com.transsion.phoenix:id/cleanContainer", TIMEOUT_MEDIUM.toLong())
         if (cleanContainer != null) {
-            cleanContainer.click();
-            sleep(TIMEOUT_SHORT);
+            cleanContainer.click()
+            sleep(TIMEOUT_SHORT.toLong())
         }
-        openNotification();
-        sleep(TIMEOUT_VERY_SHORT);
-        UiObject2 status = waitUiObject2ByRes("com.transsion.phoenix:id/tv_status_text", TIMEOUT_MEDIUM);
+        openNotification()
+        sleep(TIMEOUT_VERY_SHORT.toLong())
+        val status = waitUiObject2ByRes("com.transsion.phoenix:id/tv_status_text", TIMEOUT_MEDIUM.toLong())
         if (status != null) {
-            status.click();
-            sleep(TIMEOUT_SHORT);
+            status.click()
+            sleep(TIMEOUT_SHORT.toLong())
         }
-        openNotification();
-        sleep(TIMEOUT_VERY_SHORT);
-        UiObject2 sticker = waitUiObject2ByRes("com.transsion.phoenix:id/layout_sticker_part_normal", TIMEOUT_MEDIUM);
+        openNotification()
+        sleep(TIMEOUT_VERY_SHORT.toLong())
+        val sticker = waitUiObject2ByRes("com.transsion.phoenix:id/layout_sticker_part_normal", TIMEOUT_MEDIUM.toLong())
         if (sticker != null) {
-            sticker.click();
-            sleep(TIMEOUT_SHORT);
+            sticker.click()
+            sleep(TIMEOUT_SHORT.toLong())
         }
         // 清理通知
-        openNotification();
-        sleep(TIMEOUT_VERY_SHORT);
-        UiObject2 fileCleanJunkInfo = waitUiObject2ByRes("com.transsion.phoenix:id/file_clean_tv_junk_info", TIMEOUT_MEDIUM);
+        openNotification()
+        sleep(TIMEOUT_VERY_SHORT.toLong())
+        val fileCleanJunkInfo = waitUiObject2ByRes("com.transsion.phoenix:id/file_clean_tv_junk_info", TIMEOUT_MEDIUM.toLong())
         if (fileCleanJunkInfo != null) {
-            fileCleanJunkInfo.click();
-            sleep(TIMEOUT_SHORT);
+            fileCleanJunkInfo.click()
+            sleep(TIMEOUT_SHORT.toLong())
         }
         // 退出通知栏
-        back();
-        sleep(TIMEOUT_VERY_SHORT);
+        back()
+        sleep(TIMEOUT_VERY_SHORT.toLong())
         // 回到主页
         if (!isAppBackstage(pkgName, monkeyFile)) {
-            backToHome();
+            backToHome()
         }
     }
 
     @After
-    public void afterTest() {
-        super.afterTest();
+    public override fun afterTest() {
+        super.afterTest()
     }
 }

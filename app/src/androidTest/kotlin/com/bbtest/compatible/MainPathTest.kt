@@ -1,72 +1,72 @@
-package com.bbtest.compatible;
+package com.bbtest.compatible
 
-import androidx.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.UiObject2
+import com.bbtest.common.PhxCommon
+import com.bbtest.common.ShellCommon.amStartApp
+import com.bbtest.common.ShellCommon.forceStopApp
+import com.bbtest.common.ShellCommon.grantApkPermission
+import com.bbtest.common.ShellCommon.isAppBackstage
+import com.bbtest.utils.CommonUtil.getCurTimeForFile
+import com.bbtest.utils.CommonUtil.getExceptionMsg
+import com.bbtest.utils.FileUtil.createFolder
+import com.bbtest.utils.FileUtil.deleteFile
+import com.bbtest.utils.FileUtil.writeStrToFile
+import com.bbtest.utils.ShellCommand.execCmdByUiDevice
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import java.io.File
 
-import com.bbtest.common.PhxCommon;
-import com.bbtest.common.ShellCommon;
-import com.bbtest.utils.CommonUtil;
-import com.bbtest.utils.FileUtil;
-import com.bbtest.utils.ShellCommand;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainPathTest extends PhxCommon {
-
-    private File resultFolder = new File(rootFolder, "compatible");
-    private File mainPathFile = new File(resultFolder, "mainpath.txt");
+class MainPathTest : PhxCommon() {
+    private val resultFolder = File(rootFolder, "compatible")
+    private val mainPathFile = File(resultFolder, "mainpath.txt")
 
     @Before
-    public void beforeTest() {
-        super.beforeTest();
+    public override fun beforeTest() {
+        super.beforeTest()
         // 初始化目录及文件
-        FileUtil.createFolder(resultFolder);
-        FileUtil.deleteFile(mainPathFile);
+        createFolder(resultFolder)
+        deleteFile(mainPathFile)
     }
 
     @Test
-    public void testStartApp() {
+    fun testStartApp() {
         try {
             // 先授权
-            ShellCommon.grantApkPermission(device, pkgName);
+            grantApkPermission(device, pkgName)
 
             // 再启动应用->跳过闪屏->切换语言->停止应用
-            startApp(pkgName);
-            sleep(TIMEOUT_LONG);
-            backToHome();
-            skipFilesGuide();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 forYou = waitUiObject2ByText("For you", TIMEOUT_MEDIUM);
+            startApp(pkgName)
+            sleep(TIMEOUT_LONG.toLong())
+            backToHome()
+            skipFilesGuide()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val forYou = waitUiObject2ByText("For you", TIMEOUT_MEDIUM)
             if (forYou == null) {
-                switchLanguage("NG", "en");
+                switchLanguage("NG", "en")
             }
-            backToHome();
-            backExitBrowser();
-            ShellCommon.forceStopApp(device, pkgName, null);
+            backToHome()
+            backExitBrowser()
+            forceStopApp(device, pkgName, null)
 
             // 再次启动应用->跳过Feeds上滑->停止应用
-            startApp(pkgName);
-            sleep(TIMEOUT_LONG);
-            backToHome();
-            skipFeedsGuide();
-            backToHome();
-            backExitBrowser();
-            ShellCommon.forceStopApp(device, pkgName, null);
+            startApp(pkgName)
+            sleep(TIMEOUT_LONG.toLong())
+            backToHome()
+            skipFeedsGuide()
+            backToHome()
+            backExitBrowser()
+            forceStopApp(device, pkgName, null)
 
             //启动应用
-            startApp(pkgName);
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("StartApp:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/StartApp_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            e.printStackTrace();
+            startApp(pkgName)
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("StartApp:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/StartApp_" + getCurTimeForFile() + ".jpg")
+            e.printStackTrace()
         }
     }
 
@@ -74,67 +74,71 @@ public class MainPathTest extends PhxCommon {
      * 设置默认浏览器
      */
     @Test
-    public void testSetDefaultBrowser() {
+    fun testSetDefaultBrowser() {
         try {
-            UiObject2 me = waitUiObject2ByText("Me", TIMEOUT_MEDIUM);
+            var me = waitUiObject2ByText("Me", TIMEOUT_MEDIUM)
             if (me == null) {
-                me = waitUiObject2ByDesc("toolbar menu", TIMEOUT_SHORT);
+                me = waitUiObject2ByDesc("toolbar menu", TIMEOUT_SHORT.toLong())
             }
-            me.click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            swip(0.5, 0.8, 0.5, 0.2);
-            sleep(TIMEOUT_VERY_SHORT);
-            boolean isSetDefaultSuccess = getUiObject2ByChildText("android.widget.LinearLayout", true, "Set as default browser", "android.widget.Switch").isChecked();
+            me?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            swip(0.5, 0.8, 0.5, 0.2)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var isSetDefaultSuccess =
+                getUiObject2ByChildText("android.widget.LinearLayout", true, "Set as default browser", "android.widget.Switch")?.isChecked
+                    ?: false
             if (!isSetDefaultSuccess) {
-                waitUiObject2ByText("Set as default browser", TIMEOUT_MEDIUM).click();
-                UiObject2 next = waitUiObject2ByText("Continue", TIMEOUT_MEDIUM);
+                waitUiObject2ByText("Set as default browser", TIMEOUT_MEDIUM)?.click()
+                var next = waitUiObject2ByText("Continue", TIMEOUT_MEDIUM)
                 if (next == null) {
-                    next = waitUiObject2ByText("Next", TIMEOUT_SHORT);
+                    next = waitUiObject2ByText("Next", TIMEOUT_SHORT)
                 }
-                next.click();
-                sleep(TIMEOUT_VERY_SHORT);
-                UiObject2 dialogPHXBrowser = waitUiObject2ByText("Phoenix", TIMEOUT_MEDIUM);
+                next?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                val dialogPHXBrowser = waitUiObject2ByText("Phoenix", TIMEOUT_MEDIUM)
                 if (dialogPHXBrowser != null) {
-                    dialogPHXBrowser.click();
-                    UiObject2 setAsDefault = waitUiObject2ByText("Set as default", TIMEOUT_SHORT);
+                    dialogPHXBrowser.click()
+                    var setAsDefault = waitUiObject2ByText("Set as default", TIMEOUT_SHORT)
                     if (setAsDefault == null) {
-                        setAsDefault = waitUiObject2ByText("SET AS DEFAULT", TIMEOUT_SHORT);
+                        setAsDefault = waitUiObject2ByText("SET AS DEFAULT", TIMEOUT_SHORT)
                     }
-                    setAsDefault.click();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    waitUiObject2ByText("Set as default browser", TIMEOUT_MEDIUM);
+                    setAsDefault?.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    waitUiObject2ByText("Set as default browser", TIMEOUT_MEDIUM)
                 } else {
-                    UiObject2 browserApp = waitUiObject2ByText("Browser app", TIMEOUT_MEDIUM);
+                    val browserApp = waitUiObject2ByText("Browser app", TIMEOUT_MEDIUM)
                     if (browserApp != null) {
-                        browserApp.click();
-                        sleep(TIMEOUT_VERY_SHORT);
-                        UiObject2 phx = waitUiObject2ByText("Phoenix", TIMEOUT_MEDIUM);
+                        browserApp.click()
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
+                        var phx = waitUiObject2ByText("Phoenix", TIMEOUT_MEDIUM)
                         if (phx == null) {
-                            phx = waitUiObject2ByText("PHX Browser", TIMEOUT_MEDIUM);
+                            phx = waitUiObject2ByText("PHX Browser", TIMEOUT_MEDIUM)
                         }
-                        phx.click();
-                        if (ShellCommon.isAppBackstage(device, pkgName)) {
-                            ShellCommon.amStartApp(device, activity, null);
+                        phx?.click()
+                        if (isAppBackstage(device, pkgName)) {
+                            amStartApp(device, activity, null)
                         }
                     }
                 }
-                isSetDefaultSuccess = getUiObject2ByChildText("android.widget.LinearLayout", true, "Set as default browser", "android.widget.Switch").isChecked();
+                isSetDefaultSuccess =
+                    getUiObject2ByChildText("android.widget.LinearLayout", true, "Set as default browser", "android.widget.Switch")?.isChecked
+                        ?: false
             }
             if (isSetDefaultSuccess) {
-                FileUtil.writeStrToFile("SetDefaultBrowser:PASS" + "\n", mainPathFile);
+                writeStrToFile("SetDefaultBrowser:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("SetDefaultBrowser:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/SetDefaultBrowser_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("SetDefaultBrowser:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/SetDefaultBrowser_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SetDefaultBrowser:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SetDefaultBrowser_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SetDefaultBrowser:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SetDefaultBrowser_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -142,31 +146,31 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-登录
      */
     @Test
-    public void testMeLogin() {
+    fun testMeLogin() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Login", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Continue with Google", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            waitUiObject2ByTextContains("@gmail.com", TIMEOUT_LONG).click();
-            sleep(TIMEOUT_SHORT);
-            boolean isSigned = isUiObject2ExistByText("Signed in with Google", TIMEOUT_LONG);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Login", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Continue with Google", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            waitUiObject2ByTextContains("@gmail.com", TIMEOUT_LONG)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            val isSigned = isUiObject2ExistByText("Signed in with Google", TIMEOUT_LONG)
             if (isSigned) {
-                FileUtil.writeStrToFile("MeLogin:PASS" + "\n", mainPathFile);
+                writeStrToFile("MeLogin:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("MeLogin:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/MeLogin_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("MeLogin:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/MeLogin_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeLogin:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeLogin_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeLogin:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeLogin_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -174,62 +178,62 @@ public class MainPathTest extends PhxCommon {
      * 常规操作天气
      */
     @Test
-    public void testOperateWeather() {
+    fun testOperateWeather() {
         try {
-            List<UiObject2> weathers = getUiObject2s("android.widget.LinearLayout", true, 0, 0.4, 0, 0.2, 0, 0.4, 0.02, 0.2);
-            if (weathers == null || weathers.size() == 0) {
-                backToHome();
-                sleep(TIMEOUT_LONG);
-                weathers = getUiObject2s("android.widget.LinearLayout", true, 0, 0.4, 0, 0.2, 0, 0.4, 0.02, 0.2);
+            var weathers = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.4, 0.0, 0.2, 0.0, 0.4, 0.02, 0.2)
+            if (weathers == null || weathers.size == 0) {
+                backToHome()
+                sleep(TIMEOUT_LONG.toLong())
+                weathers = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.4, 0.0, 0.2, 0.0, 0.4, 0.02, 0.2)
             }
-            if (weathers != null && weathers.size() > 0) {
-                weathers.get(0).click();
-                sleep(TIMEOUT_MEDIUM);
-                waitUiObject2ByText("Air quality", TIMEOUT_LONG);
-                List<UiObject2> images = getUiObject2s("android.widget.ImageView", true, 0, 0.5, 0, 0.5, 0.8, 1, 0.02, 0.2);
-                if (images == null || images.size() == 0) {
-                    images = getUiObject2s("android.widget.ImageView", true, 0, 0.5, 0, 0.5, 0.8, 1, 0.02, 0.2);
+            if (weathers != null && weathers.size > 0) {
+                weathers?.get(0)?.click()
+                sleep(TIMEOUT_MEDIUM.toLong())
+                waitUiObject2ByText("Air quality", TIMEOUT_LONG)
+                var images = getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.8, 1.0, 0.02, 0.2)
+                if (images == null || images.size == 0) {
+                    images = getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.8, 1.0, 0.02, 0.2)
                 }
-                images.get(0).click();
-                waitUiObject2ByText("Manage city", TIMEOUT_MEDIUM).click();
-                waitUiObject2ByText("Add city", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_SHORT);
-                device.click(width / 2, height / 2);
-                sleep(TIMEOUT_SHORT);
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                swip(0.5, 0.3, 0.5, 0.7);
-                sleep(TIMEOUT_VERY_SHORT);
-                swip(0.7, 0.5, 0.3, 0.5);
-                sleep(TIMEOUT_VERY_SHORT);
-                swip(0.3, 0.5, 0.7, 0.5);
-                sleep(TIMEOUT_SHORT);
-                List<UiObject2> imageViews = getUiObject2s("android.widget.ImageView", true, 0, 0.5, 0, 0.5, 0, 0.2, 0.02, 0.2);
-                for (int i = 0; i < 3; i++) {
-                    if (imageViews != null && imageViews.size() > 0) {
-                        break;
+                images?.get(0)?.click()
+                waitUiObject2ByText("Manage city", TIMEOUT_MEDIUM)?.click()
+                waitUiObject2ByText("Add city", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_SHORT.toLong())
+                device.click(width / 2, height / 2)
+                sleep(TIMEOUT_SHORT.toLong())
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                swip(0.5, 0.3, 0.5, 0.7)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                swip(0.7, 0.5, 0.3, 0.5)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                swip(0.3, 0.5, 0.7, 0.5)
+                sleep(TIMEOUT_SHORT.toLong())
+                var imageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.0, 0.2, 0.02, 0.2)
+                for (i in 0..2) {
+                    if (imageViews != null && imageViews.size > 0) {
+                        break
                     } else {
-                        sleep(TIMEOUT_SHORT);
-                        imageViews = getUiObject2s("android.widget.ImageView", true, 0, 0.5, 0, 0.5, 0, 0.2, 0.02, 0.2);
+                        sleep(TIMEOUT_SHORT.toLong())
+                        imageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.0, 0.2, 0.02, 0.2)
                     }
                 }
-                imageViews.get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                FileUtil.writeStrToFile("OperateWeather:PASS" + "\n", mainPathFile);
+                imageViews!!.get(0).click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                writeStrToFile("OperateWeather:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("OperateWeather:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/OperateWeather_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("OperateWeather:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/OperateWeather_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("OperateWeather:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/OperateWeather_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("OperateWeather:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/OperateWeather_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -237,30 +241,30 @@ public class MainPathTest extends PhxCommon {
      * 搜索关键词
      */
     @Test
-    public void testSearchKeywords() {
+    fun testSearchKeywords() {
         try {
-            clickSearchBox(false);
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.5, 0, 0.5, 0, 0.2, 0.02, 0.2).get(0).click();
-            waitUiObject2ByText("Yahoo", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.LinearLayout", true, 0.3, 0.5, 0, 0.5, 0, 0.6, 0.1, 0.4).get(0).click();
-            sleep(TIMEOUT_SHORT);
-            boolean isSearchKeywordSuccess = isUiObject2ExistByDesc("toolbar menu", TIMEOUT_MEDIUM);
+            clickSearchBox(false)
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.0, 0.2, 0.02, 0.2)?.get(0)?.click()
+            waitUiObject2ByText("Yahoo", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.3, 0.5, 0.0, 0.5, 0.0, 0.6, 0.1, 0.4)?.get(0)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            val isSearchKeywordSuccess = isUiObject2ExistByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())
             if (isSearchKeywordSuccess) {
-                FileUtil.writeStrToFile("SearchKeywords:PASS" + "\n", mainPathFile);
+                writeStrToFile("SearchKeywords:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("SearchKeywords:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/SearchKeywords_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("SearchKeywords:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/SearchKeywords_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SearchKeywords:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SearchKeywords_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SearchKeywords:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SearchKeywords_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -268,23 +272,23 @@ public class MainPathTest extends PhxCommon {
      * 打开网页
      */
     @Test
-    public void testOpenWebpage() {
+    fun testOpenWebpage() {
         try {
-            clickSearchBox(false);
-            sleep(TIMEOUT_SHORT);
-            setTextAndGo("www.qq.com");
-            sleep(TIMEOUT_SHORT);
-            skipAppDialog();
-            skipOtherDialog();
-            FileUtil.writeStrToFile("OpenWebpage:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("OpenWebpage:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/OpenWebpage_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            clickSearchBox(false)
+            sleep(TIMEOUT_SHORT.toLong())
+            setTextAndGo("www.qq.com")
+            sleep(TIMEOUT_SHORT.toLong())
+            skipAppDialog()
+            skipOtherDialog()
+            writeStrToFile("OpenWebpage:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("OpenWebpage:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/OpenWebpage_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -292,48 +296,50 @@ public class MainPathTest extends PhxCommon {
      * 网页长按弹框
      */
     @Test
-    public void testWebviewLongpressDialog() {
+    fun testWebviewLongpressDialog() {
         try {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com");
-            sleep(TIMEOUT_LONG);
+            execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com")
+            sleep(TIMEOUT_LONG.toLong())
 
             // 网页长按弹窗
-            int index = 5;
-            for (int i = 7; i < 3; i--) {
-                longClick(width / 2, height * i / 9);
+            var index = 5
+            var i = 7
+            while (i < 3) {
+                longClick(width / 2, height * i / 9)
                 if (waitUiObject2ByText("Open in new tab", TIMEOUT_SHORT) != null) {
-                    back();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    index = i;
-                    break;
+                    back()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    index = i
+                    break
                 }
+                i--
             }
-            longClick(width / 2, height * index / 9);
-            waitUiObject2ByText("Open in new tab", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            longClick(width / 2, height * index / 9);
-            waitUiObject2ByText("Open in incognito tab", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            longClick(width / 2, height * index / 9);
-            waitUiObject2ByText("Copy link", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            longClick(width / 2, height * index / 9);
-            waitUiObject2ByText("Copy link text", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            longClick(width / 2, height * index / 9);
-            waitUiObject2ByText("Share link", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("WebviewLongpressDialog:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("WebviewLongpressDialog:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/WebviewLongpressDialog_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            longClick(width / 2, height * index / 9)
+            waitUiObject2ByText("Open in new tab", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            longClick(width / 2, height * index / 9)
+            waitUiObject2ByText("Open in incognito tab", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            longClick(width / 2, height * index / 9)
+            waitUiObject2ByText("Copy link", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            longClick(width / 2, height * index / 9)
+            waitUiObject2ByText("Copy link text", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            longClick(width / 2, height * index / 9)
+            waitUiObject2ByText("Share link", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("WebviewLongpressDialog:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("WebviewLongpressDialog:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/WebviewLongpressDialog_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -341,65 +347,65 @@ public class MainPathTest extends PhxCommon {
      * 网页更多菜单
      */
     @Test
-    public void testWebpageMoreMenu() {
+    fun testWebpageMoreMenu() {
         try {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com");
-            sleep(TIMEOUT_LONG);
+            execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com")
+            sleep(TIMEOUT_LONG.toLong())
 
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Add to bookmark", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Add to speed dial", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Add to home screen", TIMEOUT_MEDIUM).click();
-            UiObject2 addHomeOk = waitUiObject2ByText("Add automatically", TIMEOUT_SHORT);
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Add to bookmark", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Add to speed dial", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Add to home screen", TIMEOUT_MEDIUM)?.click()
+            var addHomeOk = waitUiObject2ByText("Add automatically", TIMEOUT_SHORT)
             if (addHomeOk == null) {
-                addHomeOk = waitUiObject2ByText("OK", TIMEOUT_VERY_SHORT);
+                addHomeOk = waitUiObject2ByText("OK", TIMEOUT_VERY_SHORT)
             }
             if (addHomeOk == null) {
-                addHomeOk = waitUiObject2ByText("ADD", TIMEOUT_VERY_SHORT);
+                addHomeOk = waitUiObject2ByText("ADD", TIMEOUT_VERY_SHORT)
             }
             if (addHomeOk != null) {
-                addHomeOk.click();
-                sleep(TIMEOUT_VERY_SHORT);
+                addHomeOk.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Share", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Save page for offline", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Save as PDF", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_LONG).click();
-            waitUiObject2ByText("Find in page", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Cancel", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Translate page", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Switch to desktop site", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Switch to mobile site", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Screenshot", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Crop region", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.5, 0, 0.5, 0.7, 1, 0.02, 0.15).get(0).click();
-            waitUiObject2ByText("Save", TIMEOUT_MEDIUM).click();
-            FileUtil.writeStrToFile("WebpageMoreMenu:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("WebpageMoreMenu:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/WebpageMoreMenu_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Share", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Save page for offline", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Save as PDF", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_LONG.toLong())?.click()
+            waitUiObject2ByText("Find in page", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Cancel", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Translate page", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Switch to desktop site", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Switch to mobile site", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Screenshot", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Crop region", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.7, 1.0, 0.02, 0.15)?.get(0)?.click()
+            waitUiObject2ByText("Save", TIMEOUT_MEDIUM)?.click()
+            writeStrToFile("WebpageMoreMenu:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("WebpageMoreMenu:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/WebpageMoreMenu_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -407,109 +413,109 @@ public class MainPathTest extends PhxCommon {
      * 网页工具栏(含主菜单)
      */
     @Test
-    public void testWebpageMenu() {
+    fun testWebpageMenu() {
         try {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com");
-            sleep(TIMEOUT_LONG);
+            execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com")
+            sleep(TIMEOUT_LONG.toLong())
 
             // 前进后退
-            sleep(TIMEOUT_SHORT);
-            click(width / 2, height * 5 / 9);
-            sleep(TIMEOUT_SHORT);
-            waitUiObject2ByDesc("toolbar back", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByDesc("toolbar forward", TIMEOUT_MEDIUM).click();
+            sleep(TIMEOUT_SHORT.toLong())
+            click(width / 2, height * 5 / 9)
+            sleep(TIMEOUT_SHORT.toLong())
+            waitUiObject2ByDesc("toolbar back", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByDesc("toolbar forward", TIMEOUT_MEDIUM.toLong())?.click()
 
             // 进入菜单-书签
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            UiObject2 bookmark = waitUiObject2ByText("Bookmarks", TIMEOUT_MEDIUM);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            var bookmark = waitUiObject2ByText("Bookmarks", TIMEOUT_MEDIUM)
             if (bookmark == null) {
-                bookmark = waitUiObject2ByText("Bookmark", TIMEOUT_SHORT);
+                bookmark = waitUiObject2ByText("Bookmark", TIMEOUT_SHORT)
             }
-            bookmark.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
+            bookmark?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 进入历史
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("History", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("History", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 进入下载
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 进入文件
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 进入我的视频
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("My video", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("My video", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 进入我的音乐
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("My music", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("My music", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 进入广告拦截
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            UiObject2 adBlock = waitUiObject2ByRes("com.transsion.phoenix:id/adBlocked", TIMEOUT_MEDIUM);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            var adBlock = waitUiObject2ByRes("com.transsion.phoenix:id/adBlocked", TIMEOUT_MEDIUM.toLong())
             if (adBlock == null) {
-                adBlock = waitUiObject2ByText("Adblocker", TIMEOUT_VERY_SHORT);
+                adBlock = waitUiObject2ByText("Adblocker", TIMEOUT_VERY_SHORT)
             }
             if (adBlock == null) {
-                adBlock = waitUiObject2ByText("Ads blocked", TIMEOUT_VERY_SHORT);
+                adBlock = waitUiObject2ByText("Ads blocked", TIMEOUT_VERY_SHORT)
             }
             if (adBlock == null) {
-                adBlock = waitUiObject2ByText("Ad block", TIMEOUT_VERY_SHORT);
+                adBlock = waitUiObject2ByText("Ad block", TIMEOUT_VERY_SHORT)
             }
-            adBlock.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
+            adBlock?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 进入日(夜)间模式
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            UiObject2 darkLight = waitUiObject2ByText("Dark", TIMEOUT_SHORT);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            var darkLight = waitUiObject2ByText("Dark", TIMEOUT_SHORT)
             if (darkLight == null) {
-                darkLight = waitUiObject2ByText("Light", TIMEOUT_SHORT);
+                darkLight = waitUiObject2ByText("Light", TIMEOUT_SHORT)
             }
-            darkLight.click();
-            sleep(TIMEOUT_VERY_SHORT);
+            darkLight?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 设置
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_SHORT).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_SHORT)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 多窗口
-            waitUiObject2ByDesc("toolbar multiWindow", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.5, 1, 0.01, 0.5, 0, 1, 0.7, 1).get(0).click();
-            FileUtil.writeStrToFile("WebpageMenu:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("WebpageMenu:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/WebpageMenu_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByDesc("toolbar multiWindow", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.get(0)?.click()
+            writeStrToFile("WebpageMenu:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("WebpageMenu:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/WebpageMenu_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -517,23 +523,23 @@ public class MainPathTest extends PhxCommon {
      * 扫一扫
      */
     @Test
-    public void testScan() {
+    fun testScan() {
         try {
-            waitUiObject2ByRes("com.transsion.phoenix:id/homepage_qrcode_button", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.5, 0, 0.5, 0, 0.3, 0.8, 1).get(0).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.5, 0.15, 0.5, 0, 1, 0.15, 1).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("Scan:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("Scan:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/Scan_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByRes("com.transsion.phoenix:id/homepage_qrcode_button", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.0, 0.3, 0.8, 1.0)?.get(0)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.5, 0.15, 0.5, 0.0, 1.0, 0.15, 1.0)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("Scan:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("Scan:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/Scan_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -541,38 +547,38 @@ public class MainPathTest extends PhxCommon {
      * 快链跳转
      */
     @Test
-    public void testSpeedDialAccess() {
+    fun testSpeedDialAccess() {
         try {
             // 点击快链进入
-            waitUiObject2ByText("All Sites", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_MEDIUM);
-            for (int i = 0; i < 3; i++) {
-                List<UiObject2> allSites = getUiObject2s("android.view.View", true, 0.4, 0.6, 0.02, 0.2, 0, 1, 0.2, 0.9);
-                if (allSites != null && allSites.size() > 0) {
-                    allSites.get(0).click();
-                    sleep(TIMEOUT_SHORT);
-                    waitUiObject2ByDesc("toolbar home", TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    FileUtil.writeStrToFile("SpeedDialAccess:PASS" + "\n", mainPathFile);
-                    break;
+            waitUiObject2ByText("All Sites", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
+            for (i in 0..2) {
+                val allSites = getUiObject2s("android.view.View", true, 0.4, 0.6, 0.02, 0.2, 0.0, 1.0, 0.2, 0.9)
+                if (allSites.isNotEmpty()) {
+                    allSites.getOrNull(0)?.click()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    waitUiObject2ByDesc("toolbar home", TIMEOUT_MEDIUM.toLong())?.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    writeStrToFile("SpeedDialAccess:PASS" + "\n", mainPathFile)
+                    break
                 } else {
-                    sleep(TIMEOUT_SHORT);
+                    sleep(TIMEOUT_SHORT.toLong())
                     if (i == 2) {
-                        back();
-                        sleep(TIMEOUT_VERY_SHORT);
-                        FileUtil.writeStrToFile("SpeedDialAccess:FAILED" + "\n", mainPathFile);
-                        screenshot(resultFolder + "/SpeedDialAccess_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                        back()
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
+                        writeStrToFile("SpeedDialAccess:FAILED" + "\n", mainPathFile)
+                        screenshot(resultFolder.toString() + "/SpeedDialAccess_" + getCurTimeForFile() + ".jpg")
                     }
                 }
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SpeedDialAccess:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SpeedDialAccess_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SpeedDialAccess:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SpeedDialAccess_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -580,64 +586,64 @@ public class MainPathTest extends PhxCommon {
      * 添加满快链
      */
     @Test
-    public void testSpeedDialAdds() {
+    fun testSpeedDialAdds() {
         try {
-            List<UiObject2> curSpeedDials = getUiObject2sByClazz("android.widget.TextView");
-            List<String> curSpeedDialTexts = getTexts(curSpeedDials);
-            for (int i = 0; i < 20; i++) {
+            val curSpeedDials = getUiObject2sByClazz("android.widget.TextView")
+            val curSpeedDialTexts = getTexts(curSpeedDials)
+            for (i in 0..19) {
                 // 进入添加快链
-                List<UiObject2> linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.15, 0.25, 0.02, 0.5, 0, 1, 0.2, 0.8);
-                UiObject2 lastLinearLayout = linearLayouts.get(linearLayouts.size() - 1);
-                String lastLinearLayoutText = getTextOrDesc(lastLinearLayout, true);
-                if (lastLinearLayoutText == null || lastLinearLayoutText.equals("") || lastLinearLayoutText.equals("Add")) {
-                    lastLinearLayout.click();
-                    sleep(TIMEOUT_SHORT);
+                val linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.15, 0.25, 0.02, 0.5, 0.0, 1.0, 0.2, 0.8)
+                val lastLinearLayout = linearLayouts.getOrNull(linearLayouts.size - 1) ?: break
+                val lastLinearLayoutText = getTextOrDesc(lastLinearLayout, true)
+                if (lastLinearLayoutText == null || lastLinearLayoutText == "" || lastLinearLayoutText == "Add") {
+                    lastLinearLayout.click()
+                    sleep(TIMEOUT_SHORT.toLong())
                 } else {
-                    break;
+                    break
                 }
 
                 // 点击未添加快链添加
-                List<UiObject2> addSites = new ArrayList<>();
-                for (int j = 0; j < 3; j++) {
-                    if (getUiObject2sByClazz("android.view.View").size() > 0) {
-                        addSites = getUiObject2s("android.view.View", true, 0.4, 0.6, 0.02, 0.2, 0, 1, 0.2, 0.9);
-                        break;
+                var addSites: MutableList<UiObject2> = ArrayList<UiObject2>()
+                for (j in 0..2) {
+                    if (getUiObject2sByClazz("android.view.View").isNotEmpty()) {
+                        addSites = getUiObject2s("android.view.View", true, 0.4, 0.6, 0.02, 0.2, 0.0, 1.0, 0.2, 0.9)
+                        break
                     }
                 }
-                boolean isClickAddSite = false;
-                for (UiObject2 addSite : addSites) {
-                    String addSiteText = getTextOrDesc(addSite, true);
-                    if (!curSpeedDialTexts.contains(addSiteText)) {
-                        addSite.click();
-                        sleep(TIMEOUT_SHORT);
-                        curSpeedDialTexts.add(addSiteText);
-                        isClickAddSite = true;
-                        break;
+                var isClickAddSite = false
+                for (addSite in addSites) {
+                    val addSiteText = getTextOrDesc(addSite, true)
+                    if (addSiteText != null && !curSpeedDialTexts.contains(addSiteText)) {
+                        addSite.click()
+                        sleep(TIMEOUT_SHORT.toLong())
+                        curSpeedDialTexts.add(addSiteText)
+                        isClickAddSite = true
+                        break
                     }
                 }
                 if (!isClickAddSite) {
-                    back();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    break;
+                    back()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    break
                 }
 
                 // 判断是否添加满
-                UiObject2 gotIt = waitUiObject2ByText("Got it", TIMEOUT_VERY_SHORT);
+                val gotIt = waitUiObject2ByText("Got it", TIMEOUT_VERY_SHORT)
                 if (gotIt != null) {
-                    gotIt.click();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    break;
+                    gotIt.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    break
                 }
             }
-            FileUtil.writeStrToFile("SpeedDialAdds:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SpeedDialAdds:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SpeedDialAdds_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("SpeedDialAdds:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SpeedDialAdds:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SpeedDialAdds_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -645,30 +651,31 @@ public class MainPathTest extends PhxCommon {
      * 删除所有快链
      */
     @Test
-    public void testSpeedDialDels() {
+    fun testSpeedDialDels() {
         try {
-            for (int i = 0; i < 19; i++) {
-                sleep(TIMEOUT_VERY_SHORT);
-                UiObject2 secondSpeedDial = getUiObject2s("android.widget.LinearLayout", true, 0.15, 0.25, 0.02, 0.5, 0, 1, 0.2, 0.8).get(1);
-                String secondSpeedDialText = getTextOrDesc(secondSpeedDial, true);
-                if (secondSpeedDialText == null || secondSpeedDialText.equals("") || secondSpeedDialText.equals("Add")) {
-                    break;
+            for (i in 0..18) {
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                val secondSpeedDial = getUiObject2s("android.widget.LinearLayout", true, 0.15, 0.25, 0.02, 0.5, 0.0, 1.0, 0.2, 0.8).getOrNull(1)
+                    ?: break
+                val secondSpeedDialText = getTextOrDesc(secondSpeedDial, true)
+                if (secondSpeedDialText == null || secondSpeedDialText == "" || secondSpeedDialText == "Add") {
+                    break
                 } else {
-                    longClick(secondSpeedDial);
-                    sleep(TIMEOUT_VERY_SHORT);
-                    waitUiObject2ByText("Delete", TIMEOUT_SHORT).click();
-                    sleep(TIMEOUT_VERY_SHORT);
+                    longClick(secondSpeedDial)
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    waitUiObject2ByText("Delete", TIMEOUT_SHORT)?.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            FileUtil.writeStrToFile("SpeedDialDels:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SpeedDialDels:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SpeedDialDels_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("SpeedDialDels:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SpeedDialDels:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SpeedDialDels_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -676,41 +683,41 @@ public class MainPathTest extends PhxCommon {
      * Feeds删除所有tab
      */
     @Test
-    public void testFeedsTabDels() {
+    fun testFeedsTabDels() {
         try {
             // 删除所有tab
-            getUiObject2s("android.widget.FrameLayout", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.1, 0.8).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Edit", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            for (int i = 0; i < 20; i++) {
-                UiObject2 addChannel = waitUiObject2ByText("Add channel", TIMEOUT_SHORT);
-                double maxY = 0.9;
+            getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.1, 0.8)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Edit", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            for (i in 0..19) {
+                val addChannel = waitUiObject2ByText("Add channel", TIMEOUT_SHORT)
+                var maxY = 0.9
                 if (addChannel != null) {
-                    maxY = (double) addChannel.getVisibleBounds().top / height;
+                    maxY = addChannel.getVisibleBounds().top.toDouble() / height
                 }
-                List<UiObject2> tabs = getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0, 0.2, 0, 1, 0.1, maxY);
-                UiObject2 lastTab = tabs.get(tabs.size() - 1);
-                String lastTabText = getText(lastTab, true);
-                if (lastTabText != null && lastTabText.equals("Video")) {
-                    break;
+                val tabs = getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.0, 0.2, 0.0, 1.0, 0.1, maxY)
+                val lastTab = tabs.getOrNull(tabs.size - 1) ?: break
+                val lastTabText = getText(lastTab, true)
+                if (lastTabText != null && lastTabText == "Video") {
+                    break
                 } else {
-                    lastTab.click();
+                    lastTab.click()
                 }
             }
-            waitUiObject2ByText("Done", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.1, 0.3, 0.05, 0.2, 0, 0.5, 0.02, 0.5).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FeedsTabDels:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FeedsTabDels:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FeedsTabDels_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Done", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.1, 0.3, 0.05, 0.2, 0.0, 0.5, 0.02, 0.5)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FeedsTabDels:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FeedsTabDels:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FeedsTabDels_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -718,41 +725,41 @@ public class MainPathTest extends PhxCommon {
      * Feeds添加所有tab
      */
     @Test
-    public void testFeedsTabAdds() {
+    fun testFeedsTabAdds() {
         try {
-            getUiObject2s("android.widget.FrameLayout", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.1, 0.8).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            for (int i = 0; i < 20; i++) {
-                UiObject2 addChannel = waitUiObject2ByText("Add channel", TIMEOUT_SHORT);
+            getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.1, 0.8)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            for (i in 0..19) {
+                val addChannel = waitUiObject2ByText("Add channel", TIMEOUT_SHORT)
                 if (addChannel == null) {
-                    break;
+                    break
                 } else {
-                    double minY = (double) addChannel.getVisibleBounds().bottom / height;
-                    List<UiObject2> tabs = getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0, 0.2, 0, 1, minY, 1);
-                    System.out.println(tabs.size());
-                    for (UiObject2 tab : tabs) {
-                        String tabTxt = getText(tab, true);
-                        System.out.println(tab.getVisibleBounds().toString() + "," + tabTxt);
-                        if (tabTxt != null && !tabTxt.equals("")) {
-                            tab.click();
-                            break;
+                    val minY = addChannel.getVisibleBounds().bottom.toDouble() / height
+                    val tabs = getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.0, 0.2, 0.0, 1.0, minY, 1.0)
+                    println(tabs.size)
+                    for (tab in tabs) {
+                        val tabTxt = getText(tab, true)
+                        println(tab.getVisibleBounds().toString() + "," + tabTxt)
+                        if (tabTxt != null && tabTxt != "") {
+                            tab.click()
+                            break
                         }
                     }
                 }
             }
-            waitUiObject2ByText("Done", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FeedsTabAdds:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FeedsTabAdds:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FeedsTabAdds_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Done", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FeedsTabAdds:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FeedsTabAdds:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FeedsTabAdds_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -760,102 +767,102 @@ public class MainPathTest extends PhxCommon {
      * Feeds新闻
      */
     @Test
-    public void testFeedsNews() {
+    fun testFeedsNews() {
         try {
             // 打开Feeds新闻
-            switchFeedsTab("Lifestyle");
-            sleep(TIMEOUT_MEDIUM);
-            getUiObject2s("android.widget.LinearLayout", true, 0.9, 1, 0.1, 0.5, 0, 1, 0.02, 0.8).get(0).click();
-            sleep(TIMEOUT_MEDIUM);
+            switchFeedsTab("Lifestyle")
+            sleep(TIMEOUT_MEDIUM.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.5, 0.0, 1.0, 0.02, 0.8)?.get(0)?.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
 
             // Feeds新闻-省流
-            List<UiObject2> topRightImgs = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0.02, 0.2, 0.6, 1, 0.02, 0.3);
-            for (int i = 0; i < 3; i++) {
-                if (topRightImgs != null && topRightImgs.size() >= 2) {
-                    break;
+            var topRightImgs = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)
+            for (i in 0..2) {
+                if (topRightImgs != null && topRightImgs.size >= 2) {
+                    break
                 } else {
-                    sleep(TIMEOUT_SHORT);
-                    topRightImgs = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0.02, 0.2, 0.6, 1, 0.02, 0.3);
+                    sleep(TIMEOUT_SHORT.toLong())
+                    topRightImgs = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)
                 }
             }
-            topRightImgs.get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2ByChildText("android.widget.LinearLayout", true, "Prompt saving result", "android.widget.Switch").click();
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.2, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            topRightImgs!!.get(0).click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2ByChildText("android.widget.LinearLayout", true, "Prompt saving result", "android.widget.Switch")?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.2, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // Feeds新闻-更多按钮
             if (waitUiObject2ByText("Home", TIMEOUT_SHORT) != null) {
-                getUiObject2s("android.widget.LinearLayout", true, 0.9, 1, 0.1, 0.5, 0, 1, 0.02, 0.8).get(0).click();
-                sleep(TIMEOUT_MEDIUM);
+                getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.5, 0.0, 1.0, 0.02, 0.8)?.get(0)?.click()
+                sleep(TIMEOUT_MEDIUM.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1, 0.02, 0.3).get(1).click();
-            waitUiObject2ByText("Add to favorites", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1, 0.02, 0.3).get(1).click();
-            waitUiObject2ByText("Share", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1, 0.02, 0.3).get(1).click();
-            UiObject2 dartLight = waitUiObject2ByText("Dark mode", TIMEOUT_SHORT);
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.get(1)?.click()
+            waitUiObject2ByText("Add to favorites", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.get(1)?.click()
+            waitUiObject2ByText("Share", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.get(1)?.click()
+            var dartLight = waitUiObject2ByText("Dark mode", TIMEOUT_SHORT)
             if (dartLight == null) {
-                dartLight = waitUiObject2ByText("Light mode", TIMEOUT_SHORT);
+                dartLight = waitUiObject2ByText("Light mode", TIMEOUT_SHORT)
             }
-            dartLight.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1, 0.02, 0.3).get(1).click();
-            waitUiObject2ByText("Report", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1, 0.02, 0.3).get(1).click();
-            waitUiObject2ByText("Font size", TIMEOUT_MEDIUM).click();
-            UiObject2 seekBar = waitUiObject2sByClazz("android.widget.SeekBar", TIMEOUT_MEDIUM).get(0);
-            swip(seekBar, "right");
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
+            dartLight?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.get(1)?.click()
+            waitUiObject2ByText("Report", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.get(1)?.click()
+            waitUiObject2ByText("Font size", TIMEOUT_MEDIUM)?.click()
+            val seekBar = waitUiObject2sByClazz("android.widget.SeekBar", TIMEOUT_MEDIUM.toLong()).getOrNull(0) ?: return
+            swip(seekBar, "right")
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // Feeds新闻-底部工具栏
-            List<UiObject2> frameLayouts = getUiObject2s("android.widget.FrameLayout", true, 0, 0.19, 0, 0.2, 0, 1, 0.8, 1);
+            val frameLayouts = getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
             if (frameLayouts != null) {
-                for (int i = 0; i < frameLayouts.size(); i++) {
-                    frameLayouts.get(i).click();
-                    sleep(TIMEOUT_VERY_SHORT);
+                for (i in frameLayouts.indices) {
+                    frameLayouts.get(i).click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                     if (i == 0) {
-                        back();
-                        sleep(TIMEOUT_VERY_SHORT);
+                        back()
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
                     } else if (i == 1) {
-                        swip(0.5, 0.6, 0.5, 0.8);
-                        sleep(TIMEOUT_VERY_SHORT);
-                        break;
+                        swip(0.5, 0.6, 0.5, 0.8)
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
+                        break
                     }
                 }
             }
-            List<UiObject2> linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0, 0.8, 0, 0.2, 0, 1, 0.8, 1);
-            if (linearLayouts != null && linearLayouts.size() > 0) {
-                linearLayouts.get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+            val linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.8, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
+            if (linearLayouts != null && linearLayouts.size > 0) {
+                linearLayouts?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
 
-            List<UiObject2> imageViews = getUiObject2s("android.widget.ImageView", true, 0, 0.19, 0, 0.2, 0, 1, 0.88, 1);
+            val imageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.88, 1.0)
             if (imageViews != null) {
-                imageViews.get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                imageViews?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            FileUtil.writeStrToFile("FeedsNews:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FeedsNews:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FeedsNews_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("FeedsNews:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FeedsNews:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FeedsNews_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -863,71 +870,71 @@ public class MainPathTest extends PhxCommon {
      * Feeds图片
      */
     @Test
-    public void testFeedsImg() {
+    fun testFeedsImg() {
         try {
-            switchFeedsTab("Hot Girl");
-            sleep(TIMEOUT_MEDIUM);
-            List<UiObject2> bigImgLinearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1, 0.2, 0.8, 0, 1, 0.02, 1);
-            if (bigImgLinearLayouts == null || bigImgLinearLayouts.size() == 0) {
-                bigImgLinearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.4, 0.6, 0.1, 0.5, 0, 1, 0.02, 1);
+            switchFeedsTab("Hot Girl")
+            sleep(TIMEOUT_MEDIUM.toLong())
+            var bigImgLinearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.2, 0.8, 0.0, 1.0, 0.02, 1.0)
+            if (bigImgLinearLayouts == null || bigImgLinearLayouts.size == 0) {
+                bigImgLinearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.4, 0.6, 0.1, 0.5, 0.0, 1.0, 0.02, 1.0)
             }
-            bigImgLinearLayouts.get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            bigImgLinearLayouts?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             if (waitUiObject2ByText("Save", TIMEOUT_SHORT) == null) {
-                List<UiObject2> bigImgs = getUiObject2s("android.widget.FrameLayout", true, 0.8, 1, 0.5, 0.8, 0, 1, 0.02, 1);
-                if (bigImgs != null && bigImgs.size() > 0) {
-                    bigImgs.get(0).click();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    back();
-                    sleep(TIMEOUT_VERY_SHORT);
+                val bigImgs = getUiObject2s("android.widget.FrameLayout", true, 0.8, 1.0, 0.5, 0.8, 0.0, 1.0, 0.02, 1.0)
+                if (bigImgs != null && bigImgs.size > 0) {
+                    bigImgs?.get(0)?.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    back()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
 
                 // 底部工具栏
-                List<UiObject2> frameLayouts = getUiObject2s("android.widget.FrameLayout", true, 0, 0.19, 0, 0.2, 0, 1, 0.8, 1);
+                val frameLayouts = getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
                 if (frameLayouts != null) {
-                    for (int i = 0; i < frameLayouts.size(); i++) {
-                        frameLayouts.get(i).click();
-                        sleep(TIMEOUT_VERY_SHORT);
+                    for (i in frameLayouts.indices) {
+                        frameLayouts.get(i).click()
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
                         if (i == 0) {
-                            back();
-                            sleep(TIMEOUT_VERY_SHORT);
+                            back()
+                            sleep(TIMEOUT_VERY_SHORT.toLong())
                         } else if (i == 1) {
-                            swip(0.5, 0.6, 0.5, 0.8);
-                            sleep(TIMEOUT_VERY_SHORT);
-                            break;
+                            swip(0.5, 0.6, 0.5, 0.8)
+                            sleep(TIMEOUT_VERY_SHORT.toLong())
+                            break
                         }
                     }
                 }
-                List<UiObject2> linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0, 0.8, 0, 0.2, 0, 1, 0.8, 1);
-                if (linearLayouts != null && linearLayouts.size() > 0) {
-                    linearLayouts.get(0).click();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    back();
-                    sleep(TIMEOUT_VERY_SHORT);
+                val linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.8, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
+                if (linearLayouts != null && linearLayouts.size > 0) {
+                    linearLayouts?.get(0)?.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    back()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
 
-                List<UiObject2> imageViews = getUiObject2s("android.widget.ImageView", true, 0, 0.19, 0, 0.2, 0, 1, 0.88, 1);
-                if (imageViews != null && imageViews.size() > 0) {
-                    imageViews.get(0).click();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    back();
-                    sleep(TIMEOUT_VERY_SHORT);
+                val imageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.88, 1.0)
+                if (imageViews != null && imageViews.size > 0) {
+                    imageViews?.get(0)?.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    back()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             } else {
-                for (int i = 0; i < 11; i++) {
-                    swip(0.7, 0.5, 0.3, 0.5);
-                    sleep(TIMEOUT_VERY_SHORT);
+                for (i in 0..10) {
+                    swip(0.7, 0.5, 0.3, 0.5)
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            FileUtil.writeStrToFile("FeedsImg:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FeedsImg:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FeedsImg_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("FeedsImg:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FeedsImg:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FeedsImg_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -935,56 +942,56 @@ public class MainPathTest extends PhxCommon {
      * Feeds视频
      */
     @Test
-    public void testFeedsVideos() {
+    fun testFeedsVideos() {
         try {
             // Feeds视频-打开
-            switchFeedsTab("Video");
-            sleep(TIMEOUT_MEDIUM);
-            UiObject2 firstVideo = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1, 0.2, 0.8, 0, 1, 0.02, 0.9).get(0);
-            UiObject2 firstVideoBottom = getChildUiObject2(firstVideo, false, "android.widget.LinearLayout", 0.8, 1, 0, 0.1, 0, 1, 0, 1, false);
-            firstVideoBottom.click();
-            sleep(TIMEOUT_SHORT);
+            switchFeedsTab("Video")
+            sleep(TIMEOUT_MEDIUM.toLong())
+            val firstVideo = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9).get(0)
+            val firstVideoBottom = getChildUiObject2(firstVideo, false, "android.widget.LinearLayout", 0.8, 1.0, 0.0, 0.1, 0.0, 1.0, 0.0, 1.0, false)
+            firstVideoBottom?.click()
+            sleep(TIMEOUT_SHORT.toLong())
 
             // Feeds视频-底部工具栏
-            List<UiObject2> frameLayouts = getUiObject2s("android.widget.FrameLayout", true, 0, 0.19, 0, 0.2, 0, 1, 0.8, 1);
+            val frameLayouts = getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
             if (frameLayouts != null) {
-                for (int i = 0; i < frameLayouts.size(); i++) {
-                    frameLayouts.get(i).click();
-                    sleep(TIMEOUT_VERY_SHORT);
+                for (i in frameLayouts.indices) {
+                    frameLayouts.get(i).click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                     if (i == 0) {
-                        back();
-                        sleep(TIMEOUT_VERY_SHORT);
+                        back()
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
                     } else if (i == 1) {
-                        swip(0.5, 0.6, 0.5, 0.8);
-                        sleep(TIMEOUT_VERY_SHORT);
-                        break;
+                        swip(0.5, 0.6, 0.5, 0.8)
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
+                        break
                     }
                 }
             }
-            List<UiObject2> linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0, 0.8, 0, 0.2, 0, 1, 0.8, 1);
-            if (linearLayouts != null && linearLayouts.size() > 0) {
-                linearLayouts.get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+            val linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.8, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
+            if (linearLayouts != null && linearLayouts.size > 0) {
+                linearLayouts?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
 
-            List<UiObject2> imageViews = getUiObject2s("android.widget.ImageView", true, 0, 0.19, 0, 0.2, 0, 1, 0.88, 1);
+            val imageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.88, 1.0)
             if (imageViews != null) {
-                imageViews.get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                imageViews?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            FileUtil.writeStrToFile("FeedsVideos:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FeedsVideos:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FeedsVideos_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("FeedsVideos:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FeedsVideos:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FeedsVideos_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -992,51 +999,51 @@ public class MainPathTest extends PhxCommon {
      * Feeds小视频
      */
     @Test
-    public void testFeedsSmallVideo() {
+    fun testFeedsSmallVideo() {
         try {
             // Feeds小视频
-            switchFeedsTab("Short Video");
-            sleep(TIMEOUT_MEDIUM);
-            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0, 1, 0.02, 0.9).get(0).click();
-            sleep(TIMEOUT_SHORT);
-            UiObject2 swipeToast = waitUiObject2ByText("Swipe up for more", TIMEOUT_SHORT);
+            switchFeedsTab("Short Video")
+            sleep(TIMEOUT_MEDIUM.toLong())
+            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            val swipeToast = waitUiObject2ByText("Swipe up for more", TIMEOUT_SHORT)
             if (swipeToast != null) {
-                swipeToast.click();
+                swipeToast.click()
             }
-            swip(0.5, 0.7, 0.5, 0.3);
-            sleep(TIMEOUT_SHORT);
-            swip(0.5, 0.3, 0.5, 0.7);
-            sleep(TIMEOUT_SHORT);
+            swip(0.5, 0.7, 0.5, 0.3)
+            sleep(TIMEOUT_SHORT.toLong())
+            swip(0.5, 0.3, 0.5, 0.7)
+            sleep(TIMEOUT_SHORT.toLong())
 
             // Feeds小视频-右侧工具栏
-            getUiObject2s("android.widget.LinearLayout", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.3, 1).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.LinearLayout", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.3, 1).get(1).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.2, 1).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.LinearLayout", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.3, 1).get(2).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.LinearLayout", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.3, 1).get(3).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Download", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            UiObject2 downloadDialog = waitUiObject2ByText("Video saved", TIMEOUT_VERY_LONG);
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.get(1)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.2, 1.0)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.get(2)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.get(3)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Download", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            val downloadDialog = waitUiObject2ByText("Video saved", TIMEOUT_VERY_LONG)
             if (downloadDialog != null) {
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            FileUtil.writeStrToFile("FeedsSmallVideo:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FeedsSmallVideo:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FeedsSmallVideo_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("FeedsSmallVideo:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FeedsSmallVideo:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FeedsSmallVideo_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1044,56 +1051,56 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-消息
      */
     @Test
-    public void testMeMsg() {
+    fun testMeMsg() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            UiObject2 login = waitUiObject2ByText("Login", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            val login = waitUiObject2ByText("Login", TIMEOUT_MEDIUM)
             if (login != null) {
-                login.click();
-                sleep(TIMEOUT_VERY_SHORT);
-                waitUiObject2ByText("Continue with Google", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_SHORT);
-                waitUiObject2ByTextContains("@gmail.com", TIMEOUT_LONG).click();
-                sleep(TIMEOUT_SHORT);
-                waitUiObject2ByText("Signed in with Google", TIMEOUT_LONG);
-                sleep(TIMEOUT_VERY_SHORT);
+                login.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                waitUiObject2ByText("Continue with Google", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_SHORT.toLong())
+                waitUiObject2ByTextContains("@gmail.com", TIMEOUT_LONG)?.click()
+                sleep(TIMEOUT_SHORT.toLong())
+                waitUiObject2ByText("Signed in with Google", TIMEOUT_LONG)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.01, 0.2, 0.8, 1, 0.02, 0.2).get(0).click();
-            sleep(TIMEOUT_SHORT);
-            List<UiObject2> comments = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.1, 0.8, 0, 1, 0.02, 0.9);
-            for (int i = 0; i < 3; i++) {
-                if (comments == null || comments.size() == 0) {
-                    back();
-                    sleep(TIMEOUT_SHORT);
-                    getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.01, 0.2, 0.8, 1, 0.02, 0.2).get(0).click();
-                    sleep(TIMEOUT_SHORT);
-                    comments = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.1, 0.8, 0, 1, 0.02, 0.9);
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.01, 0.2, 0.8, 1.0, 0.02, 0.2)?.get(0)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            var comments = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.1, 0.8, 0.0, 1.0, 0.02, 0.9)
+            for (i in 0..2) {
+                if (comments == null || comments.size == 0) {
+                    back()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.01, 0.2, 0.8, 1.0, 0.02, 0.2)?.get(0)?.click()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    comments = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.1, 0.8, 0.0, 1.0, 0.02, 0.9)
                 } else {
-                    break;
+                    break
                 }
             }
-            comments.get(0).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.FrameLayout", true, 0.8, 1, 0.1, 0.8, 0, 1, 0.02, 0.9).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            for (int i = 0; i < 5; i++) {
+            comments!!.get(0).click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.FrameLayout", true, 0.8, 1.0, 0.1, 0.8, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            for (i in 0..4) {
                 if (waitUiObject2ByText("Share Phoenix", TIMEOUT_SHORT) != null) {
-                    break;
+                    break
                 } else {
-                    getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                    sleep(TIMEOUT_VERY_SHORT);
+                    getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            FileUtil.writeStrToFile("MeMsg:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeMsg:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeMsg_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("MeMsg:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeMsg:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeMsg_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1101,53 +1108,55 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-书签
      */
     @Test
-    public void testMeBookmark() {
+    fun testMeBookmark() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 bookmark = waitUiObject2ByText("Bookmarks", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var bookmark = waitUiObject2ByText("Bookmarks", TIMEOUT_MEDIUM)
             if (bookmark == null) {
-                bookmark = waitUiObject2ByText("Bookmark", TIMEOUT_SHORT);
+                bookmark = waitUiObject2ByText("Bookmark", TIMEOUT_SHORT)
             }
-            bookmark.click();
-            waitUiObject2ByText("New Folder", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Title", TIMEOUT_MEDIUM).setText("Test");
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 save = waitUiObject2ByText("Save", TIMEOUT_MEDIUM);
+            bookmark?.click()
+            waitUiObject2ByText("New Folder", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Title", TIMEOUT_MEDIUM)?.setText("Test" ?: "")
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var save = waitUiObject2ByText("Save", TIMEOUT_MEDIUM)
             if (save == null) {
-                save = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.02, 0.2).get(0);
+                save = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.2).get(0)
             }
-            save.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            longClick(waitUiObject2ByText("Test", TIMEOUT_MEDIUM));
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            List<UiObject2> bookmarkMore = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.02, 0.9);
-            if (bookmarkMore != null && bookmarkMore.size() > 0) {
-                bookmarkMore.get(0).click();
-                waitUiObject2ByText("Delete", TIMEOUT_MEDIUM).click();
+            save?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Test", TIMEOUT_MEDIUM)?.let {
+                longClick(it)
             }
-            waitUiObject2ByText("Sync", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val bookmarkMore = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.9)
+            if (bookmarkMore != null && bookmarkMore.size > 0) {
+                bookmarkMore?.get(0)?.click()
+                waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
+            }
+            waitUiObject2ByText("Sync", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             if (waitUiObject2ByText("Continue with Google", TIMEOUT_SHORT) != null) {
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0, 0.3, 0, 0.3, 0, 0.5, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("MeBookmark:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeBookmark:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeBookmark_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("MeBookmark:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeBookmark:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeBookmark_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1155,35 +1164,35 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-历史
      */
     @Test
-    public void testMeHistory() {
+    fun testMeHistory() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("History", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.02, 0.9).get(0).click();
-            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Clear", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Clear", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            boolean isCleared = isUiObject2ExistByText("No history", TIMEOUT_MEDIUM);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.3, 0, 0.3, 0, 0.5, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("History", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.9)?.get(0)?.click()
+            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Clear", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Clear", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val isCleared = isUiObject2ExistByText("No history", TIMEOUT_MEDIUM)
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             if (isCleared) {
-                FileUtil.writeStrToFile("MeHistory:PASS" + "\n", mainPathFile);
+                writeStrToFile("MeHistory:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("MeHistory:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/meHistory_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("MeHistory:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/meHistory_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeHistory:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeHistory_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeHistory:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeHistory_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1191,41 +1200,43 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-我的视频
      */
     @Test
-    public void testMeMyVideo() {
+    fun testMeMyVideo() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("My Video", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Local videos", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0, 1, 0.02, 0.9).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            click(width / 2, height / 2);
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            longClick(waitUiObject2ByTextContains("Watched", TIMEOUT_MEDIUM));
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Remove", TIMEOUT_MEDIUM).click();
-            boolean isRemoved = isUiObject2ExistByTextContains("No history", TIMEOUT_MEDIUM);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.3, 0, 0.3, 0, 0.5, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            if (isRemoved) {
-                FileUtil.writeStrToFile("MeMyVideo:PASS" + "\n", mainPathFile);
-            } else {
-                FileUtil.writeStrToFile("MeMyVideo:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/meMyVideo_" + CommonUtil.getCurTimeForFile() + ".jpg");
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("My Video", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Local videos", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            click(width / 2, height / 2)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByTextContains("Watched", TIMEOUT_MEDIUM)?.let {
+                longClick(it)
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeMyVideo:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeMyVideo_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Remove", TIMEOUT_MEDIUM)?.click()
+            val isRemoved = isUiObject2ExistByTextContains("No history", TIMEOUT_MEDIUM)
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            if (isRemoved) {
+                writeStrToFile("MeMyVideo:PASS" + "\n", mainPathFile)
+            } else {
+                writeStrToFile("MeMyVideo:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/meMyVideo_" + getCurTimeForFile() + ".jpg")
+            }
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeMyVideo:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeMyVideo_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1233,48 +1244,50 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-我的音乐
      */
     @Test
-    public void testMeMyMusic() {
+    fun testMeMyMusic() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("My Music", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Local music", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.5, 0, 1, 0.02, 0.9).get(0).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(1).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("New playlist", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2("New playlist", "android.widget.EditText", 0, 0).setText("Test");
-            waitUiObject2ByText("Done", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Add songs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.1, 0.5, 0, 1, 0.02, 0.9).get(0).click();
-            waitUiObject2ByText("Add", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0, 0.3, 0, 0.5, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            longClick(waitUiObject2ByText("Test", TIMEOUT_MEDIUM));
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.3, 0, 0.3, 0, 0.5, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("MeMyMusic:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeMyMusic:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeMyMusic_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("My Music", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Local music", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.5, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(1)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("New playlist", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2("New playlist", "android.widget.EditText", 0.0, 0.0)?.setText("Test")
+            waitUiObject2ByText("Done", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Add songs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.1, 0.5, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            waitUiObject2ByText("Add", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Test", TIMEOUT_MEDIUM)?.let {
+                longClick(it)
+            }
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("MeMyMusic:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeMyMusic:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeMyMusic_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1282,35 +1295,50 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-广告过滤
      */
     @Test
-    public void testMeAdblock() {
+    fun testMeAdblock() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 adBlock = waitUiObject2ByRes("com.transsion.phoenix:id/adBlocked", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var adBlock = waitUiObject2ByRes("com.transsion.phoenix:id/adBlocked", TIMEOUT_MEDIUM.toLong())
             if (adBlock == null) {
-                adBlock = waitUiObject2ByText("Adblocker", TIMEOUT_VERY_SHORT);
+                adBlock = waitUiObject2ByText("Adblocker", TIMEOUT_VERY_SHORT)
             }
             if (adBlock == null) {
-                adBlock = waitUiObject2ByText("Ads blocked", TIMEOUT_VERY_SHORT);
+                adBlock = waitUiObject2ByText("Ads blocked", TIMEOUT_VERY_SHORT)
             }
             if (adBlock == null) {
-                adBlock = waitUiObject2ByText("Ad block", TIMEOUT_VERY_SHORT);
+                adBlock = waitUiObject2ByText("Ad block", TIMEOUT_VERY_SHORT)
             }
-            adBlock.click();
-            getChildUiObject2(waitUiObject2ByDesc("Ad block", TIMEOUT_MEDIUM), true, "android.widget.Switch", 0, 1, 0, 1, 0.5, 1, 0.5, 1, true).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Clear", TIMEOUT_MEDIUM).click();
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("MeAdblock:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeAdblock:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeAdblock_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            adBlock?.click()
+            waitUiObject2ByDesc("Ad block", TIMEOUT_MEDIUM.toLong())?.let { adBlockRoot ->
+                getChildUiObject2(
+                    adBlockRoot,
+                    true,
+                    "android.widget.Switch",
+                    0.0,
+                    1.0,
+                    0.0,
+                    1.0,
+                    0.5,
+                    1.0,
+                    0.5,
+                    1.0,
+                    true
+                )?.click()
+            }
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Clear", TIMEOUT_MEDIUM)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("MeAdblock:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeAdblock:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeAdblock_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1318,24 +1346,24 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-日(夜)间模式
      */
     @Test
-    public void testMeDarkLight() {
+    fun testMeDarkLight() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 darkLight = waitUiObject2ByText("Dark", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var darkLight = waitUiObject2ByText("Dark", TIMEOUT_MEDIUM)
             if (darkLight == null) {
-                darkLight = waitUiObject2ByText("Light", TIMEOUT_MEDIUM);
+                darkLight = waitUiObject2ByText("Light", TIMEOUT_MEDIUM)
             }
-            darkLight.click();
-            FileUtil.writeStrToFile("MeDarkLight:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeDarkLight:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeDarkLight_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            darkLight?.click()
+            writeStrToFile("MeDarkLight:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeDarkLight:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeDarkLight_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1343,28 +1371,28 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-Facebook
      */
     @Test
-    public void testMeFacebook() {
+    fun testMeFacebook() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Like us on Facebook", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            if (ShellCommon.isAppBackstage(device, pkgName)) {
-                ShellCommon.amStartApp(device, activity, null);
-                sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Like us on Facebook", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            if (isAppBackstage(device, pkgName)) {
+                amStartApp(device, activity, null)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             } else {
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            FileUtil.writeStrToFile("MeFacebook:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeFacebook:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeFacebook_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("MeFacebook:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeFacebook:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeFacebook_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1372,28 +1400,28 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-分享
      */
     @Test
-    public void testMeShare() {
+    fun testMeShare() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Share Phoenix", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            for (int i = 0; i < 5; i++) {
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Share Phoenix", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            for (i in 0..4) {
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
                 if (waitUiObject2ByText("Share via", TIMEOUT_SHORT) == null) {
-                    break;
+                    break
                 }
             }
-            FileUtil.writeStrToFile("MeShare:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeShare:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeShare_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("MeShare:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeShare:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeShare_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1401,92 +1429,92 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-帮助反馈
      */
     @Test
-    public void testMeHelpFeedback() {
+    fun testMeHelpFeedback() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 上滑
-            swip(0.5, 0.7, 0.5, 0.3);
-            sleep(TIMEOUT_VERY_SHORT);
+            swip(0.5, 0.7, 0.5, 0.3)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 帮助中心
-            waitUiObject2ByText("Help and feedback", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_LONG);
-            List<UiObject2> views = getUiObject2s("android.view.View", true, 0.8, 1, 0.05, 0.2, 0, 1, 0.02, 0.9);
-            for (int i = 0; i < 3; i++) {
+            waitUiObject2ByText("Help and feedback", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_LONG.toLong())
+            var views = getUiObject2s("android.view.View", true, 0.8, 1.0, 0.05, 0.2, 0.0, 1.0, 0.02, 0.9)
+            for (i in 0..2) {
                 if (views == null) {
-                    sleep(TIMEOUT_SHORT);
-                    views = getUiObject2s("android.view.View", true, 0.8, 1, 0.05, 0.2, 0, 1, 0.02, 0.9);
+                    sleep(TIMEOUT_SHORT.toLong())
+                    views = getUiObject2s("android.view.View", true, 0.8, 1.0, 0.05, 0.2, 0.0, 1.0, 0.02, 0.9)
                 } else {
-                    break;
+                    break
                 }
             }
-            views.get(1).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            for (int i = 0; i < 10; i++) {
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
+            views!!.get(1).click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            for (i in 0..9) {
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
                 if (waitUiObject2ByText("Helpful", TIMEOUT_SHORT) != null) {
-                    break;
+                    break
                 }
             }
-            swip(0.5, 0.7, 0.5, 0.3);
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 helpful = waitUiObject2ByText("Helpful", TIMEOUT_SHORT);
+            swip(0.5, 0.7, 0.5, 0.3)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var helpful = waitUiObject2ByText("Helpful", TIMEOUT_SHORT)
             if (helpful == null) {
-                helpful = waitUiObject2ByDesc("Helpful", TIMEOUT_VERY_SHORT);
+                helpful = waitUiObject2ByDesc("Helpful", TIMEOUT_VERY_SHORT.toLong())
             }
-            helpful.click();
-            UiObject2 whatsAppGroup = waitUiObject2ByText("Join WhatsApp group to feedback", TIMEOUT_SHORT);
+            helpful?.click()
+            var whatsAppGroup = waitUiObject2ByText("Join WhatsApp group to feedback", TIMEOUT_SHORT)
             if (whatsAppGroup == null) {
-                whatsAppGroup = waitUiObject2ByDesc("Join WhatsApp group to feedback", TIMEOUT_VERY_SHORT);
+                whatsAppGroup = waitUiObject2ByDesc("Join WhatsApp group to feedback", TIMEOUT_VERY_SHORT.toLong())
             }
-            whatsAppGroup.click();
-            sleep(TIMEOUT_SHORT);
-            if (ShellCommon.isAppBackstage(device, pkgName)) {
-                ShellCommon.amStartApp(device, activity, null);
-                sleep(TIMEOUT_VERY_SHORT);
+            whatsAppGroup?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            if (isAppBackstage(device, pkgName)) {
+                amStartApp(device, activity, null)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            UiObject2 likeFacebook = waitUiObject2ByText("Like us on Facebook", TIMEOUT_SHORT);
+            var likeFacebook = waitUiObject2ByText("Like us on Facebook", TIMEOUT_SHORT)
             if (likeFacebook == null) {
-                likeFacebook = waitUiObject2ByDesc("Like us on Facebook", TIMEOUT_VERY_SHORT);
+                likeFacebook = waitUiObject2ByDesc("Like us on Facebook", TIMEOUT_VERY_SHORT.toLong())
             }
-            likeFacebook.click();
-            sleep(TIMEOUT_SHORT);
-            if (ShellCommon.isAppBackstage(device, pkgName)) {
-                ShellCommon.amStartApp(device, activity, null);
-                sleep(TIMEOUT_VERY_SHORT);
+            likeFacebook?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            if (isAppBackstage(device, pkgName)) {
+                amStartApp(device, activity, null)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            waitUiObject2ByDesc("toolbar home", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Help and feedback", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_MEDIUM);
-            waitUiObject2ByRes("J_Feedback_Btn", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByRes("J_Email", TIMEOUT_MEDIUM).setText("test@qq.com");
-            waitUiObject2ByRes("J_Desc", TIMEOUT_MEDIUM).setText("test");
-            swip(0.5, 0.7, 0.5, 0.3);
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByRes("J_UploadTrigger", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.3, 0, 1, 0.02, 0.9).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByRes("J_Btn", TIMEOUT_MEDIUM).click();
-            boolean isSuccess = isUiObject2ExistByText("Thank you for the feedback!", TIMEOUT_MEDIUM);
+            waitUiObject2ByDesc("toolbar home", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Help and feedback", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
+            waitUiObject2ByRes("J_Feedback_Btn", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByRes("J_Email", TIMEOUT_MEDIUM.toLong())?.setText("test@qq.com" ?: "")
+            waitUiObject2ByRes("J_Desc", TIMEOUT_MEDIUM.toLong())?.setText("test" ?: "")
+            swip(0.5, 0.7, 0.5, 0.3)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByRes("J_UploadTrigger", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.3, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByRes("J_Btn", TIMEOUT_MEDIUM.toLong())?.click()
+            val isSuccess = isUiObject2ExistByText("Thank you for the feedback!", TIMEOUT_MEDIUM)
             if (isSuccess) {
-                FileUtil.writeStrToFile("MeHelpFeedback:PASS" + "\n", mainPathFile);
+                writeStrToFile("MeHelpFeedback:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("MeHelpFeedback:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/MeHelpFeedback_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("MeHelpFeedback:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/MeHelpFeedback_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeHelpFeedback:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeHelpFeedback_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeHelpFeedback:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeHelpFeedback_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1494,29 +1522,29 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-打赏
      */
     @Test
-    public void testMeReward() {
+    fun testMeReward() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Support developer", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Coffee", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            boolean isCallSuccess = isUiObject2ExistByRes("com.android.vending:id/0_resource_name_obfuscated", TIMEOUT_LONG);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Support developer", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Coffee", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val isCallSuccess = isUiObject2ExistByRes("com.android.vending:id/0_resource_name_obfuscated", TIMEOUT_LONG.toLong())
             if (isCallSuccess) {
-                FileUtil.writeStrToFile("MeReward:PASS" + "\n", mainPathFile);
+                writeStrToFile("MeReward:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("MeReward:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/MeReward_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("MeReward:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/MeReward_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeReward:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeReward_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeReward:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeReward_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1524,25 +1552,25 @@ public class MainPathTest extends PhxCommon {
      * 设置-搜索引擎
      */
     @Test
-    public void testSettingSearchEngine() {
+    fun testSettingSearchEngine() {
         try {
             // 进入设置
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 搜索引擎
-            waitUiObject2ByText("Search engine", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Bing", TIMEOUT_MEDIUM).click();
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            FileUtil.writeStrToFile("SettingSearchEngine:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingSearchEngine:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingSearchEngine_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Search engine", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Bing", TIMEOUT_MEDIUM)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            writeStrToFile("SettingSearchEngine:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingSearchEngine:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingSearchEngine_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1550,24 +1578,24 @@ public class MainPathTest extends PhxCommon {
      * 设置-图片
      */
     @Test
-    public void testSettingImage() {
+    fun testSettingImage() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 图片
-            waitUiObject2ByText("Image", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Always no image", TIMEOUT_MEDIUM).click();
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            FileUtil.writeStrToFile("SettingImage:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingImage:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingImage_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Image", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Always no image", TIMEOUT_MEDIUM)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            writeStrToFile("SettingImage:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingImage:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingImage_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1575,25 +1603,25 @@ public class MainPathTest extends PhxCommon {
      * 设置-字体大小
      */
     @Test
-    public void testSettingFontSize() {
+    fun testSettingFontSize() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 字体大小
-            waitUiObject2ByText("Font size", TIMEOUT_MEDIUM).click();
-            UiObject2 seekBar = waitUiObject2sByClazz("android.widget.SeekBar", TIMEOUT_MEDIUM).get(0);
-            swip(seekBar, "left");
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            FileUtil.writeStrToFile("SettingFontSize:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingFontSize:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingFontSize_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Font size", TIMEOUT_MEDIUM)?.click()
+            val seekBar = waitUiObject2sByClazz("android.widget.SeekBar", TIMEOUT_MEDIUM.toLong()).get(0)
+            swip(seekBar, "left")
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            writeStrToFile("SettingFontSize:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingFontSize:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingFontSize_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1601,24 +1629,24 @@ public class MainPathTest extends PhxCommon {
      * 设置-语言
      */
     @Test
-    public void testSettingLanguage() {
+    fun testSettingLanguage() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 语言
-            waitUiObject2ByText("Language", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            FileUtil.writeStrToFile("SettingLanguage:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingLanguage:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingLanguage_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Language", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            writeStrToFile("SettingLanguage:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingLanguage:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingLanguage_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1626,40 +1654,42 @@ public class MainPathTest extends PhxCommon {
      * 设置-主页(含最常访问)
      */
     @Test
-    public void testSettingHomepage() {
+    fun testSettingHomepage() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 主页
-            waitUiObject2ByText("Homepage", TIMEOUT_MEDIUM).click();
-            UiObject2 homeSwitch = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM).get(0);
-            if (homeSwitch.isChecked()) {
-                homeSwitch.click();
+            waitUiObject2ByText("Homepage", TIMEOUT_MEDIUM)?.click()
+            val homeSwitch = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong()).getOrNull(0) ?: return
+            if (homeSwitch.isChecked) {
+                homeSwitch.click()
             }
-            backToHome();
-            UiObject2 mostVisited = waitUiObject2ByText("Most Visited", TIMEOUT_SHORT);
-            double topY = 0.3;
-            double bottomY = 0.5;
+            backToHome()
+            val mostVisited = waitUiObject2ByText("Most Visited", TIMEOUT_SHORT)
+            var topY = 0.3
+            var bottomY = 0.5
             if (mostVisited != null) {
-                topY = (double) mostVisited.getVisibleBounds().top / height;
-                bottomY = (double) mostVisited.getVisibleBounds().bottom / height;
+                topY = mostVisited.getVisibleBounds().top.toDouble() / height
+                bottomY = mostVisited.getVisibleBounds().bottom.toDouble() / height
             }
-            longClick(getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, bottomY, 0.9).get(0));
-            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.3, 0, 0.3, 0.8, 1, topY - 0.02, bottomY + 0.02).get(0).click();
-            waitUiObject2ByText("Clear", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("SettingHomepage:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingHomepage:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingHomepage_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, bottomY, 0.9).getOrNull(0)?.let {
+                longClick(it)
+            } ?: return
+            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.8, 1.0, topY - 0.02, bottomY + 0.02)?.get(0)?.click()
+            waitUiObject2ByText("Clear", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("SettingHomepage:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingHomepage:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingHomepage_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1667,34 +1697,34 @@ public class MainPathTest extends PhxCommon {
      * 设置-下载
      */
     @Test
-    public void testSettingDownloads() {
+    fun testSettingDownloads() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 下载
-            waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Concurrent downloads", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("6", TIMEOUT_MEDIUM).click();
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            waitUiObject2ByText("Download folder", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 storage = getUiObject2("Internal Storage", "android.widget.TextView", 0.8, 0);
+            waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Concurrent downloads", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("6", TIMEOUT_MEDIUM)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            waitUiObject2ByText("Download folder", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val storage = getUiObject2("Internal Storage", "android.widget.TextView", 0.8, 0.0)
             if (storage != null) {
-                storage.click();
+                storage.click()
             }
-            waitUiObject2ByText("Choose it", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            FileUtil.writeStrToFile("SettingDownloads:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingDownloads:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingDownloads_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Choose it", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            writeStrToFile("SettingDownloads:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingDownloads:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingDownloads_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1702,30 +1732,30 @@ public class MainPathTest extends PhxCommon {
      * 设置-通知栏
      */
     @Test
-    public void testSettingNotification() {
+    fun testSettingNotification() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 通知栏
-            waitUiObject2ByText("Notification", TIMEOUT_MEDIUM).click();
-            List<UiObject2> notificationSwitchs = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM);
-            for (UiObject2 notificationSwitch : notificationSwitchs) {
+            waitUiObject2ByText("Notification", TIMEOUT_MEDIUM)?.click()
+            val notificationSwitchs = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong())
+            for (notificationSwitch in notificationSwitchs) {
                 if (notificationSwitch.isChecked()) {
-                    notificationSwitch.click();
+                    notificationSwitch.click()
                 }
             }
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            FileUtil.writeStrToFile("SettingNotification:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingNotification:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingNotification_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            writeStrToFile("SettingNotification:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingNotification:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingNotification_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1733,57 +1763,57 @@ public class MainPathTest extends PhxCommon {
      * 设置-清理数据
      */
     @Test
-    public void testSettingClearData() {
+    fun testSettingClearData() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 清理数据
-            waitUiObject2ByText("Clear data", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Account and password", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Video and Document browsing history", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            UiObject2 cleanPhoenix = null;
-            List<UiObject2> tmpCleanPhoenixs = waitUiObject2sByTextContains("Clean up", TIMEOUT_MEDIUM);
-            for (UiObject2 tmpCleanPhoenix : tmpCleanPhoenixs) {
+            waitUiObject2ByText("Clear data", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Account and password", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Video and Document browsing history", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            var cleanPhoenix: UiObject2? = null
+            val tmpCleanPhoenixs = waitUiObject2sByTextContains("Clean up", TIMEOUT_MEDIUM)
+            for (tmpCleanPhoenix in tmpCleanPhoenixs) {
                 if (tmpCleanPhoenix.isClickable()) {
-                    cleanPhoenix = tmpCleanPhoenix;
-                    break;
+                    cleanPhoenix = tmpCleanPhoenix
+                    break
                 }
             }
             if (cleanPhoenix != null && cleanPhoenix.isEnabled()) {
-                cleanPhoenix.click();
-                for (int i = 0; i < 10; i++) {
-                    sleep(TIMEOUT_VERY_SHORT);
-                    List<UiObject2> cleanPhoenixBacks = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3);
-                    if (cleanPhoenixBacks == null || cleanPhoenixBacks.size() == 0) {
-                        back();
+                cleanPhoenix.click()
+                for (i in 0..9) {
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    val cleanPhoenixBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
+                    if (cleanPhoenixBacks == null || cleanPhoenixBacks.size == 0) {
+                        back()
                     } else {
                         // uiautomator有时点击时会报异常
                         try {
-                            cleanPhoenixBacks.get(0).click();
-                        } catch (Exception e) {
-                            back();
+                            cleanPhoenixBacks?.get(0)?.click()
+                        } catch (e: Exception) {
+                            back()
                         }
                     }
 
                     if (waitUiObject2ByText("Clear data", TIMEOUT_VERY_SHORT) != null) {
-                        break;
+                        break
                     }
                 }
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
             }
-            FileUtil.writeStrToFile("SettingClearData:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingClearData:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingClearData_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("SettingClearData:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingClearData:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingClearData_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1791,30 +1821,30 @@ public class MainPathTest extends PhxCommon {
      * 设置-检查更新
      */
     @Test
-    public void testSettingCheckUpdates() {
+    fun testSettingCheckUpdates() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
             // 上滑
-            swip(0.5, 0.8, 0.5, 0.2);
-            sleep(TIMEOUT_VERY_SHORT);
+            swip(0.5, 0.8, 0.5, 0.2)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 检查更新
-            waitUiObject2ByText("Check for updates", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
+            waitUiObject2ByText("Check for updates", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
             if (waitUiObject2ByText("Check for updates", TIMEOUT_SHORT) == null) {
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            FileUtil.writeStrToFile("SettingCheckUpdates:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingCheckUpdates:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingCheckUpdates_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("SettingCheckUpdates:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingCheckUpdates:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingCheckUpdates_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1822,44 +1852,44 @@ public class MainPathTest extends PhxCommon {
      * 设置-关于
      */
     @Test
-    public void testSettingAbout() {
+    fun testSettingAbout() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
             // 上滑
-            swip(0.5, 0.8, 0.5, 0.2);
-            sleep(TIMEOUT_VERY_SHORT);
+            swip(0.5, 0.8, 0.5, 0.2)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 关于
-            waitUiObject2ByTextContains("About Phoenix", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Product features", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            List<UiObject2> aboutSwitchs = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM);
-            for (UiObject2 aboutSwitch : aboutSwitchs) {
+            waitUiObject2ByTextContains("About Phoenix", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Product features", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val aboutSwitchs = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong())
+            for (aboutSwitch in aboutSwitchs) {
                 if (aboutSwitch.isChecked()) {
-                    aboutSwitch.click();
+                    aboutSwitch.click()
                 }
             }
-            waitUiObject2ByTextContains("Terms of service", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByTextContains("Privacy policy", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            FileUtil.writeStrToFile("SettingAbout:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingAbout:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingAbout_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByTextContains("Terms of service", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByTextContains("Privacy policy", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            writeStrToFile("SettingAbout:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingAbout:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingAbout_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1867,33 +1897,33 @@ public class MainPathTest extends PhxCommon {
      * 设置-Facebook
      */
     @Test
-    public void testSettingFacebook() {
+    fun testSettingFacebook() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
             // 上滑
-            swip(0.5, 0.8, 0.5, 0.2);
-            sleep(TIMEOUT_VERY_SHORT);
+            swip(0.5, 0.8, 0.5, 0.2)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // Facebook
-            waitUiObject2ByText("Like us on Facebook", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            if (ShellCommon.isAppBackstage(device, pkgName)) {
-                ShellCommon.amStartApp(device, activity, null);
-                sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Like us on Facebook", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            if (isAppBackstage(device, pkgName)) {
+                amStartApp(device, activity, null)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             } else {
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            FileUtil.writeStrToFile("SettingFacebook:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingFacebook:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingFacebook_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("SettingFacebook:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingFacebook:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingFacebook_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1901,28 +1931,28 @@ public class MainPathTest extends PhxCommon {
      * 设置-Feedback
      */
     @Test
-    public void testSettingFeedback() {
+    fun testSettingFeedback() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
             // 上滑
-            swip(0.5, 0.8, 0.5, 0.2);
-            sleep(TIMEOUT_VERY_SHORT);
+            swip(0.5, 0.8, 0.5, 0.2)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 用户反馈
-            waitUiObject2ByText("Feedback", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("SettingFeedback:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingFeedback:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingFeedback_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Feedback", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("SettingFeedback:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingFeedback:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingFeedback_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1930,30 +1960,30 @@ public class MainPathTest extends PhxCommon {
      * 设置-评分
      */
     @Test
-    public void testSettingRateUs() {
+    fun testSettingRateUs() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
             // 上滑
-            swip(0.5, 0.8, 0.5, 0.2);
-            sleep(TIMEOUT_VERY_SHORT);
+            swip(0.5, 0.8, 0.5, 0.2)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 评分
-            waitUiObject2ByText("Rate us", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            if (ShellCommon.isAppBackstage(device, pkgName)) {
-                ShellCommon.amStartApp(device, activity, null);
-                sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Rate us", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            if (isAppBackstage(device, pkgName)) {
+                amStartApp(device, activity, null)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            FileUtil.writeStrToFile("SettingRateUs:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingRateUs:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingRateUs_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("SettingRateUs:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingRateUs:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingRateUs_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1961,28 +1991,28 @@ public class MainPathTest extends PhxCommon {
      * 设置-恢复默认设置
      */
     @Test
-    public void testSettingReset() {
+    fun testSettingReset() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
             // 上滑
-            swip(0.5, 0.8, 0.5, 0.2);
-            sleep(TIMEOUT_VERY_SHORT);
+            swip(0.5, 0.8, 0.5, 0.2)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             // 恢复默认
-            waitUiObject2ByText("Reset to default settings", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Restore", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            backToHome();
-            FileUtil.writeStrToFile("SettingReset:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("SettingReset:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/SettingReset_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Reset to default settings", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Restore", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            backToHome()
+            writeStrToFile("SettingReset:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("SettingReset:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/SettingReset_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -1990,55 +2020,55 @@ public class MainPathTest extends PhxCommon {
      * 多窗口-普通窗口
      */
     @Test
-    public void testTabsNormal() {
+    fun testTabsNormal() {
         try {
-            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 normal = waitUiObject2ByText("Normal", TIMEOUT_SHORT);
-            UiObject2 incognito = waitUiObject2ByText("Incognito", TIMEOUT_SHORT);
+            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val normal = waitUiObject2ByText("Normal", TIMEOUT_SHORT)
+            val incognito = waitUiObject2ByText("Incognito", TIMEOUT_SHORT)
             if (normal != null && incognito != null) {
-                normal.click();
-                sleep(TIMEOUT_VERY_SHORT);
+                normal.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             } else {
                 if (normal == null) {
-                    swip(0.3, 0.5, 0.7, 0.5);
-                    sleep(TIMEOUT_VERY_SHORT);
+                    swip(0.3, 0.5, 0.7, 0.5)
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            getUiObject2s("android.widget.ImageView", true, 0.5, 1, 0.01, 0.5, 0, 1, 0.7, 1).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             if (normal != null && incognito != null) {
-                getUiObject2s("android.widget.ImageView", true, 0.01, 0.3, 0.01, 0.5, 0.5, 1, 0.7, 1).get(0).click();
+                getUiObject2s("android.widget.ImageView", true, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.get(0)?.click()
             } else {
-                getUiObject2s("android.widget.FrameLayout", false, 0.01, 0.3, 0.01, 0.5, 0.5, 1, 0.7, 1).get(0).click();
+                getUiObject2s("android.widget.FrameLayout", false, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.get(0)?.click()
             }
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            swip(0.5, 0.7, 0.5, 0.3);
-            sleep(TIMEOUT_VERY_SHORT);
-            swip(0.5, 0.3, 0.5, 0.7);
-            sleep(TIMEOUT_VERY_SHORT);
-            List<UiObject2> normalImageViews = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0.7, 1, 0.2, 0.8);
-            if (normalImageViews != null && normalImageViews.size() > 0) {
-                normalImageViews.get(0).click();
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            swip(0.5, 0.7, 0.5, 0.3)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            swip(0.5, 0.3, 0.5, 0.7)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val normalImageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.7, 1.0, 0.2, 0.8)
+            if (normalImageViews != null && normalImageViews.size > 0) {
+                normalImageViews?.get(0)?.click()
             } else {
-                swip(0.3, 0.5, 0.7, 0.5);
+                swip(0.3, 0.5, 0.7, 0.5)
             }
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("TabsNormal:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("TabsNormal:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/TabsNormal_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("TabsNormal:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("TabsNormal:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/TabsNormal_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2046,64 +2076,64 @@ public class MainPathTest extends PhxCommon {
      * 多窗口-隐私窗口
      */
     @Test
-    public void testTabsIncognito() {
+    fun testTabsIncognito() {
         try {
-            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 normal = waitUiObject2ByText("Normal", TIMEOUT_SHORT);
-            UiObject2 incognito = waitUiObject2ByText("Incognito", TIMEOUT_SHORT);
+            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val normal = waitUiObject2ByText("Normal", TIMEOUT_SHORT)
+            val incognito = waitUiObject2ByText("Incognito", TIMEOUT_SHORT)
             if (normal != null && incognito != null) {
-                incognito.click();
-                sleep(TIMEOUT_VERY_SHORT);
+                incognito.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1, 0.03, 0.15).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                waitUiObject2ByText("New incognito tab", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_SHORT);
-                UiObject2 dialog = waitUiObject2ByText("OK", TIMEOUT_SHORT);
+                getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                waitUiObject2ByText("New incognito tab", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_SHORT.toLong())
+                val dialog = waitUiObject2ByText("OK", TIMEOUT_SHORT)
                 if (dialog != null) {
-                    dialog.click();
-                    sleep(TIMEOUT_VERY_SHORT);
+                    dialog.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
-                waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
+                waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.5, 1, 0.01, 0.5, 0, 1, 0.7, 1).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             if (normal != null && incognito != null) {
-                getUiObject2s("android.widget.ImageView", true, 0.01, 0.3, 0.01, 0.5, 0.5, 1, 0.7, 1).get(0).click();
+                getUiObject2s("android.widget.ImageView", true, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.get(0)?.click()
             } else {
-                getUiObject2s("android.widget.FrameLayout", false, 0.01, 0.3, 0.01, 0.5, 0.5, 1, 0.7, 1).get(0).click();
+                getUiObject2s("android.widget.FrameLayout", false, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.get(0)?.click()
             }
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            swip(0.5, 0.7, 0.5, 0.3);
-            sleep(TIMEOUT_VERY_SHORT);
-            swip(0.5, 0.3, 0.5, 0.7);
-            sleep(TIMEOUT_VERY_SHORT);
-            List<UiObject2> incognitoImageViews = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0.7, 1, 0.2, 0.8);
-            if (incognitoImageViews != null && incognitoImageViews.size() > 0) {
-                incognitoImageViews.get(0).click();
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            swip(0.5, 0.7, 0.5, 0.3)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            swip(0.5, 0.3, 0.5, 0.7)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val incognitoImageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.7, 1.0, 0.2, 0.8)
+            if (incognitoImageViews != null && incognitoImageViews.size > 0) {
+                incognitoImageViews?.get(0)?.click()
             } else {
-                swip(0.7, 0.5, 0.3, 0.5);
+                swip(0.7, 0.5, 0.3, 0.5)
             }
-            sleep(TIMEOUT_VERY_SHORT);
+            sleep(TIMEOUT_VERY_SHORT.toLong())
             if (normal != null && incognito != null) {
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            FileUtil.writeStrToFile("TabsIncognito:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("TabsIncognito:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/TabsIncognito_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("TabsIncognito:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("TabsIncognito:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/TabsIncognito_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2111,44 +2141,44 @@ public class MainPathTest extends PhxCommon {
      * 多窗口-更多操作
      */
     @Test
-    public void testTabsMore() {
+    fun testTabsMore() {
         try {
-            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 normal = waitUiObject2ByText("Normal", TIMEOUT_SHORT);
-            UiObject2 incognito = waitUiObject2ByText("Incognito", TIMEOUT_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1, 0.03, 0.15).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("New normal tab", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1, 0.03, 0.15).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("New incognito tab", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_MEDIUM);
-            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1, 0.03, 0.15).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Close all incognito tabs", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
+            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val normal = waitUiObject2ByText("Normal", TIMEOUT_SHORT)
+            val incognito = waitUiObject2ByText("Incognito", TIMEOUT_SHORT)
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("New normal tab", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("New incognito tab", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
+            waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Close all incognito tabs", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
             if (normal == null || incognito == null) {
-                waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
+                waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1, 0.03, 0.15).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Close all tabs", TIMEOUT_MEDIUM).click();
-            FileUtil.writeStrToFile("TabsMore:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("TabsMore:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/TabsMore_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Close all tabs", TIMEOUT_MEDIUM)?.click()
+            writeStrToFile("TabsMore:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("TabsMore:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/TabsMore_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2156,48 +2186,49 @@ public class MainPathTest extends PhxCommon {
      * 文件-下载
      */
     @Test
-    public void testFilesDownloads() {
+    fun testFilesDownloads() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 下滑
-            swip(0.5, 0.3, 0.5, 0.7);
-            sleep(TIMEOUT_VERY_SHORT);
+            swip(0.5, 0.3, 0.5, 0.7)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 下载
-            waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1, 0.03, 0.15).get(0).click();
-            waitUiObject2ByText("Add download link", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2sByClazz("android.widget.EditText", TIMEOUT_MEDIUM).get(0).setText("https://dldir1.qq.com/weixin/android/weixin7021android1800_arm64.apk");
-            waitUiObject2ByText("Download", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Download", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1, 0.03, 0.15).get(0).click();
-            waitUiObject2ByText("Start all", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1, 0.03, 0.15).get(0).click();
-            waitUiObject2ByText("Pause all", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1, 0.03, 0.15).get(0).click();
-            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesDownloads:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesDownloads:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesDownloads_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            waitUiObject2ByText("Add download link", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2sByClazz("android.widget.EditText", TIMEOUT_MEDIUM.toLong()).getOrNull(0)
+                ?.setText("https://dldir1.qq.com/weixin/android/weixin7021android1800_arm64.apk")
+            waitUiObject2ByText("Download", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Download", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            waitUiObject2ByText("Start all", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            waitUiObject2ByText("Pause all", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesDownloads:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesDownloads:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesDownloads_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2205,36 +2236,36 @@ public class MainPathTest extends PhxCommon {
      * 文件-Status saver
      */
     @Test
-    public void testFilesStatusSaver() {
+    fun testFilesStatusSaver() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 statusSaver = waitUiObject2ByText("Status saver", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var statusSaver = waitUiObject2ByText("Status saver", TIMEOUT_MEDIUM)
             if (statusSaver == null) {
-                statusSaver = waitUiObject2ByText("Status & Sticker", TIMEOUT_VERY_SHORT);
+                statusSaver = waitUiObject2ByText("Status & Sticker", TIMEOUT_VERY_SHORT)
             }
-            statusSaver.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            for (int i = 0; i < 3; i++) {
-                swip(0.7, 0.5, 0.3, 0.5);
-                sleep(TIMEOUT_VERY_SHORT);
+            statusSaver?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            for (i in 0..2) {
+                swip(0.7, 0.5, 0.3, 0.5)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            UiObject2 whatsAppTips = waitUiObject2ByText("Manage WhatsApp files here", TIMEOUT_SHORT);
+            val whatsAppTips = waitUiObject2ByText("Manage WhatsApp files here", TIMEOUT_SHORT)
             if (whatsAppTips != null) {
-                whatsAppTips.click();
-                sleep(TIMEOUT_VERY_SHORT);
+                whatsAppTips.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesStatusSaver:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesStatusSaver:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesStatusSaver_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesStatusSaver:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesStatusSaver:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesStatusSaver_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2242,27 +2273,27 @@ public class MainPathTest extends PhxCommon {
      * 文件-WhatsApp
      */
     @Test
-    public void testFilesWhatsApp() {
+    fun testFilesWhatsApp() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("WhatsApp", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            for (int i = 0; i < 3; i++) {
-                swip(0.7, 0.5, 0.3, 0.5);
-                sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("WhatsApp", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            for (i in 0..2) {
+                swip(0.7, 0.5, 0.3, 0.5)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesWhatsApp:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesWhatsApp:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesWhatsApp_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesWhatsApp:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesWhatsApp:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesWhatsApp_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2270,33 +2301,33 @@ public class MainPathTest extends PhxCommon {
      * 文件-Telegram
      */
     @Test
-    public void testFilesTelegram() {
+    fun testFilesTelegram() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 telegram = waitUiObject2ByText("Telegram", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val telegram = waitUiObject2ByText("Telegram", TIMEOUT_MEDIUM)
             if (telegram != null) {
-                telegram.click();
-                sleep(TIMEOUT_VERY_SHORT);
-                for (int i = 0; i < 3; i++) {
-                    swip(0.7, 0.5, 0.3, 0.5);
-                    sleep(TIMEOUT_VERY_SHORT);
+                telegram.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                for (i in 0..2) {
+                    swip(0.7, 0.5, 0.3, 0.5)
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                FileUtil.writeStrToFile("FilesTelegram:PASS" + "\n", mainPathFile);
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                writeStrToFile("FilesTelegram:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FilesTelegram:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/FilesTelegram_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("FilesTelegram:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/FilesTelegram_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesTelegram:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesTelegram_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesTelegram:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesTelegram_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2304,32 +2335,32 @@ public class MainPathTest extends PhxCommon {
      * 文件-Videos
      */
     @Test
-    public void testFilesVideos() {
+    fun testFilesVideos() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Videos", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            swip(0.7, 0.5, 0.3, 0.5);
-            sleep(TIMEOUT_VERY_SHORT);
-            swip(0.3, 0.5, 0.7, 0.5);
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.5, 0, 1, 0.1, 0.9).get(0).click();
-            sleep(TIMEOUT_SHORT);
-            horizontalScreen();
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesVideos:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesVideos:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesVideos_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Videos", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            swip(0.7, 0.5, 0.3, 0.5)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            swip(0.3, 0.5, 0.7, 0.5)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.5, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            horizontalScreen()
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesVideos:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesVideos:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesVideos_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2337,31 +2368,31 @@ public class MainPathTest extends PhxCommon {
      * 文件-Music
      */
     @Test
-    public void testFilesMusic() {
+    fun testFilesMusic() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Music", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            swip(0.7, 0.5, 0.3, 0.5);
-            sleep(TIMEOUT_VERY_SHORT);
-            swip(0.3, 0.5, 0.7, 0.5);
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, 0.1, 0.9).get(0).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(1).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesMusic:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesMusic:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesMusic_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Music", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            swip(0.7, 0.5, 0.3, 0.5)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            swip(0.3, 0.5, 0.7, 0.5)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(1)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesMusic:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesMusic:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesMusic_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2369,35 +2400,35 @@ public class MainPathTest extends PhxCommon {
      * 文件-Images
      */
     @Test
-    public void testFilesImages() {
+    fun testFilesImages() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Images", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            swip(0.7, 0.5, 0.3, 0.5);
-            sleep(TIMEOUT_VERY_SHORT);
-            swip(0.3, 0.5, 0.7, 0.5);
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.3, 0, 1, 0.1, 0.9).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            for (int i = 0; i < 10; i++) {
-                swip(0.7, 0.5, 0.3, 0.5);
-                sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Images", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            swip(0.7, 0.5, 0.3, 0.5)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            swip(0.3, 0.5, 0.7, 0.5)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            for (i in 0..9) {
+                swip(0.7, 0.5, 0.3, 0.5)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesImages:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesImages:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesImages_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesImages:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesImages:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesImages_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2405,34 +2436,34 @@ public class MainPathTest extends PhxCommon {
      * 文件-Documents
      */
     @Test
-    public void testFilesDocuments() {
+    fun testFilesDocuments() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Documents", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            for (int i = 0; i < 6; i++) {
-                swip(0.7, 0.5, 0.3, 0.5);
-                sleep(TIMEOUT_VERY_SHORT);
-                UiObject2 firstDoc = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, 0.1, 0.9).get(0);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Documents", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            for (i in 0..5) {
+                swip(0.7, 0.5, 0.3, 0.5)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                val firstDoc = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9).get(0)
                 if (firstDoc != null) {
-                    firstDoc.click();
-                    sleep(TIMEOUT_SHORT);
-                    getUiObject2s("android.widget.LinearLayout", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                    sleep(TIMEOUT_VERY_SHORT);
+                    firstDoc.click()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesDocuments:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesDocuments:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesDocuments_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesDocuments:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesDocuments:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesDocuments_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2440,29 +2471,29 @@ public class MainPathTest extends PhxCommon {
      * 文件-Storage
      */
     @Test
-    public void testFilesStorage() {
+    fun testFilesStorage() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 storage = waitUiObject2ByText("Storage", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var storage = waitUiObject2ByText("Storage", TIMEOUT_MEDIUM)
             if (storage == null) {
-                waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                storage = waitUiObject2ByText("Storage", TIMEOUT_SHORT);
+                waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                storage = waitUiObject2ByText("Storage", TIMEOUT_SHORT)
             }
-            storage.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesStorage:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesStorage:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesStorage_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            storage?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesStorage:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesStorage:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesStorage_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2470,33 +2501,33 @@ public class MainPathTest extends PhxCommon {
      * 文件-Archives
      */
     @Test
-    public void testFilesArchives() {
+    fun testFilesArchives() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 archives = waitUiObject2ByText("Archives", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var archives = waitUiObject2ByText("Archives", TIMEOUT_MEDIUM)
             if (archives == null) {
-                waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                archives = waitUiObject2ByText("Archives", TIMEOUT_SHORT);
+                waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                archives = waitUiObject2ByText("Archives", TIMEOUT_SHORT)
             }
-            archives.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, 0.1, 0.9).get(0).click();
-            sleep(TIMEOUT_MEDIUM);
-            getUiObject2s("android.widget.LinearLayout", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesArchives:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesArchives:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesArchives_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            archives?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesArchives:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesArchives:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesArchives_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2504,31 +2535,31 @@ public class MainPathTest extends PhxCommon {
      * 文件-Instagram
      */
     @Test
-    public void testFilesInstagram() {
+    fun testFilesInstagram() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 instagram = waitUiObject2ByText("Instagram", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var instagram = waitUiObject2ByText("Instagram", TIMEOUT_MEDIUM)
             if (instagram == null) {
-                waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                instagram = waitUiObject2ByText("Instagram", TIMEOUT_SHORT);
+                waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                instagram = waitUiObject2ByText("Instagram", TIMEOUT_SHORT)
             }
-            instagram.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            swip(0.7, 0.5, 0.3, 0.5);
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesInstagram:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesInstagram:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesInstagram_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            instagram?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            swip(0.7, 0.5, 0.3, 0.5)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesInstagram:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesInstagram:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesInstagram_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2536,29 +2567,29 @@ public class MainPathTest extends PhxCommon {
      * 文件-Offline pages
      */
     @Test
-    public void testFilesOfflinePages() {
+    fun testFilesOfflinePages() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 offlinePages = waitUiObject2ByText("Offline pages", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var offlinePages = waitUiObject2ByText("Offline pages", TIMEOUT_MEDIUM)
             if (offlinePages == null) {
-                waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                offlinePages = waitUiObject2ByText("Offline pages", TIMEOUT_SHORT);
+                waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                offlinePages = waitUiObject2ByText("Offline pages", TIMEOUT_SHORT)
             }
-            offlinePages.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesOfflinePages:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesOfflinePages:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesOfflinePages_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            offlinePages?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesOfflinePages:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesOfflinePages:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesOfflinePages_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2566,29 +2597,29 @@ public class MainPathTest extends PhxCommon {
      * 文件-Apps
      */
     @Test
-    public void testFilesApps() {
+    fun testFilesApps() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 apps = waitUiObject2ByText("Apps", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var apps = waitUiObject2ByText("Apps", TIMEOUT_MEDIUM)
             if (apps == null) {
-                waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                apps = waitUiObject2ByText("Apps", TIMEOUT_SHORT);
+                waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                apps = waitUiObject2ByText("Apps", TIMEOUT_SHORT)
             }
-            apps.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesApps:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesApps:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesApps_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            apps?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesApps:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesApps:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesApps_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2596,29 +2627,29 @@ public class MainPathTest extends PhxCommon {
      * 文件-Others
      */
     @Test
-    public void testFilesOthers() {
+    fun testFilesOthers() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 others = waitUiObject2ByText("Others", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var others = waitUiObject2ByText("Others", TIMEOUT_MEDIUM)
             if (others == null) {
-                waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                others = waitUiObject2ByText("Others", TIMEOUT_SHORT);
+                waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                others = waitUiObject2ByText("Others", TIMEOUT_SHORT)
             }
-            others.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesOthers:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesOthers:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesOthers_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            others?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesOthers:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesOthers:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesOthers_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2626,66 +2657,66 @@ public class MainPathTest extends PhxCommon {
      * 文件-Junk files
      */
     @Test
-    public void testFilesJunkfiles() {
+    fun testFilesJunkfiles() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Junk files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 cleanJunkFiles = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Junk files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var cleanJunkFiles = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM)
             if (cleanJunkFiles == null) {
-                cleanJunkFiles = waitUiObject2ByTextContains("Safe clean", TIMEOUT_MEDIUM);
+                cleanJunkFiles = waitUiObject2ByTextContains("Safe clean", TIMEOUT_MEDIUM)
             }
             if (cleanJunkFiles != null && cleanJunkFiles.isEnabled()) {
-                cleanJunkFiles.click();
-                sleep(TIMEOUT_LONG);
+                cleanJunkFiles.click()
+                sleep(TIMEOUT_LONG.toLong())
                 // 关闭广告
-                closeAdDialog();
-                for (int i = 0; i < 10; i++) {
+                closeAdDialog()
+                for (i in 0..9) {
                     // 返回
-                    List<UiObject2> junkFilesBacks = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3);
-                    if (junkFilesBacks == null || junkFilesBacks.size() == 0) {
+                    val junkFilesBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
+                    if (junkFilesBacks == null || junkFilesBacks.size == 0) {
                         // 处理退出清理确认弹窗
-                        UiObject2 exit = waitUiObject2ByText("Exit", TIMEOUT_SHORT);
+                        val exit = waitUiObject2ByText("Exit", TIMEOUT_SHORT)
                         if (exit != null) {
-                            exit.click();
-                            sleep(TIMEOUT_VERY_SHORT);
+                            exit.click()
+                            sleep(TIMEOUT_VERY_SHORT.toLong())
                         } else {
-                            back();
+                            back()
                         }
                     } else {
                         // uiautomator有时点击时会报异常
                         try {
-                            junkFilesBacks.get(0).click();
-                        } catch (Exception e) {
-                            back();
+                            junkFilesBacks?.get(0)?.click()
+                        } catch (e: Exception) {
+                            back()
                         }
                     }
-                    sleep(TIMEOUT_VERY_SHORT);
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
 
                     if (waitUiObject2ByText("Me", TIMEOUT_VERY_SHORT) != null) {
-                        break;
+                        break
                     }
                 }
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
                 // 处理退出确认弹窗
-                UiObject2 exit = waitUiObject2ByText("Exit", TIMEOUT_SHORT);
+                val exit = waitUiObject2ByText("Exit", TIMEOUT_SHORT)
                 if (exit != null) {
-                    exit.click();
-                    sleep(TIMEOUT_VERY_SHORT);
+                    exit.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            FileUtil.writeStrToFile("FilesJunkfiles:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesJunkfiles:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesJunkfiles_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("FilesJunkfiles:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesJunkfiles:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesJunkfiles_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2693,45 +2724,45 @@ public class MainPathTest extends PhxCommon {
      * 文件-Phone boost
      */
     @Test
-    public void testFilesPhoneBoost() {
+    fun testFilesPhoneBoost() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Phone boost", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_LONG);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Phone boost", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_LONG.toLong())
             // 关闭广告
-            closeAdDialog();
+            closeAdDialog()
             // 处理添加至主页弹窗
             if (waitUiObject2ByText("Add", TIMEOUT_MEDIUM) != null) {
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            for (int i = 0; i < 10; i++) {
-                List<UiObject2> boostBacks = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3);
-                if (boostBacks == null || boostBacks.size() == 0) {
-                    back();
+            for (i in 0..9) {
+                val boostBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
+                if (boostBacks == null || boostBacks.size == 0) {
+                    back()
                 } else {
                     // uiautomator有时点击时会报异常
                     try {
-                        boostBacks.get(0).click();
-                    } catch (Exception e) {
-                        back();
+                        boostBacks?.get(0)?.click()
+                    } catch (e: Exception) {
+                        back()
                     }
                 }
-                sleep(TIMEOUT_VERY_SHORT);
+                sleep(TIMEOUT_VERY_SHORT.toLong())
                 if (waitUiObject2ByTextContains("Me", TIMEOUT_VERY_SHORT) != null) {
-                    break;
+                    break
                 }
             }
-            FileUtil.writeStrToFile("FilesPhoneBoost:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesPhoneBoost:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesPhoneBoost_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("FilesPhoneBoost:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesPhoneBoost:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesPhoneBoost_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2739,65 +2770,65 @@ public class MainPathTest extends PhxCommon {
      * 文件-Clean Up Phoenix
      */
     @Test
-    public void testFilesCleanPhoenix() {
+    fun testFilesCleanPhoenix() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
-            UiObject2 cleanPhoenix = waitUiObject2ByText("Clean Up Phoenix", TIMEOUT_MEDIUM);
+            var cleanPhoenix = waitUiObject2ByText("Clean Up Phoenix", TIMEOUT_MEDIUM)
             if (cleanPhoenix == null) {
                 // 上滑
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                cleanPhoenix = waitUiObject2ByText("Clean Up Phoenix", TIMEOUT_MEDIUM);
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                cleanPhoenix = waitUiObject2ByText("Clean Up Phoenix", TIMEOUT_MEDIUM)
             }
-            cleanPhoenix.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Account and password", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            UiObject2 cleanUp = null;
-            List<UiObject2> tmpCleanPhoenixs = waitUiObject2sByTextContains("Clean up", TIMEOUT_MEDIUM);
-            for (UiObject2 tmpCleanPhoenix : tmpCleanPhoenixs) {
+            cleanPhoenix?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Account and password", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            var cleanUp: UiObject2? = null
+            val tmpCleanPhoenixs = waitUiObject2sByTextContains("Clean up", TIMEOUT_MEDIUM)
+            for (tmpCleanPhoenix in tmpCleanPhoenixs) {
                 if (tmpCleanPhoenix.isClickable()) {
-                    cleanUp = tmpCleanPhoenix;
-                    break;
+                    cleanUp = tmpCleanPhoenix
+                    break
                 }
             }
             if (cleanUp != null && cleanUp.isEnabled()) {
-                cleanUp.click();
-                sleep(TIMEOUT_LONG);
+                cleanUp.click()
+                sleep(TIMEOUT_LONG.toLong())
                 // 关闭广告
-                closeAdDialog();
-                for (int i = 0; i < 10; i++) {
-                    List<UiObject2> whatsAppBacks = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3);
-                    if (whatsAppBacks == null || whatsAppBacks.size() == 0) {
-                        back();
+                closeAdDialog()
+                for (i in 0..9) {
+                    val whatsAppBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
+                    if (whatsAppBacks == null || whatsAppBacks.size == 0) {
+                        back()
                     } else {
                         // uiautomator有时点击时会报异常
                         try {
-                            whatsAppBacks.get(0).click();
-                        } catch (Exception e) {
-                            back();
+                            whatsAppBacks?.get(0)?.click()
+                        } catch (e: Exception) {
+                            back()
                         }
                     }
-                    sleep(TIMEOUT_VERY_SHORT);
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                     if (waitUiObject2ByText("Me", TIMEOUT_VERY_SHORT) != null) {
-                        break;
+                        break
                     }
                 }
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            FileUtil.writeStrToFile("FilesCleanPhoenix:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesCleanPhoenix:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesCleanPhoenix_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("FilesCleanPhoenix:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesCleanPhoenix:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesCleanPhoenix_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2805,58 +2836,58 @@ public class MainPathTest extends PhxCommon {
      * 文件-Large File Cleanup
      */
     @Test
-    public void testFilesCleanLargeFile() {
+    fun testFilesCleanLargeFile() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 cleanLargeFile = waitUiObject2ByText("Large File Cleanup", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var cleanLargeFile = waitUiObject2ByText("Large File Cleanup", TIMEOUT_MEDIUM)
             if (cleanLargeFile == null) {
                 // 上滑
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                cleanLargeFile = waitUiObject2ByText("Large File Cleanup", TIMEOUT_MEDIUM);
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                cleanLargeFile = waitUiObject2ByText("Large File Cleanup", TIMEOUT_MEDIUM)
             }
-            cleanLargeFile.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM);
+            cleanLargeFile?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM)
             if (cleanUp != null && !cleanUp.isEnabled()) {
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0.5, 1, 0.02, 0.5).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM);
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.5, 1.0, 0.02, 0.5)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM)
             }
-            cleanUp.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Clean", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_LONG);
+            cleanUp?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Clean", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_LONG.toLong())
             // 关闭广告
-            closeAdDialog();
-            for (int i = 0; i < 10; i++) {
-                List<UiObject2> videosBacks = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3);
-                if (videosBacks == null || videosBacks.size() == 0) {
-                    back();
+            closeAdDialog()
+            for (i in 0..9) {
+                val videosBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
+                if (videosBacks == null || videosBacks.size == 0) {
+                    back()
                 } else {
                     // uiautomator有时点击时会报异常
                     try {
-                        videosBacks.get(0).click();
-                    } catch (Exception e) {
-                        back();
+                        videosBacks?.get(0)?.click()
+                    } catch (e: Exception) {
+                        back()
                     }
                 }
 
-                sleep(TIMEOUT_VERY_SHORT);
+                sleep(TIMEOUT_VERY_SHORT.toLong())
                 if (waitUiObject2ByText("Me", TIMEOUT_VERY_SHORT) != null) {
-                    break;
+                    break
                 }
             }
-            FileUtil.writeStrToFile("FilesCleanLargeFile:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesCleanLargeFile:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesCleanLargeFile_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("FilesCleanLargeFile:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesCleanLargeFile:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesCleanLargeFile_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2864,76 +2895,76 @@ public class MainPathTest extends PhxCommon {
      * 文件-Clean Up Videos
      */
     @Test
-    public void testFilesCleanVideos() {
+    fun testFilesCleanVideos() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 cleanVideos = waitUiObject2ByText("Clean Up Videos", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var cleanVideos = waitUiObject2ByText("Clean Up Videos", TIMEOUT_MEDIUM)
             if (cleanVideos == null) {
                 // 上滑
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                cleanVideos = waitUiObject2ByText("Clean Up WhatsApp", TIMEOUT_MEDIUM);
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                cleanVideos = waitUiObject2ByText("Clean Up WhatsApp", TIMEOUT_MEDIUM)
             }
-            cleanVideos.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Other videos", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 firstVideo = getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.5, 0, 1, 0.1, 0.9).get(0);
+            cleanVideos?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Other videos", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val firstVideo = getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.5, 0.0, 1.0, 0.1, 0.9).get(0)
             if (firstVideo != null) {
-                firstVideo.click();
-                sleep(TIMEOUT_VERY_SHORT);
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
-                UiObject2 checkBox = waitUiObject2sByClazz("android.widget.CheckBox", TIMEOUT_MEDIUM).get(0);
+                firstVideo.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                val checkBox = waitUiObject2sByClazz("android.widget.CheckBox", TIMEOUT_MEDIUM.toLong()).get(0)
                 if (!checkBox.isChecked()) {
-                    checkBox.click();
-                    sleep(TIMEOUT_VERY_SHORT);
+                    checkBox.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
             }
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM);
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM)
             if (cleanUp != null && cleanUp.isEnabled()) {
-                cleanUp.click();
-                sleep(TIMEOUT_VERY_SHORT);
-                waitUiObject2ByText("Delete", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_LONG);
+                cleanUp.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_LONG.toLong())
                 // 关闭广告
-                closeAdDialog();
-                for (int i = 0; i < 10; i++) {
-                    List<UiObject2> videosBacks = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3);
-                    if (videosBacks == null || videosBacks.size() == 0) {
-                        back();
+                closeAdDialog()
+                for (i in 0..9) {
+                    val videosBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
+                    if (videosBacks == null || videosBacks.size == 0) {
+                        back()
                     } else {
                         // uiautomator有时点击时会报异常
                         try {
-                            videosBacks.get(0).click();
-                        } catch (Exception e) {
-                            back();
+                            videosBacks?.get(0)?.click()
+                        } catch (e: Exception) {
+                            back()
                         }
                     }
 
-                    sleep(TIMEOUT_VERY_SHORT);
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                     if (waitUiObject2ByText("Me", TIMEOUT_VERY_SHORT) != null) {
-                        break;
+                        break
                     }
                 }
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            FileUtil.writeStrToFile("FilesCleanVideos:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesCleanVideos:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesCleanVideos_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            writeStrToFile("FilesCleanVideos:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesCleanVideos:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesCleanVideos_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -2941,59 +2972,59 @@ public class MainPathTest extends PhxCommon {
      * 文件-Clean Up WhatsApp
      */
     @Test
-    public void testFilesCleanWhatsApp() {
+    fun testFilesCleanWhatsApp() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 cleanWhatsApp = waitUiObject2ByText("Clean Up WhatsApp", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var cleanWhatsApp = waitUiObject2ByText("Clean Up WhatsApp", TIMEOUT_MEDIUM)
             if (cleanWhatsApp == null) {
                 // 上滑
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                cleanWhatsApp = waitUiObject2ByText("Clean Up WhatsApp", TIMEOUT_MEDIUM);
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                cleanWhatsApp = waitUiObject2ByText("Clean Up WhatsApp", TIMEOUT_MEDIUM)
             }
             if (cleanWhatsApp != null) {
-                cleanWhatsApp.click();
-                sleep(TIMEOUT_VERY_SHORT);
-                UiObject2 cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM);
+                cleanWhatsApp.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                val cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM)
                 if (cleanUp != null && cleanUp.isEnabled()) {
-                    cleanUp.click();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    for (int i = 0; i < 10; i++) {
-                        List<UiObject2> whatsAppBacks = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3);
-                        if (whatsAppBacks == null || whatsAppBacks.size() == 0) {
-                            back();
+                    cleanUp.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    for (i in 0..9) {
+                        val whatsAppBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
+                        if (whatsAppBacks == null || whatsAppBacks.size == 0) {
+                            back()
                         } else {
                             // uiautomator有时点击时会报异常
                             try {
-                                whatsAppBacks.get(0).click();
-                            } catch (Exception e) {
-                                back();
+                                whatsAppBacks?.get(0)?.click()
+                            } catch (e: Exception) {
+                                back()
                             }
                         }
 
-                        sleep(TIMEOUT_VERY_SHORT);
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
                         if (waitUiObject2ByText("Me", TIMEOUT_VERY_SHORT) != null) {
-                            break;
+                            break
                         }
                     }
                 } else {
-                    getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                    sleep(TIMEOUT_VERY_SHORT);
+                    getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
-                FileUtil.writeStrToFile("FilesCleanWhatsApp:PASS" + "\n", mainPathFile);
+                writeStrToFile("FilesCleanWhatsApp:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FilesCleanWhatsApp:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/FilesCleanWhatsApp_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("FilesCleanWhatsApp:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/FilesCleanWhatsApp_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesCleanWhatsApp:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesCleanWhatsApp_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesCleanWhatsApp:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesCleanWhatsApp_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -3001,34 +3032,34 @@ public class MainPathTest extends PhxCommon {
      * 文件-Clean Telegram
      */
     @Test
-    public void testFilesCleanTelegram() {
+    fun testFilesCleanTelegram() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 cleanTelegram = waitUiObject2ByText("Clean Telegram", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var cleanTelegram = waitUiObject2ByText("Clean Telegram", TIMEOUT_MEDIUM)
             if (cleanTelegram == null) {
                 // 上滑
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                cleanTelegram = waitUiObject2ByText("Clean Telegram", TIMEOUT_MEDIUM);
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                cleanTelegram = waitUiObject2ByText("Clean Telegram", TIMEOUT_MEDIUM)
             }
             if (cleanTelegram != null) {
-                cleanTelegram.click();
-                sleep(TIMEOUT_VERY_SHORT);
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                FileUtil.writeStrToFile("FilesCleanTelegram:PASS" + "\n", mainPathFile);
+                cleanTelegram.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                writeStrToFile("FilesCleanTelegram:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FilesCleanTelegram:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/filesCleanTelegram_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("FilesCleanTelegram:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/filesCleanTelegram_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesCleanTelegram:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesCleanTelegram_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesCleanTelegram:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesCleanTelegram_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -3036,36 +3067,36 @@ public class MainPathTest extends PhxCommon {
      * 文件-Recent documents
      */
     @Test
-    public void testFilesRecentDocuments() {
+    fun testFilesRecentDocuments() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 recentDocuments = waitUiObject2ByText("Recent documents", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var recentDocuments = waitUiObject2ByText("Recent documents", TIMEOUT_MEDIUM)
             if (recentDocuments == null) {
                 // 上滑
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                recentDocuments = waitUiObject2ByText("Recent documents", TIMEOUT_MEDIUM);
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                recentDocuments = waitUiObject2ByText("Recent documents", TIMEOUT_MEDIUM)
             }
             // 最近打开文档
             if (recentDocuments != null) {
-                waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                FileUtil.writeStrToFile("FilesRecentDocuments:PASS" + "\n", mainPathFile);
+                waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                writeStrToFile("FilesRecentDocuments:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FilesRecentDocuments:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/FilesRecentDocuments_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("FilesRecentDocuments:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/FilesRecentDocuments_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesRecentDocuments:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesRecentDocuments_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesRecentDocuments:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesRecentDocuments_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -3073,49 +3104,49 @@ public class MainPathTest extends PhxCommon {
      * 文件-Wallpaper
      */
     @Test
-    public void testFilesWallpaper() {
+    fun testFilesWallpaper() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 wallpaper = waitUiObject2ByText("Wallpaper", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var wallpaper = waitUiObject2ByText("Wallpaper", TIMEOUT_MEDIUM)
             if (wallpaper == null) {
                 // 上滑
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                wallpaper = waitUiObject2ByText("Wallpaper", TIMEOUT_MEDIUM);
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                wallpaper = waitUiObject2ByText("Wallpaper", TIMEOUT_MEDIUM)
             }
-            wallpaper.click();
-            waitUiObject2ByText("Select wallpaper", TIMEOUT_MEDIUM).click();
-            for (int i = 0; i < 20; i++) {
-                sleep(TIMEOUT_SHORT);
-                List<UiObject2> firstImgs = getUiObject2s("android.view.View", true, 0.2, 0.4, 0.2, 0.5, 0, 1, 0.05, 0.9);
-                if (firstImgs != null && firstImgs.size() > 6) {
-                    firstImgs.get(0).click();
-                    sleep(TIMEOUT_MEDIUM);
-                    break;
+            wallpaper?.click()
+            waitUiObject2ByText("Select wallpaper", TIMEOUT_MEDIUM)?.click()
+            for (i in 0..19) {
+                sleep(TIMEOUT_SHORT.toLong())
+                val firstImgs = getUiObject2s("android.view.View", true, 0.2, 0.4, 0.2, 0.5, 0.0, 1.0, 0.05, 0.9)
+                if (firstImgs != null && firstImgs.size > 6) {
+                    firstImgs?.get(0)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                    break
                 }
             }
-            waitUiObject2ByText("Set as", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Both", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            waitUiObject2ByText("Download", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesWallpaper:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesWallpaper:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesWallpaper_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Set as", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Both", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            waitUiObject2ByText("Download", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesWallpaper:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesWallpaper:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesWallpaper_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -3123,58 +3154,58 @@ public class MainPathTest extends PhxCommon {
      * 文件-Ringtones
      */
     @Test
-    public void testFilesRingtones() {
+    fun testFilesRingtones() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 ringtones = waitUiObject2ByText("Ringtones", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var ringtones = waitUiObject2ByText("Ringtones", TIMEOUT_MEDIUM)
             if (ringtones == null) {
                 // 上滑
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                ringtones = waitUiObject2ByText("Ringtones", TIMEOUT_MEDIUM);
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                ringtones = waitUiObject2ByText("Ringtones", TIMEOUT_MEDIUM)
             }
-            ringtones.click();
-            waitUiObject2ByText("Select ringtone", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, 0.1, 0.9).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            List<UiObject2> uiObject2s = waitUiObject2sByText("Set", TIMEOUT_MEDIUM);
-            if (uiObject2s != null && uiObject2s.size() > 0) {
-                for (int i = 0; i < uiObject2s.size(); i++) {
-                    UiObject2 set = uiObject2s.get(i);
+            ringtones?.click()
+            waitUiObject2ByText("Select ringtone", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val uiObject2s = waitUiObject2sByText("Set", TIMEOUT_MEDIUM)
+            if (uiObject2s != null && uiObject2s.size > 0) {
+                for (i in uiObject2s.indices) {
+                    val set = uiObject2s.get(i)
                     if (i == 0) {
-                        set.click();
-                        UiObject2 goSetting = waitUiObject2ByText("Go to settings", TIMEOUT_SHORT);
+                        set.click()
+                        val goSetting = waitUiObject2ByText("Go to settings", TIMEOUT_SHORT)
                         if (goSetting != null) {
-                            goSetting.click();
-                            UiObject2 settingSwitch = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM).get(0);
+                            goSetting.click()
+                            val settingSwitch = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong()).get(0)
                             if (!settingSwitch.isChecked()) {
-                                settingSwitch.click();
+                                settingSwitch.click()
                             }
-                            back();
-                            sleep(TIMEOUT_VERY_SHORT);
+                            back()
+                            sleep(TIMEOUT_VERY_SHORT.toLong())
                         }
                     } else {
-                        set.click();
+                        set.click()
                     }
                 }
             }
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("FilesRingtones:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesRingtones:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesRingtones_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("FilesRingtones:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesRingtones:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesRingtones_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -3182,52 +3213,52 @@ public class MainPathTest extends PhxCommon {
      * 文件-Compress files
      */
     @Test
-    public void testFilesCompressFiles() {
+    fun testFilesCompressFiles() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 compressFiles = waitUiObject2ByText("Compress files", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var compressFiles = waitUiObject2ByText("Compress files", TIMEOUT_MEDIUM)
             if (compressFiles == null) {
                 // 上滑
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                compressFiles = waitUiObject2ByText("Compress files", TIMEOUT_MEDIUM);
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                compressFiles = waitUiObject2ByText("Compress files", TIMEOUT_MEDIUM)
             }
-            compressFiles.click();
-            waitUiObject2ByText("Select files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Images", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 checkBox = waitUiObject2sByClazz("android.widget.CheckBox", TIMEOUT_MEDIUM).get(0);
-            if (!checkBox.isChecked()) {
-                checkBox.click();
-                sleep(TIMEOUT_VERY_SHORT);
+            compressFiles?.click()
+            waitUiObject2ByText("Select files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Images", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val checkBox = waitUiObject2sByClazz("android.widget.CheckBox", TIMEOUT_MEDIUM.toLong()).getOrNull(0) ?: return
+            if (!checkBox.isChecked) {
+                checkBox.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Compress 1 file", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Done", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_MEDIUM);
-            UiObject2 compressed = waitUiObject2ByTextContains("have been compressed", TIMEOUT_LONG);
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Compress 1 file", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Done", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
+            val compressed = waitUiObject2ByTextContains("have been compressed", TIMEOUT_LONG)
             if (compressed != null) {
-                FileUtil.writeStrToFile("FilesCompressFiles:PASS" + "\n", mainPathFile);
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
+                writeStrToFile("FilesCompressFiles:PASS" + "\n", mainPathFile)
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             } else {
-                FileUtil.writeStrToFile("FilesCompressFiles:FAILED" + "\n", mainPathFile);
-                screenshot(resultFolder + "/FilesCompressFiles_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                writeStrToFile("FilesCompressFiles:FAILED" + "\n", mainPathFile)
+                screenshot(resultFolder.toString() + "/FilesCompressFiles_" + getCurTimeForFile() + ".jpg")
             }
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesCompressFiles:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesCompressFiles_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesCompressFiles:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesCompressFiles_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -3235,69 +3266,71 @@ public class MainPathTest extends PhxCommon {
      * 文件-Unzip files
      */
     @Test
-    public void testFilesUnzipFiles() {
+    fun testFilesUnzipFiles() {
         try {
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 unzipFiles = waitUiObject2ByText("Unzip files", TIMEOUT_MEDIUM);
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var unzipFiles = waitUiObject2ByText("Unzip files", TIMEOUT_MEDIUM)
             if (unzipFiles == null) {
                 // 上滑
-                swip(0.5, 0.7, 0.5, 0.3);
-                sleep(TIMEOUT_VERY_SHORT);
-                unzipFiles = waitUiObject2ByText("Unzip files", TIMEOUT_MEDIUM);
+                swip(0.5, 0.7, 0.5, 0.3)
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                unzipFiles = waitUiObject2ByText("Unzip files", TIMEOUT_MEDIUM)
             }
-            unzipFiles.click();
-            waitUiObject2ByText("Select files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, 0.1, 0.9).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 unzip = waitUiObject2ByText("Unzip", TIMEOUT_MEDIUM);
+            unzipFiles?.click()
+            waitUiObject2ByText("Select files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val unzip = waitUiObject2ByText("Unzip", TIMEOUT_MEDIUM)
             if (unzip != null) {
-                unzip.click();
-                sleep(TIMEOUT_SHORT);
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
+                unzip.click()
+                sleep(TIMEOUT_SHORT.toLong())
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            UiObject2 unzipView = waitUiObject2ByText("Unzip and view", TIMEOUT_MEDIUM);
+            val unzipView = waitUiObject2ByText("Unzip and view", TIMEOUT_MEDIUM)
             if (unzipView != null && unzipView.isEnabled()) {
-                unzipView.click();
-                sleep(TIMEOUT_SHORT);
-                getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-                sleep(TIMEOUT_VERY_SHORT);
+                unzipView.click()
+                sleep(TIMEOUT_SHORT.toLong())
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.LinearLayout", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            swip(0.5, 0.3, 0.5, 0.7);
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Unzipped files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            longClick(getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, 0.1, 0.9).get(0));
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 selectAll = waitUiObject2ByText("Select all", TIMEOUT_SHORT);
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            swip(0.5, 0.3, 0.5, 0.7)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Unzipped files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9).getOrNull(0)?.let {
+                longClick(it)
+            } ?: return
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val selectAll = waitUiObject2ByText("Select all", TIMEOUT_SHORT)
             if (selectAll != null) {
-                selectAll.click();
-                sleep(TIMEOUT_VERY_SHORT);
+                selectAll.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Home", TIMEOUT_MEDIUM).click();
-            FileUtil.writeStrToFile("FilesUnzipFiles:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FilesUnzipFiles:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FilesUnzipFiles_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Home", TIMEOUT_MEDIUM)?.click()
+            writeStrToFile("FilesUnzipFiles:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FilesUnzipFiles:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FilesUnzipFiles_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -3305,34 +3338,34 @@ public class MainPathTest extends PhxCommon {
      * 个人中心-退出登录
      */
     @Test
-    public void testMeLogout() {
+    fun testMeLogout() {
         try {
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 下滑
-            swip(0.5, 0.3, 0.5, 0.7);
-            sleep(TIMEOUT_VERY_SHORT);
+            swip(0.5, 0.3, 0.5, 0.7)
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 退出登录
-            waitUiObject2ByText("Signed in with Google", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0.8, 1, 0.02, 0.2).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Sign out", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Sign out", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(0).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            FileUtil.writeStrToFile("MeLogout:PASS" + "\n", mainPathFile);
-            backToHome();
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeLogout:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeLogout_" + CommonUtil.getCurTimeForFile() + ".jpg");
-            backToApp();
-            backToHome();
+            waitUiObject2ByText("Signed in with Google", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.2)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Sign out", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Sign out", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            writeStrToFile("MeLogout:PASS" + "\n", mainPathFile)
+            backToHome()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeLogout:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeLogout_" + getCurTimeForFile() + ".jpg")
+            backToApp()
+            backToHome()
         }
     }
 
@@ -3340,26 +3373,26 @@ public class MainPathTest extends PhxCommon {
      * 退出-网页工具栏
      */
     @Test
-    public void testWebpageMenuExit() {
+    fun testWebpageMenuExit() {
         try {
             // 启动浏览器
-            if (ShellCommon.isAppBackstage(device, pkgName)) {
-                startApp(pkgName);
-                sleep(TIMEOUT_MEDIUM);
+            if (isAppBackstage(device, pkgName)) {
+                startApp(pkgName)
+                sleep(TIMEOUT_MEDIUM.toLong())
             }
 
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com");
-            sleep(TIMEOUT_SHORT);
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Exit", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            ShellCommand.execCmdByUiDevice(device, "am force-stop " + pkgName);
-            FileUtil.writeStrToFile("WebpageMenuExit:PASS" + "\n", mainPathFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("WebpageMenuExit:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/WebpageMenuExit_" + CommonUtil.getCurTimeForFile() + ".jpg");
+            execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com")
+            sleep(TIMEOUT_SHORT.toLong())
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            waitUiObject2ByText("Exit", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            execCmdByUiDevice(device, "am force-stop " + pkgName)
+            writeStrToFile("WebpageMenuExit:PASS" + "\n", mainPathFile)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("WebpageMenuExit:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/WebpageMenuExit_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3367,25 +3400,25 @@ public class MainPathTest extends PhxCommon {
      * 退出-Me
      */
     @Test
-    public void testMeExit() {
+    fun testMeExit() {
         try {
             // 启动浏览器
-            if (ShellCommon.isAppBackstage(device, pkgName)) {
-                startApp(pkgName);
-                sleep(TIMEOUT_MEDIUM);
+            if (isAppBackstage(device, pkgName)) {
+                startApp(pkgName)
+                sleep(TIMEOUT_MEDIUM.toLong())
             }
 
             // 个人中心退出
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            waitUiObject2ByText("Exit", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_SHORT);
-            ShellCommand.execCmdByUiDevice(device, "am force-stop " + pkgName);
-            FileUtil.writeStrToFile("MeExit:PASS" + "\n", mainPathFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("MeExit:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/MeExit_" + CommonUtil.getCurTimeForFile() + ".jpg");
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            waitUiObject2ByText("Exit", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            execCmdByUiDevice(device, "am force-stop " + pkgName)
+            writeStrToFile("MeExit:PASS" + "\n", mainPathFile)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("MeExit:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/MeExit_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3393,23 +3426,23 @@ public class MainPathTest extends PhxCommon {
      * 退出-Back
      */
     @Test
-    public void testBackExit() {
+    fun testBackExit() {
         try {
             // 启动浏览器
-            if (ShellCommon.isAppBackstage(device, pkgName)) {
-                startApp(pkgName);
-                sleep(TIMEOUT_MEDIUM);
+            if (isAppBackstage(device, pkgName)) {
+                startApp(pkgName)
+                sleep(TIMEOUT_MEDIUM.toLong())
             }
 
             // 硬件back弹窗退出
-            backToHome();
-            backExitBrowser();
-            FileUtil.writeStrToFile("BackExit:PASS" + "\n", mainPathFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("BackExit:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/BackExit_" + CommonUtil.getCurTimeForFile() + ".jpg");
+            backToHome()
+            backExitBrowser()
+            writeStrToFile("BackExit:PASS" + "\n", mainPathFile)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("BackExit:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/BackExit_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3417,39 +3450,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开网页
      */
     @Test
-    public void testFirstThirdCallWebpage() {
+    fun testFirstThirdCallWebpage() {
         try {
-            boolean isSuccess = testThirdCall("webpage", true);
+            var isSuccess = testThirdCall("webpage", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallWebpage_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallWebpage:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallWebpage:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallWebpage:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallWebpage:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallWebpage_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallWebpage:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallWebpage_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallWebpage:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3457,39 +3490,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开视频
      */
     @Test
-    public void testFirstThirdCallVideo() {
+    fun testFirstThirdCallVideo() {
         try {
-            boolean isSuccess = testThirdCall("video", true);
+            var isSuccess = testThirdCall("video", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallVideo_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallVideo_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallVideo:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallVideo:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallVideo:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallVideo:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallVideo_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallVideo_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallVideo:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallVideo_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallVideo:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallVideo_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3497,39 +3530,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开音乐
      */
     @Test
-    public void testFirstThirdCallMusic() {
+    fun testFirstThirdCallMusic() {
         try {
-            boolean isSuccess = testThirdCall("music", true);
+            var isSuccess = testThirdCall("music", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallMusic_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallMusic_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallMusic:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallMusic:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallMusic:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallMusic:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallMusic_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallMusic_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallMusic:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallMusic_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallMusic:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallMusic_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3537,39 +3570,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开doc
      */
     @Test
-    public void testFirstThirdCallDoc() {
+    fun testFirstThirdCallDoc() {
         try {
-            boolean isSuccess = testThirdCall("doc", true);
+            var isSuccess = testThirdCall("doc", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallDoc_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallDoc_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallDoc:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallDoc:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallDoc:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallDoc:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallDoc_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallDoc_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallDoc:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallDoc_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallDoc:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallDoc_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3577,39 +3610,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开ppt
      */
     @Test
-    public void testFirstThirdCallPpt() {
+    fun testFirstThirdCallPpt() {
         try {
-            boolean isSuccess = testThirdCall("ppt", true);
+            var isSuccess = testThirdCall("ppt", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallPpt_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallPpt_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallPpt:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallPpt:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallPpt:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallPpt:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallPpt_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallPpt_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallPpt:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallPpt_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallPpt:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallPpt_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3617,39 +3650,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开xls
      */
     @Test
-    public void testFirstThirdCallXls() {
+    fun testFirstThirdCallXls() {
         try {
-            boolean isSuccess = testThirdCall("xls", true);
+            var isSuccess = testThirdCall("xls", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallXls_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallXls_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallXls:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallXls:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallXls:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallXls:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallXls_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallXls_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallXls:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallXls_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallXls:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallXls_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3657,39 +3690,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开pdf
      */
     @Test
-    public void testFirstThirdCallPdf() {
+    fun testFirstThirdCallPdf() {
         try {
-            boolean isSuccess = testThirdCall("pdf", true);
+            var isSuccess = testThirdCall("pdf", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallPdf_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallPdf_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallPdf:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallPdf:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallPdf:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallPdf:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallPdf_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallPdf_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallPdf:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallPdf_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallPdf:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallPdf_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3697,39 +3730,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开epub
      */
     @Test
-    public void testFirstThirdCallEpub() {
+    fun testFirstThirdCallEpub() {
         try {
-            boolean isSuccess = testThirdCall("epub", true);
+            var isSuccess = testThirdCall("epub", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallEpub_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallEpub_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallEpub:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallEpub:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallEpub:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallEpub:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallEpub_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallEpub_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallEpub:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallEpub_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallEpub:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallEpub_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3737,39 +3770,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开img
      */
     @Test
-    public void testFirstThirdCallImg() {
+    fun testFirstThirdCallImg() {
         try {
-            boolean isSuccess = testThirdCall("img", true);
+            var isSuccess = testThirdCall("img", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallImg_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallImg_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallImg:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallImg:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallImg:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallImg:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallImg_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallImg_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallImg:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallImg_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallImg:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallImg_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3777,39 +3810,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开zip
      */
     @Test
-    public void testFirstThirdCallZip() {
+    fun testFirstThirdCallZip() {
         try {
-            boolean isSuccess = testThirdCall("zip", true);
+            var isSuccess = testThirdCall("zip", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallZip_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallZip_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallZip:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallZip:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallZip:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallZip:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallZip_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallZip_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallZip:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallZip_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallZip:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallZip_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3817,39 +3850,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开txt
      */
     @Test
-    public void testFirstThirdCallTxt() {
+    fun testFirstThirdCallTxt() {
         try {
-            boolean isSuccess = testThirdCall("txt", true);
+            var isSuccess = testThirdCall("txt", true)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/FirstThirdCallTxt_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/FirstThirdCallTxt_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("FirstThirdCallTxt:PASS" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallTxt:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("FirstThirdCallTxt:FAILED" + "\n", mainPathFile);
+                writeStrToFile("FirstThirdCallTxt:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/FirstThirdCallTxt_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/FirstThirdCallTxt_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("FirstThirdCallTxt:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/FirstThirdCallTxt_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("FirstThirdCallTxt:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/FirstThirdCallTxt_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3857,39 +3890,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方打开网页
      */
     @Test
-    public void testThirdCallWebpage() {
+    fun testThirdCallWebpage() {
         try {
-            boolean isSuccess = testThirdCall("webpage", false);
+            var isSuccess = testThirdCall("webpage", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallWebpage_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallWebpage:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallWebpage:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallWebpage:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallWebpage:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallWebpage_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallWebpage:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallWebpage_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallWebpage:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3897,39 +3930,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开视频
      */
     @Test
-    public void testThirdCallVideo() {
+    fun testThirdCallVideo() {
         try {
-            boolean isSuccess = testThirdCall("video", false);
+            var isSuccess = testThirdCall("video", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallVideo_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallVideo_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallVideo:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallVideo:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallVideo:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallVideo:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallVideo_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallVideo_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallVideo:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallVideo_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallVideo:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallVideo_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3937,39 +3970,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开音乐
      */
     @Test
-    public void testThirdCallMusic() {
+    fun testThirdCallMusic() {
         try {
-            boolean isSuccess = testThirdCall("music", false);
+            var isSuccess = testThirdCall("music", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallMusic_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallMusic_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallMusic:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallMusic:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallMusic:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallMusic:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallMusic_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallMusic_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallMusic:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallMusic_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallMusic:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallMusic_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -3977,39 +4010,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开doc
      */
     @Test
-    public void testThirdCallDoc() {
+    fun testThirdCallDoc() {
         try {
-            boolean isSuccess = testThirdCall("doc", false);
+            var isSuccess = testThirdCall("doc", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallMusic_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallMusic_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallDoc:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallDoc:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallDoc:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallDoc:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallDoc_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallDoc_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallDoc:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallDoc_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallDoc:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallDoc_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -4017,39 +4050,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开ppt
      */
     @Test
-    public void testThirdCallPpt() {
+    fun testThirdCallPpt() {
         try {
-            boolean isSuccess = testThirdCall("ppt", false);
+            var isSuccess = testThirdCall("ppt", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallPpt_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallPpt_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallPpt:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallPpt:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallPpt:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallPpt:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallPpt_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallPpt_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallPpt:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallPpt_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallPpt:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallPpt_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -4057,39 +4090,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开xls
      */
     @Test
-    public void testThirdCallXls() {
+    fun testThirdCallXls() {
         try {
-            boolean isSuccess = testThirdCall("xls", false);
+            var isSuccess = testThirdCall("xls", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallXls_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallXls_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallXls:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallXls:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallXls:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallXls:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallXls_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallXls_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallXls:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallXls_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallXls:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallXls_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -4097,39 +4130,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开pdf
      */
     @Test
-    public void testThirdCallPdf() {
+    fun testThirdCallPdf() {
         try {
-            boolean isSuccess = testThirdCall("pdf", false);
+            var isSuccess = testThirdCall("pdf", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallXls_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallXls_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallPdf:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallPdf:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallPdf:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallPdf:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallPdf_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallPdf_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallPdf:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallPdf_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallPdf:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallPdf_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -4137,39 +4170,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开epub
      */
     @Test
-    public void testThirdCallEpub() {
+    fun testThirdCallEpub() {
         try {
-            boolean isSuccess = testThirdCall("epub", false);
+            var isSuccess = testThirdCall("epub", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallEpub_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallEpub_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallEpub:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallEpub:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallEpub:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallEpub:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallEpub_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallEpub_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallEpub:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallEpub_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallEpub:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallEpub_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -4177,39 +4210,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开img
      */
     @Test
-    public void testThirdCallImg() {
+    fun testThirdCallImg() {
         try {
-            boolean isSuccess = testThirdCall("img", false);
+            var isSuccess = testThirdCall("img", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallImg_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallImg_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallImg:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallImg:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallImg:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallImg:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallImg_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallImg_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallImg:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallImg_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallImg:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallImg_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -4217,39 +4250,39 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开zip
      */
     @Test
-    public void testThirdCallZip() {
+    fun testThirdCallZip() {
         try {
-            boolean isSuccess = testThirdCall("zip", false);
+            var isSuccess = testThirdCall("zip", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallZip_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallZip_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallZip:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallZip:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallZip:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallZip:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallZip_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallZip_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallZip:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallZip_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallZip:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallZip_" + getCurTimeForFile() + ".jpg")
         }
     }
 
@@ -4257,180 +4290,209 @@ public class MainPathTest extends PhxCommon {
      * 第三方首次打开txt
      */
     @Test
-    public void testThirdCallTxt() {
+    fun testThirdCallTxt() {
         try {
-            boolean isSuccess = testThirdCall("txt", false);
+            var isSuccess = testThirdCall("txt", false)
 
             // 失败截图
-            boolean isScreenshot = false;
+            var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder + "/ThirdCallTxt_" + CommonUtil.getCurTimeForFile() + ".jpg");
-                isScreenshot = true;
+                screenshot(resultFolder.toString() + "/ThirdCallTxt_" + getCurTimeForFile() + ".jpg")
+                isScreenshot = true
             }
 
             // 回到首页->退出浏览器
-            backToHome();
+            backToHome()
             if (isSuccess) {
-                isSuccess = backExitBrowser();
+                isSuccess = backExitBrowser()
             } else {
-                backExitBrowser();
+                backExitBrowser()
             }
 
             // 处理日志信息
             if (isSuccess) {
-                FileUtil.writeStrToFile("ThirdCallTxt:PASS" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallTxt:PASS" + "\n", mainPathFile)
             } else {
-                FileUtil.writeStrToFile("ThirdCallTxt:FAILED" + "\n", mainPathFile);
+                writeStrToFile("ThirdCallTxt:FAILED" + "\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder + "/ThirdCallTxt_" + CommonUtil.getCurTimeForFile() + ".jpg");
+                    screenshot(resultFolder.toString() + "/ThirdCallTxt_" + getCurTimeForFile() + ".jpg")
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            FileUtil.writeStrToFile("ThirdCallTxt:Exception" + "\n", mainPathFile);
-            FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), mainPathFile);
-            screenshot(resultFolder + "/ThirdCallTxt_" + CommonUtil.getCurTimeForFile() + ".jpg");
+        } catch (e: Exception) {
+            e.printStackTrace()
+            writeStrToFile("ThirdCallTxt:Exception" + "\n", mainPathFile)
+            writeStrToFile(getExceptionMsg(e), mainPathFile)
+            screenshot(resultFolder.toString() + "/ThirdCallTxt_" + getCurTimeForFile() + ".jpg")
         }
     }
 
-    private boolean testThirdCall(String file, boolean isFirst) {
+    private fun testThirdCall(file: String, isFirst: Boolean): Boolean {
         // 强制结束，避免anr弹窗遮挡
-        ShellCommand.execCmdByUiDevice(device, "am force-stop " + pkgName);
+        execCmdByUiDevice(device, "am force-stop " + pkgName)
 
         if (isFirst) {
             // 清理数据
-            ShellCommand.execCmdByUiDevice(device, "pm clear " + pkgName);
+            execCmdByUiDevice(device, "pm clear " + pkgName)
         }
 
         // 执行第三方调用
-        if (file.equals("webpage")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -d https://qq.com");
-        } else if (file.equals("video")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -t video/* -d file:///sdcard/testfile/video_mp4_youku.mp4");
-        } else if (file.equals("music")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -t audio/flac -d file:///sdcard/testfile/music_flac_不为谁而作的歌.flac");
-        } else if (file.equals("doc")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/msword -d file:///sdcard/testfile/document_docx_1MB.docx");
-        } else if (file.equals("ppt")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/vnd.ms-powerpoint -d file:///sdcard/testfile/document_pptx.pptx");
-        } else if (file.equals("xls")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/vnd.ms-excel -d file:///sdcard/testfile/document_xlsx_5000.xlsx");
-        } else if (file.equals("pdf")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/pdf -d file:///sdcard/testfile/document_pdf_keph101.pdf");
-        } else if (file.equals("epub")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/epub+zip -d file:///sdcard/testfile/document_epub_doupocangqiong.epub");
-        } else if (file.equals("img")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -t image/png -d file:///sdcard/testfile/img_png_640x960_529k.png");
-        } else if (file.equals("zip")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/zip -d file:///sdcard/testfile/archive_zip_10MB.zip");
-        } else if (file.equals("txt")) {
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -t text/richtext -d file:///sdcard/testfile/document_txt_1MB.txt");
+        if (file == "webpage") {
+            execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -d https://qq.com")
+        } else if (file == "video") {
+            execCmdByUiDevice(
+                device,
+                "am start -a android.intent.action.VIEW -p " + pkgName + " -t video/* -d file:///sdcard/testfile/video_mp4_youku.mp4"
+            )
+        } else if (file == "music") {
+            execCmdByUiDevice(
+                device,
+                "am start -a android.intent.action.VIEW -p " + pkgName + " -t audio/flac -d file:///sdcard/testfile/music_flac_不为谁而作的歌.flac"
+            )
+        } else if (file == "doc") {
+            execCmdByUiDevice(
+                device,
+                "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/msword -d file:///sdcard/testfile/document_docx_1MB.docx"
+            )
+        } else if (file == "ppt") {
+            execCmdByUiDevice(
+                device,
+                "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/vnd.ms-powerpoint -d file:///sdcard/testfile/document_pptx.pptx"
+            )
+        } else if (file == "xls") {
+            execCmdByUiDevice(
+                device,
+                "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/vnd.ms-excel -d file:///sdcard/testfile/document_xlsx_5000.xlsx"
+            )
+        } else if (file == "pdf") {
+            execCmdByUiDevice(
+                device,
+                "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/pdf -d file:///sdcard/testfile/document_pdf_keph101.pdf"
+            )
+        } else if (file == "epub") {
+            execCmdByUiDevice(
+                device,
+                "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/epub+zip -d file:///sdcard/testfile/document_epub_doupocangqiong.epub"
+            )
+        } else if (file == "img") {
+            execCmdByUiDevice(
+                device,
+                "am start -a android.intent.action.VIEW -p " + pkgName + " -t image/png -d file:///sdcard/testfile/img_png_640x960_529k.png"
+            )
+        } else if (file == "zip") {
+            execCmdByUiDevice(
+                device,
+                "am start -a android.intent.action.VIEW -p " + pkgName + " -t application/zip -d file:///sdcard/testfile/archive_zip_10MB.zip"
+            )
+        } else if (file == "txt") {
+            execCmdByUiDevice(
+                device,
+                "am start -a android.intent.action.VIEW -p " + pkgName + " -t text/richtext -d file:///sdcard/testfile/document_txt_1MB.txt"
+            )
         }
-        sleep(TIMEOUT_LONG);
+        sleep(TIMEOUT_LONG.toLong())
 
         // 先跳过闪屏
         if (isNeedSkipSplash()) {
-            skipSplash();
+            skipSplash()
         }
-        sleep(TIMEOUT_SHORT);
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 再处理各业务
-        boolean isSuccess = false;
-        if (file.equals("webpage")) {
-            if (waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM) != null) {
-                isSuccess = true;
+        var isSuccess = false
+        if (file == "webpage") {
+            if (waitUiObject2ByDesc("addressbar menu", TIMEOUT_MEDIUM.toLong()) != null) {
+                isSuccess = true
             }
         } else {
             if (isFirst) {
                 // 处理弹窗
-                UiObject2 continueBtn = waitUiObject2ByText("Continue", TIMEOUT_MEDIUM);
+                var continueBtn = waitUiObject2ByText("Continue", TIMEOUT_MEDIUM)
                 if (continueBtn == null) {
-                    continueBtn = waitUiObject2ByText("متابعة", TIMEOUT_VERY_SHORT);
+                    continueBtn = waitUiObject2ByText("متابعة", TIMEOUT_VERY_SHORT)
                 }
-                continueBtn.click();
-                UiObject2 allow = waitUiObject2ByText("Allow", TIMEOUT_MEDIUM);
+                continueBtn?.click()
+                var allow = waitUiObject2ByText("Allow", TIMEOUT_MEDIUM)
                 if (allow == null) {
-                    allow = waitUiObject2ByText("ALLOW", TIMEOUT_MEDIUM);
+                    allow = waitUiObject2ByText("ALLOW", TIMEOUT_MEDIUM)
                 }
-                allow.click();
-                sleep(TIMEOUT_SHORT);
+                allow?.click()
+                sleep(TIMEOUT_SHORT.toLong())
             }
 
             // 再处理业务
-            if (file.equals("video")) {
-                sleep(TIMEOUT_LONG);
-                horizontalScreen();
-                isSuccess = isThirdCallSuccess("video");
-            } else if (file.equals("music")) {
-                sleep(TIMEOUT_LONG);
-                isSuccess = isThirdCallSuccess("music");
-            } else if (file.equals("doc")) {
+            if (file == "video") {
+                sleep(TIMEOUT_LONG.toLong())
+                horizontalScreen()
+                isSuccess = isThirdCallSuccess("video")
+            } else if (file == "music") {
+                sleep(TIMEOUT_LONG.toLong())
+                isSuccess = isThirdCallSuccess("music")
+            } else if (file == "doc") {
                 // Edit Fit screen  Search  Save as
-                UiObject2 fitScreen = waitUiObject2ByText("Fit screen", TIMEOUT_VERY_LONG);
+                var fitScreen = waitUiObject2ByText("Fit screen", TIMEOUT_VERY_LONG)
                 if (fitScreen == null) {
-                    fitScreen = waitUiObject2ByText("ملائمة الشاشة", TIMEOUT_VERY_SHORT);
+                    fitScreen = waitUiObject2ByText("ملائمة الشاشة", TIMEOUT_VERY_SHORT)
                 }
                 if (fitScreen != null) {
-                    isSuccess = true;
+                    isSuccess = true
                 }
-            } else if (file.equals("ppt")) {
+            } else if (file == "ppt") {
                 // Edit Fullscreen  Save as
-                UiObject2 fullScreen = waitUiObject2ByText("Fullscreen", TIMEOUT_VERY_LONG);
+                var fullScreen = waitUiObject2ByText("Fullscreen", TIMEOUT_VERY_LONG)
                 if (fullScreen == null) {
-                    fullScreen = waitUiObject2ByText("ملء الشاشة", TIMEOUT_VERY_SHORT);
+                    fullScreen = waitUiObject2ByText("ملء الشاشة", TIMEOUT_VERY_SHORT)
                 }
                 if (fullScreen != null) {
-                    isSuccess = true;
+                    isSuccess = true
                 }
-            } else if (file.equals("xls")) {
+            } else if (file == "xls") {
                 // Edit Search  Save as
-                UiObject2 search = waitUiObject2ByText("Search", TIMEOUT_VERY_LONG);
+                var search = waitUiObject2ByText("Search", TIMEOUT_VERY_LONG)
                 if (search == null) {
-                    search = waitUiObject2ByText("بحث", TIMEOUT_VERY_SHORT);
+                    search = waitUiObject2ByText("بحث", TIMEOUT_VERY_SHORT)
                 }
                 if (search != null) {
-                    isSuccess = true;
+                    isSuccess = true
                 }
-            } else if (file.equals("pdf")) {
+            } else if (file == "pdf") {
                 // Search Fullscreen
-                UiObject2 fullScreen = waitUiObject2ByText("Fullscreen", TIMEOUT_VERY_LONG);
+                var fullScreen = waitUiObject2ByText("Fullscreen", TIMEOUT_VERY_LONG)
                 if (fullScreen == null) {
-                    fullScreen = waitUiObject2ByText("ملء الشاشة", TIMEOUT_VERY_SHORT);
+                    fullScreen = waitUiObject2ByText("ملء الشاشة", TIMEOUT_VERY_SHORT)
                 }
                 if (fullScreen != null) {
-                    isSuccess = true;
+                    isSuccess = true
                 }
-            } else if (file.equals("epub")) {
-                sleep(TIMEOUT_LONG);
-                isSuccess = isThirdCallSuccess("epub");
-            } else if (file.equals("img")) {
+            } else if (file == "epub") {
+                sleep(TIMEOUT_LONG.toLong())
+                isSuccess = isThirdCallSuccess("epub")
+            } else if (file == "img") {
                 // Share Info Delete
-                UiObject2 info = waitUiObject2ByText("Info", TIMEOUT_VERY_LONG);
+                var info = waitUiObject2ByText("Info", TIMEOUT_VERY_LONG)
                 if (info == null) {
-                    info = waitUiObject2ByText("معلومات", TIMEOUT_VERY_SHORT);
+                    info = waitUiObject2ByText("معلومات", TIMEOUT_VERY_SHORT)
                 }
                 if (info != null) {
-                    isSuccess = true;
+                    isSuccess = true
                 }
-            } else if (file.equals("zip")) {
-                UiObject2 unzipView = waitUiObject2ByText("Unzip and view", TIMEOUT_VERY_LONG);
+            } else if (file == "zip") {
+                var unzipView = waitUiObject2ByText("Unzip and view", TIMEOUT_VERY_LONG)
                 if (unzipView == null) {
-                    unzipView = waitUiObject2ByText("قم بفك الضغط ثم العرض", TIMEOUT_VERY_SHORT);
+                    unzipView = waitUiObject2ByText("قم بفك الضغط ثم العرض", TIMEOUT_VERY_SHORT)
                 }
                 if (unzipView != null) {
-                    isSuccess = true;
+                    isSuccess = true
                 }
-            } else if (file.equals("txt")) {
-                sleep(TIMEOUT_LONG);
-                isSuccess = isThirdCallSuccess("txt");
+            } else if (file == "txt") {
+                sleep(TIMEOUT_LONG.toLong())
+                isSuccess = isThirdCallSuccess("txt")
             }
         }
-        return isSuccess;
+        return isSuccess
     }
 
     @After
-    public void afterTest() {
-        super.afterTest();
+    public override fun afterTest() {
+        super.afterTest()
     }
-
 }

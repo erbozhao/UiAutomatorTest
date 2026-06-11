@@ -1,174 +1,173 @@
-package com.bbtest.other;
+package com.bbtest.other
 
-import androidx.test.uiautomator.UiObject2;
+import com.bbtest.common.PerCommon
+import com.bbtest.common.ShellCommon.amStartApp
+import com.bbtest.common.ShellCommon.forceStopApp
+import com.bbtest.common.ShellCommon.getActivity
+import com.bbtest.common.ShellCommon.isAppBackstage
+import com.bbtest.stable.threads.MemoryThread
+import com.bbtest.utils.FileUtil.createFile
+import com.bbtest.utils.FileUtil.deleteFile
+import com.bbtest.utils.ShellCommand.execCmdByUiDevice
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import java.io.File
 
-import com.bbtest.common.PerCommon;
-import com.bbtest.common.ShellCommon;
-import com.bbtest.stable.threads.MemoryThread;
-import com.bbtest.utils.FileUtil;
-import com.bbtest.utils.ShellCommand;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.File;
-
-public class MemWebpageMenu extends PerCommon {
-
-    private File resultFile = new File(perFolder, "mem_webpage-menu.txt");
+class MemWebpageMenu : PerCommon() {
+    private val resultFile = File(perFolder, "mem_webpage-menu.txt")
 
     @Before
-    public void beforeTest() {
-        super.beforeTest();
+    override fun beforeTest() {
+        super.beforeTest()
         // 初始化目录及文件
-        FileUtil.deleteFile(resultFile);
-        FileUtil.createFile(resultFile);
+        deleteFile(resultFile)
+        createFile(resultFile)
     }
 
     @Test
-    public void testMemWebpageMenu() {
-        testBrowser(BROWSER_PHX);
+    fun testMemWebpageMenu() {
+        testBrowser(BROWSER_PHX)
     }
 
-    private void testBrowser(String pkgName) {
+    private fun testBrowser(pkgName: String) {
         try {
             // 先强制停止
-            ShellCommon.forceStopApp(device, pkgName, null);
-            sleep(3000);
+            forceStopApp(device, pkgName, null)
+            sleep(3000)
 
             // 启动浏览器
-            startApp(pkgName);
-            sleep(60 * 1000);
+            startApp(pkgName)
+            sleep((60 * 1000).toLong())
 
             // 开始监控
-            MemoryThread memoryThread = new MemoryThread(0.5f, BROWSER_PHX, device, resultFile, 1);
-            memoryThread.start();
+            val memoryThread = MemoryThread(0.5f, BROWSER_PHX, device, resultFile, 1)
+            memoryThread.start()
 
             // 测试前: 等待30s
-            sleep(30 * 1000);
+            sleep((30 * 1000).toLong())
 
             // 测试场景:打开网页->遍历工具栏
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com");
-            sleep(TIMEOUT_MEDIUM);
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 bookmarkHistory = waitUiObject2ByText("Bookmark\n" + "&history", TIMEOUT_MEDIUM);
+            execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com")
+            sleep(TIMEOUT_MEDIUM.toLong())
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            val bookmarkHistory = waitUiObject2ByText("Bookmark\n" + "&history", TIMEOUT_MEDIUM)
             if (bookmarkHistory == null) {
-                UiObject2 bookmark = waitUiObject2ByText("Bookmark", TIMEOUT_MEDIUM);
+                var bookmark = waitUiObject2ByText("Bookmark", TIMEOUT_MEDIUM)
                 if (bookmark == null) {
-                    bookmark = waitUiObject2ByText("Bookmarks", TIMEOUT_SHORT);
+                    bookmark = waitUiObject2ByText("Bookmarks", TIMEOUT_SHORT)
                 }
-                bookmark.click();
-                sleep(TIMEOUT_VERY_SHORT);
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
-                waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                waitUiObject2ByText("History", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_VERY_SHORT);
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                bookmark?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                waitUiObject2ByText("History", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             } else {
-                bookmarkHistory.click();
-                sleep(TIMEOUT_VERY_SHORT);
-                back();
-                sleep(TIMEOUT_VERY_SHORT);
+                bookmarkHistory.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
+                back()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("My video", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("My music", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 adBlock = waitUiObject2ByRes("com.transsion.phoenix:id/adBlocked", TIMEOUT_MEDIUM);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("My video", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("My music", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var adBlock = waitUiObject2ByRes("com.transsion.phoenix:id/adBlocked", TIMEOUT_MEDIUM.toLong())
             if (adBlock == null) {
-                adBlock = waitUiObject2ByText("Adblocker", TIMEOUT_VERY_SHORT);
-            }
-            if (adBlock == null) {
-                adBlock = waitUiObject2ByText("Ads blocked", TIMEOUT_VERY_SHORT);
+                adBlock = waitUiObject2ByText("Adblocker", TIMEOUT_VERY_SHORT)
             }
             if (adBlock == null) {
-                adBlock = waitUiObject2ByText("Ad block", TIMEOUT_VERY_SHORT);
+                adBlock = waitUiObject2ByText("Ads blocked", TIMEOUT_VERY_SHORT)
             }
-            adBlock.click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            UiObject2 darkLight = waitUiObject2ByText("Dark", TIMEOUT_MEDIUM);
+            if (adBlock == null) {
+                adBlock = waitUiObject2ByText("Ad block", TIMEOUT_VERY_SHORT)
+            }
+            adBlock?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            var darkLight = waitUiObject2ByText("Dark", TIMEOUT_MEDIUM)
             if (darkLight == null) {
-                darkLight = waitUiObject2ByText("Light", TIMEOUT_SHORT);
+                darkLight = waitUiObject2ByText("Light", TIMEOUT_SHORT)
             }
             if (darkLight == null) {
-                darkLight = waitUiObject2ByText("Night", TIMEOUT_SHORT);
+                darkLight = waitUiObject2ByText("Night", TIMEOUT_SHORT)
                 if (darkLight == null) {
-                    darkLight = waitUiObject2ByText("Normal", TIMEOUT_SHORT);
+                    darkLight = waitUiObject2ByText("Normal", TIMEOUT_SHORT)
                 }
                 if (darkLight != null) {
-                    darkLight.click();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    waitUiObject2ByText("Dark theme", TIMEOUT_SHORT).click();
-                    sleep(TIMEOUT_VERY_SHORT);
-                    if (ShellCommon.isAppBackstage(device, pkgName)) {
-                        String activity = ShellCommon.getActivity(device, pkgName, null);
-                        ShellCommon.amStartApp(device, activity, null);
-                        sleep(TIMEOUT_VERY_SHORT);
+                    darkLight.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    waitUiObject2ByText("Dark theme", TIMEOUT_SHORT)?.click()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                    if (isAppBackstage(device, pkgName)) {
+                        val activity = getActivity(device, pkgName, null)
+                        amStartApp(device, activity, null)
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
                     }
                 }
             } else {
-                darkLight.click();
-                sleep(TIMEOUT_VERY_SHORT);
+                darkLight.click()
+                sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            waitUiObject2ByText("Settings", TIMEOUT_SHORT).click();
-            sleep(TIMEOUT_VERY_SHORT);
-            back();
-            sleep(TIMEOUT_VERY_SHORT);
+            waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            waitUiObject2ByText("Settings", TIMEOUT_SHORT)?.click()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
+            back()
+            sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // 测试后: 等待30s
-            sleep(30 * 1000);
+            sleep((30 * 1000).toLong())
 
             // 结束监控
-            memoryThread.setIsTimeOver(true);
-            memoryThread.join();
+            memoryThread.setIsTimeOver(true)
+            memoryThread.join()
 
             // 回到首页
-            backToHome();
+            backToHome()
 
             // 关闭所有多窗口->退出浏览器->强制停止
-            closeAllTabs(pkgName);
-            exitBrowser(pkgName);
-            ShellCommon.forceStopApp(device, pkgName, null);
-        } catch (Exception e) {
-            e.printStackTrace();
+            closeAllTabs(pkgName)
+            exitBrowser(pkgName)
+            forceStopApp(device, pkgName, null)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     @After
-    public void afterTest() {
-        super.afterTest();
+    override fun afterTest() {
+        super.afterTest()
     }
 }

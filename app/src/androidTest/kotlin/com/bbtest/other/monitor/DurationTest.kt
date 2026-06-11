@@ -1,1504 +1,1501 @@
-package com.bbtest.other.monitor;
+package com.bbtest.other.monitor
 
-import android.os.Build;
+import android.os.Build
+import com.bbtest.common.PhxCommon
+import com.bbtest.common.ShellCommon.amStartApp
+import com.bbtest.common.ShellCommon.clearBufferCache
+import com.bbtest.common.ShellCommon.pressHome
+import com.bbtest.utils.CommonUtil.getCurTimeForLog
+import com.bbtest.utils.CommonUtil.keepDecimalPoint
+import com.bbtest.utils.FileUtil.createFile
+import com.bbtest.utils.FileUtil.createFolder
+import com.bbtest.utils.FileUtil.writeStrToFile
+import com.bbtest.utils.ShellCommand.execCmdByUiDevice
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import java.io.File
 
-import androidx.test.uiautomator.UiObject2;
-
-import com.bbtest.common.PhxCommon;
-import com.bbtest.common.ShellCommon;
-import com.bbtest.utils.CommonUtil;
-import com.bbtest.utils.FileUtil;
-import com.bbtest.utils.ShellCommand;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.File;
-import java.util.List;
-
-public class DurationTest extends PhxCommon {
-    private File resultFolder = new File(rootFolder, "monitor");
-    private File durationFile = new File(resultFolder, "duration.txt");
+class DurationTest : PhxCommon() {
+    private val resultFolder = File(rootFolder, "monitor")
+    private val durationFile = File(resultFolder, "duration.txt")
 
     @Before
-    public void beforeTest() {
-        super.beforeTest();
+    public override fun beforeTest() {
+        super.beforeTest()
         // 初始化目录及文件
-        FileUtil.createFolder(resultFolder);
-        FileUtil.createFile(durationFile);
+        createFolder(resultFolder)
+        createFile(durationFile)
     }
 
     @After
-    public void afterTest() {
-        super.afterTest();
+    public override fun afterTest() {
+        super.afterTest()
     }
 
     @Test
-    public void testHome() {
+    fun testHome() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testHome ******************" + "\n", durationFile);
-        long startTime = 0;
-        long endTime = 0;
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testHome ******************" + "\n", durationFile)
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            startTime = System.currentTimeMillis();
-            startApp(pkgName);
-            sleep(TIMEOUT_LONG);
-            waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            startTime = System.currentTimeMillis()
+            startApp(pkgName)
+            sleep(TIMEOUT_LONG.toLong())
+            waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
 
         // 获取时长
-        double testTime = getTestTime(startTime, endTime);
-        double countTime = getCountTime("end|home|main");
-        FileUtil.writeStrToFile("场景:主页,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testHome ******************" + "\n", durationFile);
-        backToHome();
+        val testTime = getTestTime(startTime, endTime)
+        val countTime = getCountTime("end|home|main")
+        writeStrToFile("场景:主页,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testHome ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testWeather() {
+    fun testWeather() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testWeather ******************" + "\n", durationFile);
-        long startTime = 0;
-        long endTime = 0;
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testWeather ******************" + "\n", durationFile)
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            List<UiObject2> weathers = getUiObject2s("android.widget.LinearLayout", true, 0, 0.4, 0, 0.2, 0, 0.4, 0.02, 0.2);
-            if (weathers == null || weathers.size() == 0) {
-                backToHome();
-                sleep(TIMEOUT_LONG);
-                weathers = getUiObject2s("android.widget.LinearLayout", true, 0, 0.4, 0, 0.2, 0, 0.4, 0.02, 0.2);
+            var weathers = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.4, 0.0, 0.2, 0.0, 0.4, 0.02, 0.2)
+            if (weathers == null || weathers.size == 0) {
+                backToHome()
+                sleep(TIMEOUT_LONG.toLong())
+                weathers = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.4, 0.0, 0.2, 0.0, 0.4, 0.02, 0.2)
             }
-            if (weathers != null && weathers.size() > 0) {
-                startTime = System.currentTimeMillis();
-                weathers.get(0).click();
-                sleep(TIMEOUT_LONG);
-                waitUiObject2ByText("Air quality", TIMEOUT_MEDIUM);
-                back();
-                endTime = System.currentTimeMillis();
-                sleep(TIMEOUT_MEDIUM);
+            if (weathers != null && weathers.size > 0) {
+                startTime = System.currentTimeMillis()
+                weathers.get(0)!!.click()
+                sleep(TIMEOUT_LONG.toLong())
+                waitUiObject2ByText("Air quality", TIMEOUT_MEDIUM)
+                back()
+                endTime = System.currentTimeMillis()
+                sleep(TIMEOUT_MEDIUM.toLong())
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
 
         // 获取时长
-        double testTime = getTestTime(startTime, endTime);
-        double countTime = getCountTime("end|weather");
-        FileUtil.writeStrToFile("场景:天气,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testWeather ******************" + "\n", durationFile);
-        backToHome();
+        val testTime = getTestTime(startTime, endTime)
+        val countTime = getCountTime("end|weather")
+        writeStrToFile("场景:天气,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testWeather ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testSearch() {
+    fun testSearch() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testSearch ******************" + "\n", durationFile);
-        long startTime = 0;
-        long endTime = 0;
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testSearch ******************" + "\n", durationFile)
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            startTime = System.currentTimeMillis();
-            clickSearchBox(false);
-            sleep(TIMEOUT_MEDIUM);
-            back();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            startTime = System.currentTimeMillis()
+            clickSearchBox(false)
+            sleep(TIMEOUT_MEDIUM.toLong())
+            back()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
 
         // 获取时长
-        double testTime = getTestTime(startTime, endTime);
-        double countTime = getCountTime("end|search");
-        FileUtil.writeStrToFile("场景:搜索,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testSearch ******************" + "\n", durationFile);
-        backToHome();
+        val testTime = getTestTime(startTime, endTime)
+        val countTime = getCountTime("end|search")
+        writeStrToFile("场景:搜索,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testSearch ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testBrowser() {
+    fun testBrowser() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testBrowser ******************" + "\n", durationFile);
-        long startTime = 0;
-        long endTime = 0;
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testBrowser ******************" + "\n", durationFile)
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            startTime = System.currentTimeMillis();
-            ShellCommand.execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com");
-            sleep(TIMEOUT_MEDIUM);
-            back();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            startTime = System.currentTimeMillis()
+            execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -d phxbrowser://qq.com")
+            sleep(TIMEOUT_MEDIUM.toLong())
+            back()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
 
         // 获取时长
-        double testTime = getTestTime(startTime, endTime);
-        double countTime = getCountTime("end|browser");
-        FileUtil.writeStrToFile("场景:浏览,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testBrowser ******************" + "\n", durationFile);
-        backToHome();
+        val testTime = getTestTime(startTime, endTime)
+        val countTime = getCountTime("end|browser")
+        writeStrToFile("场景:浏览,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testBrowser ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testCamera() {
+    fun testCamera() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testCamera ******************" + "\n", durationFile);
-        long startTime = 0;
-        long endTime = 0;
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testCamera ******************" + "\n", durationFile)
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            startTime = System.currentTimeMillis();
-            waitUiObject2ByRes("com.transsion.phoenix:id/homepage_qrcode_button", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_MEDIUM);
-            back();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            startTime = System.currentTimeMillis()
+            waitUiObject2ByRes("com.transsion.phoenix:id/homepage_qrcode_button", TIMEOUT_MEDIUM.toLong())?.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
+            back()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
 
         // 获取时长
-        double testTime = getTestTime(startTime, endTime);
-        double countTime = getCountTime("end|camera");
-        FileUtil.writeStrToFile("场景:扫一扫,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testCamera ******************" + "\n", durationFile);
-        backToHome();
+        val testTime = getTestTime(startTime, endTime)
+        val countTime = getCountTime("end|camera")
+        writeStrToFile("场景:扫一扫,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testCamera ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFeedsForyou() {
+    fun testFeedsForyou() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFeedsForyou ******************" + "\n", durationFile);
-        double testTime = testFeedsTab("For you");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFeedsForyou ******************" + "\n", durationFile)
+        val testTime = testFeedsTab("For you")
 
         // 获取时长
-        double countTime = getCountTime("end|home|130001");
-        FileUtil.writeStrToFile("场景:Feeds-For you-Tab,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFeedsForyou ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|home|130001")
+        writeStrToFile("场景:Feeds-For you-Tab,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFeedsForyou ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFeedsForyouNews() {
+    fun testFeedsForyouNews() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFeedsForyouNews ******************" + "\n", durationFile);
-        double testTime = testFeedsNews("For you");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFeedsForyouNews ******************" + "\n", durationFile)
+        val testTime = testFeedsNews("For you")
 
         // 获取时长
-        double countTime = getCountTime("end|news|130001");
-        FileUtil.writeStrToFile("场景:Feeds-For you-News,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFeedsForyouNews ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|news|130001")
+        writeStrToFile("场景:Feeds-For you-News,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFeedsForyouNews ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFeedsShortVideo() {
+    fun testFeedsShortVideo() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFeedsShortVideo ******************" + "\n", durationFile);
-        double testTime = testFeedsTab("Short Video");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFeedsShortVideo ******************" + "\n", durationFile)
+        val testTime = testFeedsTab("Short Video")
 
         // 获取时长
-        double countTime = getCountTime("end|home|150006");
-        FileUtil.writeStrToFile("场景:Feeds-Short Video-Tab,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFeedsShortVideo ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|home|150006")
+        writeStrToFile("场景:Feeds-Short Video-Tab,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFeedsShortVideo ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFeedsShortVideoDetail() {
+    fun testFeedsShortVideoDetail() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFeedsShortVideoDetail ******************" + "\n", durationFile);
-        double testTime = testFeedsMiniVideo("Short Video");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFeedsShortVideoDetail ******************" + "\n", durationFile)
+        val testTime = testFeedsMiniVideo("Short Video")
 
         // 获取时长
-        double countTime = getCountTime("end|minivideo|150006");
-        FileUtil.writeStrToFile("场景:Feeds-Short Video-Detail,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFeedsShortVideoDetail ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|minivideo|150006")
+        writeStrToFile("场景:Feeds-Short Video-Detail,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFeedsShortVideoDetail ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFeedsVideo() {
+    fun testFeedsVideo() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFeedsVideo ******************" + "\n", durationFile);
-        double testTime = testFeedsTab("Video");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFeedsVideo ******************" + "\n", durationFile)
+        val testTime = testFeedsTab("Video")
 
         // 获取上报时长
-        double countTime = getCountTime("end|home|130008");
-        FileUtil.writeStrToFile("场景:Feeds-Video-Tab,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFeedsVideo ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|home|130008")
+        writeStrToFile("场景:Feeds-Video-Tab,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFeedsVideo ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFeedsVideoDetail() {
+    fun testFeedsVideoDetail() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFeedsVideoDetail ******************" + "\n", durationFile);
-        double testTime = testFeedsVideo("Video");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFeedsVideoDetail ******************" + "\n", durationFile)
+        val testTime = testFeedsVideo("Video")
 
         // 获取时长
-        double countTime = getCountTime("end|feedsvideo_detail|130008");
-        FileUtil.writeStrToFile("场景:Feeds-Video-Detail,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFeedsVideoDetail ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|feedsvideo_detail|130008")
+        writeStrToFile("场景:Feeds-Video-Detail,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFeedsVideoDetail ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFeedsHotGirl() {
+    fun testFeedsHotGirl() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFeedsHotGirl ******************" + "\n", durationFile);
-        double testTime = testFeedsTab("Hot Girl");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFeedsHotGirl ******************" + "\n", durationFile)
+        val testTime = testFeedsTab("Hot Girl")
 
         // 获取时长
-        double countTime = getCountTime("end|home|130027");
-        FileUtil.writeStrToFile("场景:Feeds-Hot Girl-Tab,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFeedsHotGirl ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|home|130027")
+        writeStrToFile("场景:Feeds-Hot Girl-Tab,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFeedsHotGirl ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFeedsHotGirlDetail() {
+    fun testFeedsHotGirlDetail() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFeedsHotGirlDetail ******************" + "\n", durationFile);
-        double testTime = testFeedsImg("Hot Girl");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFeedsHotGirlDetail ******************" + "\n", durationFile)
+        val testTime = testFeedsImg("Hot Girl")
 
         // 获取时长
-        double countTime = getCountTime("end|image_detail|130027");
-        FileUtil.writeStrToFile("场景:Feeds-Hot Girl-Detail,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFeedsHotGirlDetail ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|image_detail|130027")
+        writeStrToFile("场景:Feeds-Hot Girl-Detail,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFeedsHotGirlDetail ******************" + "\n", durationFile)
+        backToHome()
     }
 
-
     @Test
-    public void testDownload() {
+    fun testDownload() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testDownload ******************" + "\n", durationFile);
-        long startTime = 0;
-        long endTime = 0;
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testDownload ******************" + "\n", durationFile)
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            startTime = System.currentTimeMillis();
-            waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM).click();
-            sleep(TIMEOUT_MEDIUM);
-            back();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            startTime = System.currentTimeMillis()
+            waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM)?.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
+            back()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
 
         // 获取时长
-        double testTime = getTestTime(startTime, endTime);
-        double countTime = getCountTime("end|download");
-        FileUtil.writeStrToFile("场景:下载,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testDownload ******************" + "\n", durationFile);
-        backToHome();
+        val testTime = getTestTime(startTime, endTime)
+        val countTime = getCountTime("end|download")
+        writeStrToFile("场景:下载,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testDownload ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testMe() {
+    fun testMe() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testMe ******************" + "\n", durationFile);
-        double testTime = testMeItems("Me");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testMe ******************" + "\n", durationFile)
+        val testTime = testMeItems("Me")
 
         // 获取时长
-        double countTime = getCountTime("end|user_center|main");
-        FileUtil.writeStrToFile("场景:个人中心,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testMe ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|user_center|main")
+        writeStrToFile("场景:个人中心,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testMe ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testMeUser() {
+    fun testMeUser() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testMeUser ******************" + "\n", durationFile);
-        double testTime = testMeItems("User");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testMeUser ******************" + "\n", durationFile)
+        val testTime = testMeItems("User")
 
         // 获取时长
-        double countTime = getCountTime("end|user_center|user");
-        FileUtil.writeStrToFile("场景:个人中心-用户,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testMeUser ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|user_center|user")
+        writeStrToFile("场景:个人中心-用户,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testMeUser ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testMeMsg() {
+    fun testMeMsg() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testMeMsg ******************" + "\n", durationFile);
-        double testTime = testMeItems("Msg");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testMeMsg ******************" + "\n", durationFile)
+        val testTime = testMeItems("Msg")
 
         // 获取时长
-        double countTime = getCountTime("end|user_center|message_center");
-        FileUtil.writeStrToFile("场景:个人中心-消息,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testMeMsg ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|user_center|message_center")
+        writeStrToFile("场景:个人中心-消息,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testMeMsg ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testMeBookmarks() {
+    fun testMeBookmarks() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testMeBookmarks ******************" + "\n", durationFile);
-        double testTime = testMeItems("Bookmarks");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testMeBookmarks ******************" + "\n", durationFile)
+        val testTime = testMeItems("Bookmarks")
 
         // 获取时长
-        double countTime = getCountTime("end|user_center|bookmark");
-        FileUtil.writeStrToFile("场景:个人中心-书签,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testMeBookmarks ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|user_center|bookmark")
+        writeStrToFile("场景:个人中心-书签,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testMeBookmarks ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testMeHistory() {
+    fun testMeHistory() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testMeHistory ******************" + "\n", durationFile);
-        double testTime = testMeItems("History");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testMeHistory ******************" + "\n", durationFile)
+        val testTime = testMeItems("History")
 
         // 获取时长
-        double countTime = getCountTime("end|user_center|history");
-        FileUtil.writeStrToFile("场景:个人中心-历史,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testMeHistory ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|user_center|history")
+        writeStrToFile("场景:个人中心-历史,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testMeHistory ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testMeFavorites() {
+    fun testMeFavorites() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testMeFavorites ******************" + "\n", durationFile);
-        double testTime = testMeItems("Favorites");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testMeFavorites ******************" + "\n", durationFile)
+        val testTime = testMeItems("Favorites")
 
         // 获取时长
-        double countTime = getCountTime("end|user_center|favorites");
-        FileUtil.writeStrToFile("场景:个人中心-收藏,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testMeFavorites ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|user_center|favorites")
+        writeStrToFile("场景:个人中心-收藏,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testMeFavorites ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testMeMyVideo() {
+    fun testMeMyVideo() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testMeMyVideo ******************" + "\n", durationFile);
-        double testTime = testMeItems("My Video");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testMeMyVideo ******************" + "\n", durationFile)
+        val testTime = testMeItems("My Video")
 
         // 获取时长
-        double countTime = getCountTime("end|user_center|myvideo");
-        FileUtil.writeStrToFile("场景:个人中心-我的视频,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testMeMyVideo ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|user_center|myvideo")
+        writeStrToFile("场景:个人中心-我的视频,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testMeMyVideo ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testMeMyMusic() {
+    fun testMeMyMusic() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testMeMyMusic ******************" + "\n", durationFile);
-        double testTime = testMeItems("My Music");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testMeMyMusic ******************" + "\n", durationFile)
+        val testTime = testMeItems("My Music")
 
         // 获取时长
-        double countTime = getCountTime("end|user_center|mymusic");
-        FileUtil.writeStrToFile("场景:个人中心-我的音乐,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testMeMyMusic ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|user_center|mymusic")
+        writeStrToFile("场景:个人中心-我的音乐,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testMeMyMusic ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testMeAdsBlocked() {
+    fun testMeAdsBlocked() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testMeAdsBlocked ******************" + "\n", durationFile);
-        double testTime = testMeItems("Adblocker");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testMeAdsBlocked ******************" + "\n", durationFile)
+        val testTime = testMeItems("Adblocker")
 
         // 获取时长
-        double countTime = getCountTime("end|settings|adblock");
-        FileUtil.writeStrToFile("场景:个人中心-广告过滤,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testMeAdsBlocked ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|settings|adblock")
+        writeStrToFile("场景:个人中心-广告过滤,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testMeAdsBlocked ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testMeSettings() {
+    fun testMeSettings() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testMeSettings ******************" + "\n", durationFile);
-        double testTime = testMeItems("Settings");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testMeSettings ******************" + "\n", durationFile)
+        val testTime = testMeItems("Settings")
 
         // 获取时长
-        double countTime = getCountTime("end|settings|null");
-        FileUtil.writeStrToFile("场景:个人中心-设置,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testMeSettings ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|settings|null")
+        writeStrToFile("场景:个人中心-设置,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testMeSettings ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFiles() {
+    fun testFiles() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFiles ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Files");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFiles ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Files")
 
         // 获取时长
-        double countTime = getCountTime("end|file|main");
-        FileUtil.writeStrToFile("场景:文件,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFiles ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|main")
+        writeStrToFile("场景:文件,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFiles ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesStatusSaver() {
+    fun testFilesStatusSaver() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesStatusSaver ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Status & Sticker");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesStatusSaver ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Status & Sticker")
 
         // 获取时长
-        double countTime = getCountTime("end|file|status saver");
-        FileUtil.writeStrToFile("场景:文件-Status & Sticker,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesStatusSaver ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|status saver")
+        writeStrToFile("场景:文件-Status & Sticker,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesStatusSaver ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesWhatsapp() {
+    fun testFilesWhatsapp() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesWhatsapp ******************" + "\n", durationFile);
-        double testTime = testFilesItems("WhatsApp");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesWhatsapp ******************" + "\n", durationFile)
+        val testTime = testFilesItems("WhatsApp")
 
         // 获取时长
-        double countTime = getCountTime("end|file|whatsapp");
-        FileUtil.writeStrToFile("场景:文件-WhatsApp,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesWhatsapp ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|whatsapp")
+        writeStrToFile("场景:文件-WhatsApp,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesWhatsapp ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesVideos() {
+    fun testFilesVideos() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesVideos ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Videos");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesVideos ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Videos")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|video");
-        FileUtil.writeStrToFile("场景:文件-Videos,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesVideos ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|video")
+        writeStrToFile("场景:文件-Videos,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesVideos ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesVideoPlayer() {
+    fun testFilesVideoPlayer() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesVideoPlayer ******************" + "\n", durationFile);
-        double testTime = testFilesItems("VideoPlayer");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesVideoPlayer ******************" + "\n", durationFile)
+        val testTime = testFilesItems("VideoPlayer")
 
         // 获取上报时长
-        double countTime = getCountTime("end|videoplayer");
-        FileUtil.writeStrToFile("场景:文件-Videos-视频播放器,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesVideoPlayer ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|videoplayer")
+        writeStrToFile("场景:文件-Videos-视频播放器,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesVideoPlayer ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesMusic() {
+    fun testFilesMusic() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesMusic ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Music");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesMusic ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Music")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|music");
-        FileUtil.writeStrToFile("场景:文件-Music,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesMusic ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|music")
+        writeStrToFile("场景:文件-Music,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesMusic ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesMusicPlayer() {
+    fun testFilesMusicPlayer() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesMusicPlayer ******************" + "\n", durationFile);
-        double testTime = testFilesItems("MusicPlayer");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesMusicPlayer ******************" + "\n", durationFile)
+        val testTime = testFilesItems("MusicPlayer")
 
         // 获取上报时长
-        double countTime = getCountTime("end|music_player");
-        FileUtil.writeStrToFile("场景:文件-Music-音乐播放器,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesMusicPlayer ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|music_player")
+        writeStrToFile("场景:文件-Music-音乐播放器,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesMusicPlayer ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesImages() {
+    fun testFilesImages() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesImages ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Images");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesImages ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Images")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|images");
-        FileUtil.writeStrToFile("场景:文件-Images,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesImages ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|images")
+        writeStrToFile("场景:文件-Images,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesImages ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesImageReader() {
+    fun testFilesImageReader() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesImageReader ******************" + "\n", durationFile);
-        double testTime = testFilesItems("ImageReader");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesImageReader ******************" + "\n", durationFile)
+        val testTime = testFilesItems("ImageReader")
 
         // 获取上报时长
-        double countTime = getCountTime("end|image_reader");
-        FileUtil.writeStrToFile("场景:文件-Images-图片查看器,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesImageReader ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|image_reader")
+        writeStrToFile("场景:文件-Images-图片查看器,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesImageReader ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesDocuments() {
+    fun testFilesDocuments() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesDocuments ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Documents");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesDocuments ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Documents")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|documents");
-        FileUtil.writeStrToFile("场景:文件-Documents,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesDocuments ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|documents")
+        writeStrToFile("场景:文件-Documents,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesDocuments ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesDocumentsDOC() {
+    fun testFilesDocumentsDOC() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesDocumentsDOC ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Documents-DOC");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesDocumentsDOC ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Documents-DOC")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file_reader|word");
-        FileUtil.writeStrToFile("场景:文件-Documents-DOC,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesDocumentsDOC ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file_reader|word")
+        writeStrToFile("场景:文件-Documents-DOC,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesDocumentsDOC ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesDocumentsPDF() {
+    fun testFilesDocumentsPDF() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesDocumentsPDF ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Documents-PDF");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesDocumentsPDF ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Documents-PDF")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file_reader|pdf");
-        FileUtil.writeStrToFile("场景:文件-Documents-PDF,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesDocumentsPDF ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file_reader|pdf")
+        writeStrToFile("场景:文件-Documents-PDF,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesDocumentsPDF ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesDocumentsTXT() {
+    fun testFilesDocumentsTXT() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesDocumentsTXT ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Documents-TXT");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesDocumentsTXT ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Documents-TXT")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file_reader|txt");
-        FileUtil.writeStrToFile("场景:文件-Documents-TXT,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesDocumentsTXT ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file_reader|txt")
+        writeStrToFile("场景:文件-Documents-TXT,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesDocumentsTXT ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesDocumentsXLS() {
+    fun testFilesDocumentsXLS() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesDocumentsXLS ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Documents-XLS");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesDocumentsXLS ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Documents-XLS")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file_reader|excle");
-        FileUtil.writeStrToFile("场景:文件-Documents-XLS,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesDocumentsXLS ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file_reader|excle")
+        writeStrToFile("场景:文件-Documents-XLS,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesDocumentsXLS ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesDocumentsPPT() {
+    fun testFilesDocumentsPPT() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesDocumentsPPT ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Documents-PPT");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesDocumentsPPT ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Documents-PPT")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file_reader|ppt");
-        FileUtil.writeStrToFile("场景:文件-Documents-PPT,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesDocumentsPPT ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file_reader|ppt")
+        writeStrToFile("场景:文件-Documents-PPT,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesDocumentsPPT ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesStorage() {
+    fun testFilesStorage() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesStorage ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Storage");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesStorage ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Storage")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|storage");
-        FileUtil.writeStrToFile("场景:文件-Storage,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesStorage ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|storage")
+        writeStrToFile("场景:文件-Storage,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesStorage ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesArchives() {
+    fun testFilesArchives() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesArchives ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Archives");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesArchives ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Archives")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|archives");
-        FileUtil.writeStrToFile("场景:文件-Archives,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesArchives ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|archives")
+        writeStrToFile("场景:文件-Archives,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesArchives ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesArchivesUnzip() {
+    fun testFilesArchivesUnzip() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesArchivesUnzip ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Archives-Unzip");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesArchivesUnzip ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Archives-Unzip")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|unzip");
-        FileUtil.writeStrToFile("场景:文件-Archives-Unzip,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesArchivesUnzip ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|unzip")
+        writeStrToFile("场景:文件-Archives-Unzip,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesArchivesUnzip ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesInstagram() {
+    fun testFilesInstagram() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesInstagram ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Instagram");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesInstagram ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Instagram")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|instagram");
-        FileUtil.writeStrToFile("场景:文件-Instagram,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesInstagram ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|instagram")
+        writeStrToFile("场景:文件-Instagram,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesInstagram ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesOfflinePage() {
+    fun testFilesOfflinePage() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesOfflinePage ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Offline pages");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesOfflinePage ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Offline pages")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|offline pages");
-        FileUtil.writeStrToFile("场景:文件-Offline pages,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesOfflinePage ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|offline pages")
+        writeStrToFile("场景:文件-Offline pages,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesOfflinePage ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesApps() {
+    fun testFilesApps() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesApps ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Apps");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesApps ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Apps")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|apps");
-        FileUtil.writeStrToFile("场景:文件-Apps,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesApps ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|apps")
+        writeStrToFile("场景:文件-Apps,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesApps ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesOthers() {
+    fun testFilesOthers() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesOthers ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Others");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesOthers ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Others")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|others");
-        FileUtil.writeStrToFile("场景:文件-Others,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesOthers ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|others")
+        writeStrToFile("场景:文件-Others,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesOthers ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesOthersReader() {
+    fun testFilesOthersReader() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesOthersReader ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Others-Reader");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesOthersReader ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Others-Reader")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file_reader|other");
-        FileUtil.writeStrToFile("场景:文件-Others-Reader,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesOthersReader ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file_reader|other")
+        writeStrToFile("场景:文件-Others-Reader,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesOthersReader ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesJunkFiles() {
+    fun testFilesJunkFiles() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesJunkFiles ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Junk files");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesJunkFiles ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Junk files")
 
         // 获取上报时长
-        double countTime = getCountTime("end|cleaner|basics");
-        FileUtil.writeStrToFile("场景:文件-Junk files,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesJunkFiles ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|cleaner|basics")
+        writeStrToFile("场景:文件-Junk files,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesJunkFiles ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesPhoneBoost() {
+    fun testFilesPhoneBoost() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesPhoneBoost ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Phone boost");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesPhoneBoost ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Phone boost")
 
         // 获取上报时长
-        double countTime = getCountTime("end|cleaner|phoneboost");
-        FileUtil.writeStrToFile("场景:文件-Phone boost,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesPhoneBoost ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|cleaner|phoneboost")
+        writeStrToFile("场景:文件-Phone boost,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesPhoneBoost ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesCleanVideos() {
+    fun testFilesCleanVideos() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesCleanVideos ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Clean Up Videos");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesCleanVideos ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Clean Up Videos")
 
         // 获取上报时长
-        double countTime = getCountTime("end|cleaner|video");
-        FileUtil.writeStrToFile("场景:文件-Clean Up Videos,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesCleanVideos ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|cleaner|video")
+        writeStrToFile("场景:文件-Clean Up Videos,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesCleanVideos ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesCleanPhoenix() {
+    fun testFilesCleanPhoenix() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesCleanPhoenix ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Clean Up Phoenix");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesCleanPhoenix ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Clean Up Phoenix")
 
         // 获取上报时长
-        double countTime = getCountTime("end|cleaner|browser");
-        FileUtil.writeStrToFile("场景:文件-Clean Up Phoenix,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesCleanPhoenix ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|cleaner|browser")
+        writeStrToFile("场景:文件-Clean Up Phoenix,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesCleanPhoenix ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesRecentDocuments() {
+    fun testFilesRecentDocuments() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesRecentDocuments ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Recent Documents");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesRecentDocuments ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Recent Documents")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|recent documents");
-        FileUtil.writeStrToFile("场景:文件-Recent Documents,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesRecentDocuments ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|recent documents")
+        writeStrToFile("场景:文件-Recent Documents,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesRecentDocuments ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesWallpaper() {
+    fun testFilesWallpaper() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesWallpaper ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Wallpaper");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesWallpaper ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Wallpaper")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|wallpaper");
-        FileUtil.writeStrToFile("场景:文件-Wallpaper,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesWallpaper ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|wallpaper")
+        writeStrToFile("场景:文件-Wallpaper,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesWallpaper ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesRingtones() {
+    fun testFilesRingtones() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesRingtones ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Ringtones");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesRingtones ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Ringtones")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|Ringtones");
-        FileUtil.writeStrToFile("场景:文件-Ringtones,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesRingtones ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|Ringtones")
+        writeStrToFile("场景:文件-Ringtones,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesRingtones ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesCompressFiles() {
+    fun testFilesCompressFiles() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesCompressFiles ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Compress files");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesCompressFiles ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Compress files")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|compression");
-        FileUtil.writeStrToFile("场景:文件-Compress files,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesCompressFiles ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|compression")
+        writeStrToFile("场景:文件-Compress files,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesCompressFiles ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesCompressFilesSelector() {
+    fun testFilesCompressFilesSelector() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesCompressFilesSelector ******************" + "\n", durationFile);
-        double testTime = testFilesItems("CompressFiles-selector");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesCompressFilesSelector ******************" + "\n", durationFile)
+        val testTime = testFilesItems("CompressFiles-selector")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|selector");
-        FileUtil.writeStrToFile("场景:文件-Compress files-Selector,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesCompressFilesSelector ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|selector")
+        writeStrToFile("场景:文件-Compress files-Selector,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesCompressFilesSelector ******************" + "\n", durationFile)
+        backToHome()
     }
 
     @Test
-    public void testFilesUnzipFiles() {
+    fun testFilesUnzipFiles() {
         // 先清理日志
-        ShellCommon.clearBufferCache(device, null);
-        sleep(TIMEOUT_SHORT);
+        clearBufferCache(device, null)
+        sleep(TIMEOUT_SHORT.toLong())
 
         // 执行场景
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** start testFilesUnzipFiles ******************" + "\n", durationFile);
-        double testTime = testFilesItems("Unzip files");
+        writeStrToFile(getCurTimeForLog() + "  ****************** start testFilesUnzipFiles ******************" + "\n", durationFile)
+        val testTime = testFilesItems("Unzip files")
 
         // 获取上报时长
-        double countTime = getCountTime("end|file|unzip");
-        FileUtil.writeStrToFile("场景:文件-Unzip files,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile);
-        FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  ****************** end testFilesUnzipFiles ******************" + "\n", durationFile);
-        backToHome();
+        val countTime = getCountTime("end|file|unzip")
+        writeStrToFile("场景:文件-Unzip files,测试时长:" + testTime + "s,统计时长:" + countTime + "s" + "\n", durationFile)
+        writeStrToFile(getCurTimeForLog() + "  ****************** end testFilesUnzipFiles ******************" + "\n", durationFile)
+        backToHome()
     }
 
     /**
      * 计算测试时长
      */
-    private double getTestTime(long startTime, long endTime) {
-        return CommonUtil.keepDecimalPoint((double) (endTime - startTime) / 1000, 2);
+    private fun getTestTime(startTime: Long, endTime: Long): Double {
+        return keepDecimalPoint((endTime - startTime).toDouble() / 1000, 2)
     }
 
     /**
      * 根据场景获取上报的时长
      */
-    private double getCountTime(String scenes) {
-        double countTime = 0;
-        String result = "";
-        int sdk = Build.VERSION.SDK_INT;
+    private fun getCountTime(scenes: String): Double {
+        var countTime = 0.0
+        var result = ""
+        val sdk = Build.VERSION.SDK_INT
         if (sdk <= 23) {
-            result = ShellCommand.execCmdByUiDevice(device, "logcat -d -v time -s UnitTime:D");
+            result = execCmdByUiDevice(device, "logcat -d -v time -s UnitTime:D")
         } else {
-            result = ShellCommand.execCmdByUiDevice(device, "logcat -d -v time -v year -s UnitTime:D");
+            result = execCmdByUiDevice(device, "logcat -d -v time -v year -s UnitTime:D")
         }
-        String[] resultLines = result.split("\n");
-        for (String resultLine : resultLines) {
-            if (!resultLine.equals("")) {
+        val resultLines = result.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        for (resultLine in resultLines) {
+            if (resultLine != "") {
                 if (!resultLine.contains("--------- beginning")) {
-                    FileUtil.writeStrToFile(resultLine + "\n", durationFile);
+                    writeStrToFile(resultLine + "\n", durationFile)
                 }
 
                 if (resultLine.contains(scenes)) {
-                    String[] resultLineParts = resultLine.split("\\|");
-                    countTime = CommonUtil.keepDecimalPoint((double) Long.parseLong(resultLineParts[resultLineParts.length - 1].trim()) / 1000, 2);
-                    break;
+                    val resultLineParts = resultLine.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                    countTime = keepDecimalPoint(resultLineParts[resultLineParts.size - 1].trim { it <= ' ' }.toLong().toDouble() / 1000, 2)
+                    break
                 }
             }
         }
-        return countTime;
+        return countTime
     }
 
-    private double testFeedsTab(String tabName) {
-        long startTime = 0;
-        long endTime = 0;
+    private fun testFeedsTab(tabName: String): Double {
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            startTime = System.currentTimeMillis();
-            switchFeedsTab(tabName);
-            back();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            startTime = System.currentTimeMillis()
+            switchFeedsTab(tabName)
+            back()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
-        return getTestTime(startTime, endTime);
+        return getTestTime(startTime, endTime)
     }
 
-    private double testFeedsNews(String tabName) {
-        long startTime = 0;
-        long endTime = 0;
+    private fun testFeedsNews(tabName: String): Double {
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            switchFeedsTab(tabName);
-            List<UiObject2> news = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1, 0.1, 0.3, 0, 1, 0.02, 0.8);
-            if (news == null || news.size() == 0) {
-                for (int i = 0; i < 3; i++) {
-                    swip(0.5, 0.7, 0.5, 0.3);
-                    sleep(TIMEOUT_MEDIUM);
-                    news = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1, 0.1, 0.3, 0, 1, 0.02, 0.8);
+            switchFeedsTab(tabName)
+            var news = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.3, 0.0, 1.0, 0.02, 0.8)
+            if (news == null || news.size == 0) {
+                for (i in 0..2) {
+                    swip(0.5, 0.7, 0.5, 0.3)
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                    news = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.3, 0.0, 1.0, 0.02, 0.8)
                     if (news != null) {
-                        break;
+                        break
                     }
                 }
             }
-            startTime = System.currentTimeMillis();
-            news.get(0).click();
-            sleep(TIMEOUT_MEDIUM);
-            back();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            startTime = System.currentTimeMillis()
+            news!!.get(0)!!.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
+            back()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
-        return getTestTime(startTime, endTime);
+        return getTestTime(startTime, endTime)
     }
 
-    private double testFeedsVideo(String tabName) {
-        long startTime = 0;
-        long endTime = 0;
+    private fun testFeedsVideo(tabName: String): Double {
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            switchFeedsTab(tabName);
-            UiObject2 firstVideo = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1, 0.3, 0.6, 0, 1, 0.02, 0.9).get(0);
-            UiObject2 firstVideoBottom = getChildUiObject2(firstVideo, false, "android.widget.LinearLayout", 0.8, 1, 0, 0.1, 0, 1, 0, 1, false);
-            startTime = System.currentTimeMillis();
-            firstVideoBottom.click();
-            sleep(TIMEOUT_MEDIUM);
-            back();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            switchFeedsTab(tabName)
+            val firstVideo = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.3, 0.6, 0.0, 1.0, 0.02, 0.9).get(0)
+            val firstVideoBottom = getChildUiObject2(firstVideo, false, "android.widget.LinearLayout", 0.8, 1.0, 0.0, 0.1, 0.0, 1.0, 0.0, 1.0, false)
+            startTime = System.currentTimeMillis()
+            firstVideoBottom?.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
+            back()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
-        return getTestTime(startTime, endTime);
+        return getTestTime(startTime, endTime)
     }
 
-    private double testFeedsMiniVideo(String tabName) {
-        long startTime = 0;
-        long endTime = 0;
+    private fun testFeedsMiniVideo(tabName: String): Double {
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            switchFeedsTab(tabName);
-            startTime = System.currentTimeMillis();
-            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0, 1, 0.02, 0.9).get(0).click();
-            sleep(TIMEOUT_SHORT);
-            UiObject2 swipeToast = waitUiObject2ByText("Swipe up for more", TIMEOUT_SHORT);
+            switchFeedsTab(tabName)
+            startTime = System.currentTimeMillis()
+            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            sleep(TIMEOUT_SHORT.toLong())
+            val swipeToast = waitUiObject2ByText("Swipe up for more", TIMEOUT_SHORT)
             if (swipeToast != null) {
-                swipeToast.click();
+                swipeToast.click()
             }
-            sleep(TIMEOUT_MEDIUM);
-            back();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            sleep(TIMEOUT_MEDIUM.toLong())
+            back()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
-        return getTestTime(startTime, endTime);
+        return getTestTime(startTime, endTime)
     }
 
-    private double testFeedsImg(String tabName) {
-        long startTime = 0;
-        long endTime = 0;
+    private fun testFeedsImg(tabName: String): Double {
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            switchFeedsTab(tabName);
-            startTime = System.currentTimeMillis();
-            List<UiObject2> linearLayouts = waitUiObject2s("android.widget.LinearLayout", true, 0.9, 1, 0.2, 0.8, 0, 1, 0.02, 1, 3);
-            linearLayouts.get(0).click();
-            sleep(TIMEOUT_MEDIUM);
-            back();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            switchFeedsTab(tabName)
+            startTime = System.currentTimeMillis()
+            val linearLayouts = waitUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.2, 0.8, 0.0, 1.0, 0.02, 1.0, 3)
+            linearLayouts.get(0)!!.click()
+            sleep(TIMEOUT_MEDIUM.toLong())
+            back()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
-        return getTestTime(startTime, endTime);
+        return getTestTime(startTime, endTime)
     }
 
-    private double testMeItems(String item) {
-        long startTime = 0;
-        long endTime = 0;
+    private fun testMeItems(item: String): Double {
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            if (item.equals("Me")) {
-                startTime = System.currentTimeMillis();
-                waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_MEDIUM);
+            if (item == "Me") {
+                startTime = System.currentTimeMillis()
+                waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_MEDIUM.toLong())
             } else {
-                waitUiObject2ByText("Me", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_SHORT);
+                waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_SHORT.toLong())
 
                 // 判断是否需要登录
-                if (item.equals("User") || item.equals("Msg")) {
-                    UiObject2 login = waitUiObject2ByText("Login", TIMEOUT_MEDIUM);
+                if (item == "User" || item == "Msg") {
+                    val login = waitUiObject2ByText("Login", TIMEOUT_MEDIUM)
                     if (login != null) {
-                        login.click();
-                        sleep(TIMEOUT_VERY_SHORT);
-                        waitUiObject2ByText("Continue with Google", TIMEOUT_MEDIUM).click();
-                        sleep(TIMEOUT_SHORT);
-                        waitUiObject2ByTextContains("@gmail.com", TIMEOUT_LONG).click();
-                        sleep(TIMEOUT_SHORT);
-                        waitUiObject2ByText("Signed in with Google", TIMEOUT_LONG);
-                        sleep(TIMEOUT_VERY_SHORT);
+                        login.click()
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
+                        waitUiObject2ByText("Continue with Google", TIMEOUT_MEDIUM)?.click()
+                        sleep(TIMEOUT_SHORT.toLong())
+                        waitUiObject2ByTextContains("@gmail.com", TIMEOUT_LONG)?.click()
+                        sleep(TIMEOUT_SHORT.toLong())
+                        waitUiObject2ByText("Signed in with Google", TIMEOUT_LONG)
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
                     }
                 }
 
                 // 处理各场景
-                startTime = System.currentTimeMillis();
-                if (item.equals("User")) {
-                    waitUiObject2ByText("Signed in with Google", TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_MEDIUM);
-                } else if (item.equals("Msg")) {
-                    getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.01, 0.2, 0.8, 1, 0.02, 0.2).get(0).click();
-                    sleep(TIMEOUT_MEDIUM);
+                startTime = System.currentTimeMillis()
+                if (item == "User") {
+                    waitUiObject2ByText("Signed in with Google", TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                } else if (item == "Msg") {
+                    getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.01, 0.2, 0.8, 1.0, 0.02, 0.2)?.get(0)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
                 } else {
-                    waitUiObject2ByText(item, TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_MEDIUM);
+                    waitUiObject2ByText(item, TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
                 }
             }
 
-            back();
-            endTime = System.currentTimeMillis();
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            back()
+            endTime = System.currentTimeMillis()
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
-        return getTestTime(startTime, endTime);
+        return getTestTime(startTime, endTime)
     }
 
-    private double testFilesItems(String item) {
-        long startTime = 0;
-        long endTime = 0;
+    private fun testFilesItems(item: String): Double {
+        var startTime: Long = 0
+        var endTime: Long = 0
         try {
-            if (item.equals("Files")) {
-                startTime = System.currentTimeMillis();
-                waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_MEDIUM);
+            if (item == "Files") {
+                startTime = System.currentTimeMillis()
+                waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_MEDIUM.toLong())
             } else {
-                waitUiObject2ByText("Files", TIMEOUT_MEDIUM).click();
-                sleep(TIMEOUT_SHORT);
+                waitUiObject2ByText("Files", TIMEOUT_MEDIUM)?.click()
+                sleep(TIMEOUT_SHORT.toLong())
 
                 // 判断是否需要上滑
-                if (item.equals("Clean Up Videos") || item.equals("Clean Up Phoenix") || item.equals("Recent Documents") || item.equals("Wallpaper")
-                        || item.equals("Ringtones") || item.equals("Compress files") || item.equals("CompressFiles-selector") || item.equals("Unzip files")) {
-                    swip(0.5, 0.8, 0.5, 0.2);
-                    sleep(TIMEOUT_SHORT);
+                if (item == "Clean Up Videos" || item == "Clean Up Phoenix" || item == "Recent Documents" || item == "Wallpaper"
+                    || item == "Ringtones" || item == "Compress files" || item == "CompressFiles-selector" || item == "Unzip files"
+                ) {
+                    swip(0.5, 0.8, 0.5, 0.2)
+                    sleep(TIMEOUT_SHORT.toLong())
                 } else {
-                    swip(0.5, 0.2, 0.5, 0.8);
-                    sleep(TIMEOUT_SHORT);
+                    swip(0.5, 0.2, 0.5, 0.8)
+                    sleep(TIMEOUT_SHORT.toLong())
                 }
 
                 // 处理各场景
-                if (item.equals("VideoPlayer")) {
-                    waitUiObject2ByText("Videos", TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_SHORT);
-                    startTime = System.currentTimeMillis();
-                    getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.5, 0, 1, 0.1, 0.9).get(0).click();
-                    sleep(TIMEOUT_MEDIUM);
-                } else if (item.equals("MusicPlayer")) {
-                    waitUiObject2ByText("Music", TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_SHORT);
-                    startTime = System.currentTimeMillis();
-                    getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, 0.1, 0.9).get(0).click();
-                    sleep(TIMEOUT_MEDIUM);
-                    getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3).get(1).click();
-                    endTime = System.currentTimeMillis();
-                    sleep(TIMEOUT_MEDIUM);
-                } else if (item.equals("ImageReader")) {
-                    waitUiObject2ByText("Images", TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_SHORT);
-                    startTime = System.currentTimeMillis();
-                    getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.3, 0, 1, 0.1, 0.9).get(0).click();
-                    sleep(TIMEOUT_MEDIUM);
+                if (item == "VideoPlayer") {
+                    waitUiObject2ByText("Videos", TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    startTime = System.currentTimeMillis()
+                    getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.5, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                } else if (item == "MusicPlayer") {
+                    waitUiObject2ByText("Music", TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    startTime = System.currentTimeMillis()
+                    getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                    getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(1)?.click()
+                    endTime = System.currentTimeMillis()
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                } else if (item == "ImageReader") {
+                    waitUiObject2ByText("Images", TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    startTime = System.currentTimeMillis()
+                    getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
                 } else if (item.contains("Documents-")) {
-                    int slideNum = 0;
-                    String type = item.split("-")[1];
-                    if (type.equals("DOC")) {
-                        slideNum = 1;
-                    } else if (type.equals("PDF")) {
-                        slideNum = 2;
-                    } else if (type.equals("TXT")) {
-                        slideNum = 3;
-                    } else if (type.equals("XLS")) {
-                        slideNum = 4;
-                    } else if (type.equals("PPT")) {
-                        slideNum = 5;
-                    } else if (type.equals("EPUB")) {
-                        slideNum = 6;
+                    var slideNum = 0
+                    val type = item.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
+                    if (type == "DOC") {
+                        slideNum = 1
+                    } else if (type == "PDF") {
+                        slideNum = 2
+                    } else if (type == "TXT") {
+                        slideNum = 3
+                    } else if (type == "XLS") {
+                        slideNum = 4
+                    } else if (type == "PPT") {
+                        slideNum = 5
+                    } else if (type == "EPUB") {
+                        slideNum = 6
                     }
-                    waitUiObject2ByText("Documents", TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_SHORT);
-                    for (int i = 0; i < slideNum; i++) {
-                        swip(0.7, 0.5, 0.3, 0.5);
-                        sleep(TIMEOUT_VERY_SHORT);
+                    waitUiObject2ByText("Documents", TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    for (i in 0..<slideNum) {
+                        swip(0.7, 0.5, 0.3, 0.5)
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
                     }
-                    startTime = System.currentTimeMillis();
-                    getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, 0.1, 0.9).get(0).click();
-                    sleep(TIMEOUT_LONG);
-                    back();
-                    sleep(TIMEOUT_VERY_SHORT);
-                } else if (item.equals("Archives-Unzip")) {
-                    UiObject2 archives = waitUiObject2ByText("Archives", TIMEOUT_MEDIUM);
+                    startTime = System.currentTimeMillis()
+                    getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+                    sleep(TIMEOUT_LONG.toLong())
+                    back()
+                    sleep(TIMEOUT_VERY_SHORT.toLong())
+                } else if (item == "Archives-Unzip") {
+                    var archives = waitUiObject2ByText("Archives", TIMEOUT_MEDIUM)
                     if (archives == null) {
-                        waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                        sleep(TIMEOUT_VERY_SHORT);
-                        archives = waitUiObject2ByText(item, TIMEOUT_MEDIUM);
+                        waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
+                        archives = waitUiObject2ByText(item, TIMEOUT_MEDIUM)
                     }
-                    archives.click();
-                    sleep(TIMEOUT_SHORT);
-                    startTime = System.currentTimeMillis();
-                    getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, 0.1, 0.9).get(0).click();
-                    sleep(TIMEOUT_MEDIUM);
-                } else if (item.equals("Archives") || item.equals("Instagram") || item.equals("Offline pages") || item.equals("Apps") || item.equals("Others")) {
-                    UiObject2 itemUiObject2 = waitUiObject2ByText(item, TIMEOUT_MEDIUM);
+                    archives?.click()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    startTime = System.currentTimeMillis()
+                    getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                } else if (item == "Archives" || item == "Instagram" || item == "Offline pages" || item == "Apps" || item == "Others") {
+                    var itemUiObject2 = waitUiObject2ByText(item, TIMEOUT_MEDIUM)
                     if (itemUiObject2 == null) {
-                        waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                        sleep(TIMEOUT_VERY_SHORT);
-                        itemUiObject2 = waitUiObject2ByText(item, TIMEOUT_MEDIUM);
+                        waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
+                        itemUiObject2 = waitUiObject2ByText(item, TIMEOUT_MEDIUM)
                     }
-                    startTime = System.currentTimeMillis();
-                    itemUiObject2.click();
-                    sleep(TIMEOUT_MEDIUM);
-                } else if (item.equals("Others-Reader")) {
-                    UiObject2 others = waitUiObject2ByText("Others", TIMEOUT_MEDIUM);
+                    startTime = System.currentTimeMillis()
+                    itemUiObject2?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                } else if (item == "Others-Reader") {
+                    var others = waitUiObject2ByText("Others", TIMEOUT_MEDIUM)
                     if (others == null) {
-                        waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                        sleep(TIMEOUT_VERY_SHORT);
-                        others = waitUiObject2ByText(item, TIMEOUT_MEDIUM);
+                        waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
+                        others = waitUiObject2ByText(item, TIMEOUT_MEDIUM)
                     }
-                    others.click();
-                    sleep(TIMEOUT_SHORT);
-                    UiObject2 otherSvg = waitUiObject2ByText("other_svg_30kB.svg", TIMEOUT_MEDIUM);
+                    others?.click()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    var otherSvg = waitUiObject2ByText("other_svg_30kB.svg", TIMEOUT_MEDIUM)
                     if (otherSvg == null) {
-                        otherSvg = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1, 0.05, 0.3, 0, 1, 0.1, 0.9).get(0);
-
+                        otherSvg = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9).get(0)
                     }
-                    startTime = System.currentTimeMillis();
-                    otherSvg.click();
-                    sleep(TIMEOUT_MEDIUM);
-                } else if (item.equals("Recent Documents")) {
-                    startTime = System.currentTimeMillis();
-                    waitUiObject2ByText("More", TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_MEDIUM);
-                } else if (item.equals("CompressFiles-selector")) {
-                    waitUiObject2ByText("Compress files", TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_SHORT);
-                    startTime = System.currentTimeMillis();
-                    waitUiObject2ByText("Select files", TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_MEDIUM);
-                } else if (item.equals("Phone boost")) {
-                    startTime = System.currentTimeMillis();
-                    waitUiObject2ByText(item, TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_LONG);
+                    startTime = System.currentTimeMillis()
+                    otherSvg.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                } else if (item == "Recent Documents") {
+                    startTime = System.currentTimeMillis()
+                    waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                } else if (item == "CompressFiles-selector") {
+                    waitUiObject2ByText("Compress files", TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_SHORT.toLong())
+                    startTime = System.currentTimeMillis()
+                    waitUiObject2ByText("Select files", TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
+                } else if (item == "Phone boost") {
+                    startTime = System.currentTimeMillis()
+                    waitUiObject2ByText(item, TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_LONG.toLong())
                     // 关闭广告
-                    UiObject2 closeBtn = waitUiObject2ByRes("close-button-container", TIMEOUT_MEDIUM);
+                    var closeBtn = waitUiObject2ByRes("close-button-container", TIMEOUT_MEDIUM.toLong())
                     if (closeBtn == null) {
-                        closeBtn = waitUiObject2ByText("CLOSE", TIMEOUT_VERY_SHORT);
+                        closeBtn = waitUiObject2ByText("CLOSE", TIMEOUT_VERY_SHORT)
                     }
                     if (closeBtn != null) {
                         // 处理uiautomator有时点击时会报异常
                         try {
-                            closeBtn.click();
-                        } catch (Exception e) {
-                            ShellCommon.pressHome(device, null);
-                            sleep(3000);
-                            ShellCommon.amStartApp(device, activity, null);
+                            closeBtn.click()
+                        } catch (e: Exception) {
+                            pressHome(device, null)
+                            sleep(3000)
+                            amStartApp(device, activity, null)
                         }
-                        sleep(3000);
+                        sleep(3000)
                     } else {
-                        List<UiObject2> closeBtns = getUiObject2s("android.widget.Button", true, 0.05, 0.3, 0.05, 0.3, 0, 1, 0, 0.3);
-                        if (closeBtns == null || closeBtns.size() == 0) {
-                            closeBtns = getUiObject2s("android.widget.ImageButton", true, 0.05, 0.3, 0.05, 0.3, 0, 1, 0, 0.3);
+                        var closeBtns = getUiObject2s("android.widget.Button", true, 0.05, 0.3, 0.05, 0.3, 0.0, 1.0, 0.0, 0.3)
+                        if (closeBtns == null || closeBtns.size == 0) {
+                            closeBtns = getUiObject2s("android.widget.ImageButton", true, 0.05, 0.3, 0.05, 0.3, 0.0, 1.0, 0.0, 0.3)
                         }
-                        if (closeBtns != null && closeBtns.size() > 0) {
+                        if (closeBtns != null && closeBtns.size > 0) {
                             // 处理uiautomator有时点击时会报异常
                             try {
-                                closeBtns.get(0).click();
-                            } catch (Exception e) {
-                                ShellCommon.pressHome(device, null);
-                                sleep(3000);
-                                ShellCommon.amStartApp(device, activity, null);
+                                closeBtns.get(0)!!.click()
+                            } catch (e: Exception) {
+                                pressHome(device, null)
+                                sleep(3000)
+                                amStartApp(device, activity, null)
                             }
-                            sleep(3000);
+                            sleep(3000)
                         }
                     }
                     // 处理添加至主页弹窗
                     if (waitUiObject2ByText("Add", TIMEOUT_MEDIUM) != null) {
-                        back();
-                        sleep(TIMEOUT_VERY_SHORT);
+                        back()
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
                     }
-                    for (int i = 0; i < 10; i++) {
-                        List<UiObject2> boostBacks = getUiObject2s("android.widget.ImageView", true, 0, 0.2, 0, 0.2, 0, 0.3, 0.02, 0.3);
-                        if (boostBacks == null || boostBacks.size() == 0) {
-                            back();
+                    for (i in 0..9) {
+                        val boostBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
+                        if (boostBacks == null || boostBacks.size == 0) {
+                            back()
                         } else {
                             // uiautomator有时点击时会报异常
                             try {
-                                boostBacks.get(0).click();
-                            } catch (Exception e) {
-                                back();
+                                boostBacks.get(0)!!.click()
+                            } catch (e: Exception) {
+                                back()
                             }
                         }
-                        sleep(TIMEOUT_VERY_SHORT);
+                        sleep(TIMEOUT_VERY_SHORT.toLong())
                         if (waitUiObject2ByTextContains("Me", TIMEOUT_VERY_SHORT) != null) {
-                            break;
+                            break
                         }
                     }
                 } else {
-                    startTime = System.currentTimeMillis();
-                    waitUiObject2ByText(item, TIMEOUT_MEDIUM).click();
-                    sleep(TIMEOUT_MEDIUM);
+                    startTime = System.currentTimeMillis()
+                    waitUiObject2ByText(item, TIMEOUT_MEDIUM)?.click()
+                    sleep(TIMEOUT_MEDIUM.toLong())
                 }
             }
 
-            back();
-            if (item.equals("Junk files")) {
-                UiObject2 exit = waitUiObject2ByText("Exit", TIMEOUT_MEDIUM);
+            back()
+            if (item == "Junk files") {
+                val exit = waitUiObject2ByText("Exit", TIMEOUT_MEDIUM)
                 if (exit != null) {
-                    exit.click();
+                    exit.click()
                 }
             }
-            if (!item.equals("MusicPlayer")) {
-                endTime = System.currentTimeMillis();
+            if (item != "MusicPlayer") {
+                endTime = System.currentTimeMillis()
             }
-            sleep(TIMEOUT_MEDIUM);
-        } catch (Exception e) {
-            e.printStackTrace();
-            backToApp();
-            backToHome();
+            sleep(TIMEOUT_MEDIUM.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            backToApp()
+            backToHome()
         }
-        return getTestTime(startTime, endTime);
+        return getTestTime(startTime, endTime)
     }
-
 }
