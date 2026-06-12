@@ -61,7 +61,7 @@ class WeatherGoBack : PerCommon() {
                     sleep(TIMEOUT_LONG.toLong())
                     locations = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.4, 0.0, 0.2, 0.0, 0.4, 0.02, 0.2)
                 }
-                locations.get(0)!!.click()
+                locations?.firstOrNull()?.click()
                 sleep(3000)
                 back()
                 sleep(3000)
@@ -91,7 +91,7 @@ class WeatherGoBack : PerCommon() {
             forceStopApp(device, BROWSER_PHX, null)
         } catch (e: Exception) {
             e.printStackTrace()
-            screenshot(resultFolder.toString() + "/Img_" + model + "_Weather-GoBack-Exception_" + BROWSER_PHX + "_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/Img_${model}_Weather-GoBack-Exception_${BROWSER_PHX}_${getCurTimeForFile()}.jpg")
         }
     }
 

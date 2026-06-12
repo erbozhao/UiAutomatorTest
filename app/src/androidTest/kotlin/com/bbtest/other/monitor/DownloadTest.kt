@@ -15,7 +15,7 @@ class DownloadTest : PhxCommon() {
     private val downloadFile = File(resultFolder, "download.txt")
 
     @Before
-    public override fun beforeTest() {
+    override fun beforeTest() {
         super.beforeTest()
         // 初始化目录及文件
         createFolder(resultFolder)
@@ -23,7 +23,7 @@ class DownloadTest : PhxCommon() {
     }
 
     @After
-    public override fun afterTest() {
+    override fun afterTest() {
         super.afterTest()
     }
 
@@ -46,6 +46,6 @@ class DownloadTest : PhxCommon() {
             }
         }
 
-        writeStrToFile("主页: 测试时长-,统计时长-" + "\n", downloadFile)
+        writeStrToFile("主页: 测试时长-,统计时长-\n", downloadFile)
     }
 }

@@ -166,7 +166,7 @@ class PermissionUtil private constructor() {
                     }
                 }
             }
-            return sInstance!!
+            return requireNotNull(sInstance)
         }
     }
 }

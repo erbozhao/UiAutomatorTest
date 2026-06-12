@@ -86,7 +86,7 @@ class SearchGoBack : PerCommon() {
             forceStopApp(device, BROWSER_PHX, null)
         } catch (e: Exception) {
             e.printStackTrace()
-            screenshot(resultFolder.toString() + "/Img_" + model + "_Search-GoBack-Exception_" + BROWSER_PHX + "_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/Img_${model}_Search-GoBack-Exception_${BROWSER_PHX}_${getCurTimeForFile()}.jpg")
         }
     }
 

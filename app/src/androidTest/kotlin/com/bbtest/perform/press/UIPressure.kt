@@ -22,7 +22,7 @@ import java.io.File
 class UIPressure : PhxCommon() {
     private val perFolder = File(rootFolder, "perform")
     private val resultFolder = File(perFolder, "press")
-    var resultFile: File = File(resultFolder, "press.txt")
+    private val resultFile = File(resultFolder, "press.txt")
 
     @Before
     override fun beforeTest() {
@@ -40,14 +40,14 @@ class UIPressure : PhxCommon() {
     @Test
     fun testUIPressure() {
         try {
-//           testUIPressureOld();
-           testUIPressureNew();
-//             testUIPressureNovel()
+//            testUIPressureOld()
+            testUIPressureNew()
+//            testUIPressureNovel()
         } catch (e: Exception) {
             e.printStackTrace()
-            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  PressureTest:Exception" + "\n", resultFile)
+            FileUtil.writeStrToFile("${CommonUtil.getCurTimeForLog()}  PressureTest:Exception\n", resultFile)
             FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), resultFile)
-            screenshot(resultFolder.toString() + "/press_" + CommonUtil.getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/press_${CommonUtil.getCurTimeForFile()}.jpg")
         }
     }
 
@@ -95,8 +95,8 @@ class UIPressure : PhxCommon() {
         sleep(TIMEOUT_VERY_SHORT.toLong())
         getUiObject2ByText("Tabs")?.click()
         sleep(TIMEOUT_MEDIUM.toLong())
-        //            getUiObject2s("android.widget.ImageView", true, 0.5, 1, 0.01, 0.5, 0, 1, 0.7, 1)?.get(0)?.click();
-//            sleep(TIMEOUT_MEDIUM);
+        // getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
+        // sleep(TIMEOUT_MEDIUM.toLong())
         back()
         sleep(TIMEOUT_VERY_SHORT.toLong())
         getUiObject2ByText("Home")?.click()
@@ -187,7 +187,7 @@ class UIPressure : PhxCommon() {
         if (adBlock == null) {
             adBlock = waitUiObject2ByText("Ad Blocker", TIMEOUT_VERY_SHORT)
         }
-        adBlock!!.click()
+        adBlock?.click()
         sleep(TIMEOUT_SHORT.toLong())
         back()
         sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -285,7 +285,7 @@ class UIPressure : PhxCommon() {
             closeAdDialog()
             for (i in 0..9) {
                 val cleanPhoenixBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
-                if (cleanPhoenixBacks == null || cleanPhoenixBacks.size == 0) {
+                if (cleanPhoenixBacks.isEmpty()) {
                     back()
                 } else {
                     // uiautomator有时点击时会报异常

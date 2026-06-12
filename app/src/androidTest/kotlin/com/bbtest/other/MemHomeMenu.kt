@@ -62,7 +62,7 @@ class MemHomeMenu : PerCommon() {
 
             // 测试后: 等待30s
             sleep((30 * 1000).toLong())
-            screenshot(resultFolder.toString() + "mem_home-menu_" + BROWSER_PHX + ".jpg")
+            screenshot("${resultFolder}mem_home-menu_${BROWSER_PHX}.jpg")
 
             // 结束监控
             stopMonitorMainMem()

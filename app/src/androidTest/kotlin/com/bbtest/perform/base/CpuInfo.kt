@@ -15,7 +15,8 @@ class CpuInfo(device: UiDevice, pid: Int) {
     fun getCpuName(): String {
         var cpuName = ""
         try {
-            val result = ShellCommand.execCmdByUiDevice(device!!, "cat /proc/cpuinfo")
+            val uiDevice = requireNotNull(device) { "UiDevice is not initialized" }
+            val result = ShellCommand.execCmdByUiDevice(uiDevice, "cat /proc/cpuinfo")
             val resultLines = result.split("\n")
             for (resultLine in resultLines) {
                 if (resultLine.isNotEmpty()) {
@@ -36,7 +37,8 @@ class CpuInfo(device: UiDevice, pid: Int) {
         var cpuNum = 0
         try {
             val keywords = "cpu[0-9]"
-            val result = ShellCommand.execCmdByUiDevice(device!!, "ls /sys/devices/system/cpu/")
+            val uiDevice = requireNotNull(device) { "UiDevice is not initialized" }
+            val result = ShellCommand.execCmdByUiDevice(uiDevice, "ls /sys/devices/system/cpu/")
             val resultLines = result.split("\n")
             for (resultLine in resultLines) {
                 if (resultLine.isNotEmpty() && Pattern.compile(keywords).matcher(resultLine).find()) {
@@ -122,7 +124,8 @@ class CpuInfo(device: UiDevice, pid: Int) {
         private fun getTotalCpuInfo(): List<Long> {
             val cpuInfo = ArrayList<Long>()
             try {
-                val result = ShellCommand.execCmdByUiDevice(device!!, "cat /proc/stat")
+                val uiDevice = requireNotNull(device) { "UiDevice is not initialized" }
+                val result = ShellCommand.execCmdByUiDevice(uiDevice, "cat /proc/stat")
                 val resultLines = result.split("\n")
                 for (resultLine in resultLines) {
                     if (resultLine.isNotEmpty() && resultLine.trim().startsWith("cpu ")) {
@@ -145,7 +148,8 @@ class CpuInfo(device: UiDevice, pid: Int) {
         private fun getProCpuInfo(): List<Long> {
             val cpuInfo = ArrayList<Long>()
             try {
-                val result = ShellCommand.execCmdByUiDevice(device!!, "cat /proc/$pid/stat")
+                val uiDevice = requireNotNull(device) { "UiDevice is not initialized" }
+                val result = ShellCommand.execCmdByUiDevice(uiDevice, "cat /proc/$pid/stat")
                 val resultLines = result.split("\n")
                 for (resultLine in resultLines) {
                     if (resultLine.isNotEmpty()) {

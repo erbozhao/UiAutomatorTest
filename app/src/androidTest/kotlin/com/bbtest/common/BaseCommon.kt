@@ -21,6 +21,7 @@ import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ServiceTestRule
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.UiDevice
@@ -34,9 +35,7 @@ import com.bbtest.LocalService.LocalBinder
 import com.bbtest.R
 import com.bbtest.utils.CommonUtil.getCurTimeForLog
 import com.bbtest.utils.FileUtil.createFolder
-import org.hamcrest.CoreMatchers
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -51,34 +50,32 @@ import kotlin.math.abs
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 21)
 open class BaseCommon {
+    private companion object {
+        private const val LOG_TAG = "onuszhao"
+    }
+
 
     lateinit var context: Context
-    private var instrumentation: Instrumentation? = null
-    var uiAutomation: UiAutomation? = null
+        private set
+    private lateinit var instrumentation: Instrumentation
+    lateinit var uiAutomation: UiAutomation
+        private set
 
     lateinit var device: UiDevice
 
-    @JvmField
     var width: Int = 0
+        private set
 
-    @JvmField
     var height: Int = 0
+        private set
 
-    val TIMEOUT_VERY_LONG: Int = 20 * 1000
-    val TIMEOUT_LONG: Int = 10 * 1000
+    val TIMEOUT_VERY_LONG = 20 * 1000
+    val TIMEOUT_LONG = 10 * 1000
+    val TIMEOUT_MEDIUM = 5_000
+    val TIMEOUT_SHORT = 3_000
+    val TIMEOUT_VERY_SHORT = 1_000
 
-    @JvmField
-    val TIMEOUT_MEDIUM: Int = 5000
-
-    @JvmField
-    val TIMEOUT_SHORT: Int = 3000
-
-    @JvmField
-    val TIMEOUT_VERY_SHORT: Int = 1000
-
-    @JvmField
     val downloadsDir: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    @JvmField
     val rootFolder: File = File(downloadsDir, "bbtest")
 
     @Before
@@ -86,7 +83,7 @@ open class BaseCommon {
         initCommonObject()
         //        bindService();
         initUiDevice()
-        Assert.assertThat(device, CoreMatchers.notNullValue())
+        check(::device.isInitialized)
         // 初始化目录及文件
 //        PermissionUtil.getInstance().requestFilePermissionIfNeed(context, this);
         createFolder(rootFolder)
@@ -96,53 +93,40 @@ open class BaseCommon {
         if (!::context.isInitialized) {
             context = ApplicationProvider.getApplicationContext<Context>()
         }
-        if (instrumentation == null) {
-            /** new for androidx.test  */
+        if (!::instrumentation.isInitialized) {
             instrumentation = InstrumentationRegistry.getInstrumentation()
-            /** old for com.android.support.test */
-//            instrumentation = InstrumentationRegistry.getInstrumentation();
         }
-        if (uiAutomation == null) {
-            uiAutomation = requireNotNull(instrumentation).uiAutomation
+        if (!::uiAutomation.isInitialized) {
+            uiAutomation = instrumentation.uiAutomation
         }
     }
 
     private fun initUiDevice() {
         if (!::device.isInitialized) {
-            /** 获取设备信息  */
-            device = UiDevice.getInstance(requireNotNull(instrumentation))
+            device = UiDevice.getInstance(instrumentation)
             width = device.displayWidth
             height = device.displayHeight
 
-            /** 授权测试应用  */
             grantTestPermission()
 
-            /** 配置超时  */
             val conf = Configurator.getInstance()
-            // 动作超时: 默认3000ms
-            conf.setActionAcknowledgmentTimeout(1000) // 1000
-            // 键盘输入延时: 默认0ms
-            conf.setKeyInjectionDelay(100) // 1500
-            // 滚动超时: 默认200ms
-            conf.setScrollAcknowledgmentTimeout(200) // 2000
-            // 空闲超时: 默认10000ms，配置成100ms，动态页面及正常查找控件都会快很多
-            conf.setWaitForIdleTimeout(100) // 2500
-            // 组件查找超时: 默认10000ms
-            conf.setWaitForSelectorTimeout(100) //3000
+            conf.setActionAcknowledgmentTimeout(1_000)
+            conf.setScrollAcknowledgmentTimeout(200)
+            conf.setWaitForIdleTimeout(100)
+            conf.setWaitForSelectorTimeout(100)
         }
     }
 
     private fun grantTestPermission() {
-        // 授权当前测试应用
-        val curPkgName = context.getPackageName()
-        grantRuntimePermission(curPkgName, "android.permission.READ_EXTERNAL_STORAGE")
-        grantRuntimePermission(curPkgName, "android.permission.WRITE_EXTERNAL_STORAGE")
-        grantRuntimePermission(curPkgName, "android.permission.READ_PHONE_STATE")
-        grantRuntimePermission(curPkgName, "android.permission.ACCESS_WIFI_STATE")
-        grantRuntimePermission(curPkgName, "android.permission.CHANGE_WIFI_STATE")
-        grantRuntimePermission(curPkgName, "android.permission.ACCESS_NETWORK_STATE")
-        grantRuntimePermission(curPkgName, "android.permission.CHANGE_NETWORK_STATE")
-        grantRuntimePermission(curPkgName, "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE")
+        val currentPackageName = context.packageName
+        grantRuntimePermission(currentPackageName, "android.permission.READ_EXTERNAL_STORAGE")
+        grantRuntimePermission(currentPackageName, "android.permission.WRITE_EXTERNAL_STORAGE")
+        grantRuntimePermission(currentPackageName, "android.permission.READ_PHONE_STATE")
+        grantRuntimePermission(currentPackageName, "android.permission.ACCESS_WIFI_STATE")
+        grantRuntimePermission(currentPackageName, "android.permission.CHANGE_WIFI_STATE")
+        grantRuntimePermission(currentPackageName, "android.permission.ACCESS_NETWORK_STATE")
+        grantRuntimePermission(currentPackageName, "android.permission.CHANGE_NETWORK_STATE")
+        grantRuntimePermission(currentPackageName, "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE")
     }
 
     /**
@@ -151,21 +135,15 @@ open class BaseCommon {
      * @param pkgName
      */
     fun startApp(pkgName: String) {
-        // Start from the home screen
-        device!!.pressHome()
+        device.pressHome()
+        val launcherPackage = requireNotNull(launcherPackageName)
+        device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), TIMEOUT_MEDIUM.toLong())
 
-        // Wait for launcher
-        val launcherPackage = this.launcherPackageName
-        Assert.assertThat<String?>(launcherPackage, CoreMatchers.notNullValue())
-        device!!.wait<Boolean?>(Until.hasObject(By.pkg(launcherPackage).depth(0)), TIMEOUT_MEDIUM.toLong())
-
-        // Launch the blueprint app
-        val intent = context.getPackageManager().getLaunchIntentForPackage(pkgName)
-        intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK) // Clear out any previous instances
+        val intent = requireNotNull(context.packageManager.getLaunchIntentForPackage(pkgName))
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(intent)
 
-        // Wait for the app to appear
-        device!!.wait<Boolean?>(Until.hasObject(By.pkg(pkgName).depth(0)), TIMEOUT_MEDIUM.toLong())
+        device.wait(Until.hasObject(By.pkg(pkgName).depth(0)), TIMEOUT_MEDIUM.toLong())
     }
 
     fun grantPermission(pkgName: String?) {
@@ -185,11 +163,36 @@ open class BaseCommon {
 
     private fun grantRuntimePermission(pkgName: String?, permission: String?) {
         try {
-            uiAutomation!!.grantRuntimePermission(pkgName, permission)
+            uiAutomation.grantRuntimePermission(pkgName, permission)
         } catch (e: Throwable) {
             e.printStackTrace()
         }
     }
+
+    private inline fun <T> runUiLookup(action: () -> T): T? = try {
+        action()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+
+    private fun findUiObject(selector: UiSelector): UiObject? = runUiLookup {
+        device.findObject(selector)
+    }
+
+    private fun findUiObject2(selector: BySelector): UiObject2? = runUiLookup {
+        device.findObject(selector)
+    }
+
+    private fun findUiObject2List(selector: BySelector): MutableList<UiObject2> = runUiLookup {
+        device.findObjects(selector)
+    } ?: mutableListOf()
+
+    private fun waitForUiObjectList(timeoutMillis: Long, selector: BySelector): MutableList<UiObject2> = runUiLookup {
+        device.wait<MutableList<UiObject2>?>(Until.findObjects(selector), timeoutMillis)
+    } ?: mutableListOf()
+
+    private fun CharSequence?.hasText(): Boolean = !this.isNullOrBlank()
 
     @After
     open fun afterTest() {
@@ -197,147 +200,67 @@ open class BaseCommon {
     }
 
     fun getUiObjectByText(text: String): UiObject? {
-        try {
-            return device!!.findObject(UiSelector().text(text))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
+        return findUiObject(UiSelector().text(text))
     }
 
     fun getUiObjectByTextContains(text: String): UiObject? {
-        try {
-            return device!!.findObject(UiSelector().textContains(text))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
+        return findUiObject(UiSelector().textContains(text))
     }
 
     fun getUiObjectByDesc(desc: String): UiObject? {
-        try {
-            return device!!.findObject(UiSelector().description(desc))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
+        return findUiObject(UiSelector().description(desc))
     }
 
     fun getUiObjectByDescContains(desc: String): UiObject? {
-        try {
-            return device!!.findObject(UiSelector().descriptionContains(desc))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
+        return findUiObject(UiSelector().descriptionContains(desc))
     }
 
     fun getUiObjectByRes(res: String): UiObject? {
-        try {
-            return device!!.findObject(UiSelector().resourceId(res))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
+        return findUiObject(UiSelector().resourceId(res))
     }
 
     fun getUiObject2ByText(text: String): UiObject2? {
-        try {
-            return device!!.findObject(By.text(text))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
+        return findUiObject2(By.text(text))
     }
 
     fun getUiObject2ByTextContains(text: String): UiObject2? {
-        try {
-            return device!!.findObject(By.textContains(text))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
+        return findUiObject2(By.textContains(text))
     }
 
     fun getUiObject2ByDesc(desc: String): UiObject2? {
-        try {
-            return device!!.findObject(By.desc(desc))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
+        return findUiObject2(By.desc(desc))
     }
 
     fun getUiObject2ByDescContains(desc: String): UiObject2? {
-        try {
-            return device!!.findObject(By.descContains(desc))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
+        return findUiObject2(By.descContains(desc))
     }
 
     fun getUiObject2ByRes(res: String): UiObject2? {
-        try {
-            return device!!.findObject(By.res(res))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
+        return findUiObject2(By.res(res))
     }
 
     fun getUiObject2sByText(text: String): MutableList<UiObject2> {
-        try {
-            return device!!.findObjects(By.text(text))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return findUiObject2List(By.text(text))
     }
 
     fun getUiObject2sByTextContains(text: String): MutableList<UiObject2> {
-        try {
-            return device!!.findObjects(By.textContains(text))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return findUiObject2List(By.textContains(text))
     }
 
     fun getUiObject2sByDesc(desc: String): MutableList<UiObject2> {
-        try {
-            return device!!.findObjects(By.desc(desc))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return findUiObject2List(By.desc(desc))
     }
 
     fun getUiObject2sByDescContains(desc: String): MutableList<UiObject2> {
-        try {
-            return device!!.findObjects(By.descContains(desc))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return findUiObject2List(By.descContains(desc))
     }
 
     fun getUiObject2sByRes(res: String): MutableList<UiObject2> {
-        try {
-            return device!!.findObjects(By.res(res))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return findUiObject2List(By.res(res))
     }
 
     fun getUiObject2sByClazz(clazz: String): MutableList<UiObject2> {
-        try {
-            return device!!.findObjects(By.clazz(clazz))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return findUiObject2List(By.clazz(clazz))
     }
 
     /**
@@ -397,7 +320,7 @@ open class BaseCommon {
             for (clazzView in clazzViews) {
                 // 避免报StaleObjectException(底层控件被销毁)错误而获取不到控件，建议重复获取
                 try {
-                    if (isSrcClickable && !clazzView.isClickable()) {
+                    if (isSrcClickable && !clazzView.isClickable) {
                         continue
                     }
                 } catch (e: StaleObjectException) {
@@ -421,7 +344,7 @@ open class BaseCommon {
             for (clazzView in clazzViews) {
                 // 避免报StaleObjectException(底层控件被销毁)错误而获取不到控件，建议重复获取
                 try {
-                    if (isSrcClickable && !clazzView.isClickable()) {
+                    if (isSrcClickable && !clazzView.isClickable) {
                         continue
                     }
                 } catch (e: StaleObjectException) {
@@ -476,7 +399,7 @@ open class BaseCommon {
             for (children in childrens) {
                 // 避免报StaleObjectException(底层控件被销毁)错误而获取不到控件，建议重复获取
                 try {
-                    if (isDstClickable && !children.isClickable()) {
+                    if (isDstClickable && !children.isClickable) {
                         continue
                     }
                 } catch (e: StaleObjectException) {
@@ -590,47 +513,42 @@ open class BaseCommon {
     }
 
     fun getText(uiObject2: UiObject2, isContainChild: Boolean): String? {
-        var text: String? = ""
         try {
-            text = uiObject2.getText()
-            if ((text == null || text == "") && isContainChild) {
-                val childrens = uiObject2.getChildren()
-                for (children in childrens) {
-                    text = getTextOrDesc(children, isContainChild)
+            val text = uiObject2.text
+            if (text.hasText() || !isContainChild) {
+                return text
+            }
 
-                    if (text != null && text != "") {
-                        break
-                    }
+            for (children in uiObject2.children) {
+                val childText = getTextOrDesc(children, isContainChild)
+                if (childText.hasText()) {
+                    return childText
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return text
+        return null
     }
 
     // 获取页面所有文本信息
     fun getTextOrDesc(uiObject2: UiObject2, isContainChild: Boolean): String? {
-        var text: String? = ""
         try {
-            text = uiObject2.getText()
-            if (text == null || text == "") {
-                text = uiObject2.getContentDescription()
+            val ownText = uiObject2.text ?: uiObject2.contentDescription
+            if (ownText.hasText() || !isContainChild) {
+                return ownText?.toString()
             }
-            if ((text == null || text == "") && isContainChild) {
-                val childrens = uiObject2.getChildren()
-                for (children in childrens) {
-                    text = getTextOrDesc(children, isContainChild)
 
-                    if (text != null && text != "") {
-                        break
-                    }
+            for (children in uiObject2.children) {
+                val childText = getTextOrDesc(children, isContainChild)
+                if (childText.hasText()) {
+                    return childText
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return text
+        return null
     }
 
     fun getRootObject(): UiObject2 = requireNotNull(rootUiObject)
@@ -665,7 +583,7 @@ open class BaseCommon {
 
     // 获取所有可操作控件
     fun getAllUiObject2s(uiObject: UiObject2): MutableList<UiObject2> {
-        val uiObjects: MutableList<UiObject2> = ArrayList<UiObject2>()
+        val uiObjects = mutableListOf<UiObject2>()
         try {
             val childrens = uiObject.getChildren()
             for (children in childrens) {
@@ -679,11 +597,11 @@ open class BaseCommon {
     }
 
     fun getClickableUiObject2s(uiObject: UiObject2): MutableList<UiObject2> {
-        val uiObjects: MutableList<UiObject2> = ArrayList<UiObject2>()
+        val uiObjects = mutableListOf<UiObject2>()
         try {
             val childrens = uiObject.getChildren()
             for (children in childrens) {
-                if (children.isClickable()) {
+                if (children.isClickable) {
                     uiObjects.add(children)
                 }
 
@@ -704,7 +622,7 @@ open class BaseCommon {
             val childrens = uiObject.getChildren()
             for (children in childrens) {
                 count++
-                if (children.isClickable()) {
+                if (children.isClickable) {
                     uiObjectList.add(children)
                 }
 
@@ -745,7 +663,7 @@ open class BaseCommon {
         clazz: String, isClickable: Boolean, minWidth: Double, maxWidth: Double, minHeight: Double, maxHeight: Double,
         minX: Double, maxX: Double, minY: Double, maxY: Double
     ): MutableList<UiObject2> {
-        var uiObject2s: MutableList<UiObject2> = ArrayList()
+        var uiObject2s = mutableListOf<UiObject2>()
         try {
             uiObject2s = getUiObject2sByClazz(clazz)
             var i = 0
@@ -753,7 +671,7 @@ open class BaseCommon {
                 val uiObject2 = uiObject2s.get(i)
                 // 避免报StaleObjectException(底层控件被销毁)错误而获取不到控件，建议重复获取
                 try {
-                    if (isClickable && !uiObject2.isClickable()) {
+                    if (isClickable && !uiObject2.isClickable) {
                         uiObject2s.removeAt(i)
                         i--
                         i++
@@ -787,7 +705,7 @@ open class BaseCommon {
         clazz: String, isClickable: Boolean, childClazz: String?, minWidth: Double, maxWidth: Double,
         minHeight: Double, maxHeight: Double, minX: Double, maxX: Double, minY: Double, maxY: Double
     ): MutableList<UiObject2> {
-        var uiObject2s: MutableList<UiObject2> = ArrayList()
+        var uiObject2s = mutableListOf<UiObject2>()
         try {
             uiObject2s = getUiObject2sByClazz(clazz)
             var i = 0
@@ -795,7 +713,7 @@ open class BaseCommon {
                 val uiObject2 = uiObject2s.get(i)
                 // 避免报StaleObjectException(底层控件被销毁)错误而获取不到控件，建议重复获取
                 try {
-                    if (isClickable && !uiObject2.isClickable()) {
+                    if (isClickable && !uiObject2.isClickable) {
                         uiObject2s.removeAt(i)
                         i--
                         i++
@@ -868,15 +786,12 @@ open class BaseCommon {
 
     // 获取页面所有文本信息
     fun getTexts(uiObjects: MutableList<UiObject2>): MutableList<String> {
-        val texts: MutableList<String> = ArrayList<String>()
+        val texts = mutableListOf<String>()
         try {
             for (uiObject in uiObjects) {
-                var text = uiObject.getText()
-                if (text == null || text.trim { it <= ' ' } == "") {
-                    text = uiObject.getContentDescription()
-                }
-                if (text != null && text.trim { it <= ' ' } != "") {
-                    texts.add(text)
+                val text = uiObject.text ?: uiObject.contentDescription
+                if (text.hasText()) {
+                    texts.add(text.toString())
                 }
             }
         } catch (e: Exception) {
@@ -903,8 +818,8 @@ open class BaseCommon {
 
     fun waitUiObject2ByText(text: String, mills: Int): UiObject2? {
         try {
-            Log.i("onuszhao", getCurTimeForLog() + "     wait " + text + " found")
-            return device!!.wait<UiObject2?>(Until.findObject(By.text(text)), mills.toLong())
+            Log.i(LOG_TAG, "${getCurTimeForLog()}     wait $text found")
+            return device.wait<UiObject2?>(Until.findObject(By.text(text)), mills.toLong())
         } catch (e: Exception) {
             e.printStackTrace()
             return null
@@ -913,7 +828,7 @@ open class BaseCommon {
 
     fun waitUiObject2ByTextContains(text: String, mills: Int): UiObject2? {
         try {
-            return device!!.wait<UiObject2?>(Until.findObject(By.textContains(text)), mills.toLong())
+            return device.wait<UiObject2?>(Until.findObject(By.textContains(text)), mills.toLong())
         } catch (e: Exception) {
             e.printStackTrace()
             return null
@@ -922,7 +837,7 @@ open class BaseCommon {
 
     fun waitUiObject2ByDesc(desc: String, mills: Long): UiObject2? {
         try {
-            return device!!.wait<UiObject2?>(Until.findObject(By.desc(desc)), mills)
+            return device.wait<UiObject2?>(Until.findObject(By.desc(desc)), mills)
         } catch (e: Exception) {
             e.printStackTrace()
             return null
@@ -931,7 +846,7 @@ open class BaseCommon {
 
     fun waitUiObject2ByDescContains(desc: String, mills: Long): UiObject2? {
         try {
-            return device!!.wait<UiObject2?>(Until.findObject(By.descContains(desc)), mills)
+            return device.wait<UiObject2?>(Until.findObject(By.descContains(desc)), mills)
         } catch (e: Exception) {
             e.printStackTrace()
             return null
@@ -940,7 +855,7 @@ open class BaseCommon {
 
     fun waitUiObject2ByRes(res: String, mills: Long): UiObject2? {
         try {
-            return device!!.wait<UiObject2>(Until.findObject(By.res(res)), mills)
+            return device.wait<UiObject2>(Until.findObject(By.res(res)), mills)
         } catch (e: Exception) {
             e.printStackTrace()
             return null
@@ -948,57 +863,32 @@ open class BaseCommon {
     }
 
     fun waitUiObject2sByText(text: String, mills: Int): MutableList<UiObject2> {
-        try {
-            return device!!.wait<MutableList<UiObject2>?>(Until.findObjects(By.text(text)), mills.toLong()) ?: ArrayList()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return waitForUiObjectList(mills.toLong(), By.text(text))
     }
 
     fun waitUiObject2sByTextContains(text: String, mills: Int): MutableList<UiObject2> {
-        try {
-            return device!!.wait<MutableList<UiObject2>?>(Until.findObjects(By.textContains(text)), mills.toLong()) ?: ArrayList()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return waitForUiObjectList(mills.toLong(), By.textContains(text))
     }
 
     fun waitUiObject2sByDesc(desc: String, mills: Long): MutableList<UiObject2> {
-        try {
-            return device!!.wait<MutableList<UiObject2>?>(Until.findObjects(By.desc(desc)), mills) ?: ArrayList()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return waitForUiObjectList(mills, By.desc(desc))
     }
 
     fun waitUiObject2sByDescContains(desc: String, mills: Long): MutableList<UiObject2> {
-        try {
-            return device!!.wait<MutableList<UiObject2>?>(Until.findObjects(By.descContains(desc)), mills) ?: ArrayList()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return waitForUiObjectList(mills, By.descContains(desc))
     }
 
     fun waitUiObject2sByRes(res: String, mills: Long): MutableList<UiObject2> {
-        try {
-            return device!!.wait<MutableList<UiObject2>?>(Until.findObjects(By.res(res)), mills) ?: ArrayList()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return ArrayList()
-        }
+        return waitForUiObjectList(mills, By.res(res))
     }
 
     fun waitUiObject2sByClazz(clazz: String, mills: Long): MutableList<UiObject2> {
         try {
             sleep(TIMEOUT_VERY_SHORT.toLong()) // 统一等1s，避免元素查找失败
-            return device!!.wait<MutableList<UiObject2>?>(Until.findObjects(By.clazz(clazz)), mills) ?: ArrayList()
+            return waitForUiObjectList(mills, By.clazz(clazz))
         } catch (e: Exception) {
             e.printStackTrace()
-            return ArrayList()
+            return mutableListOf()
         }
     }
 
@@ -1017,7 +907,8 @@ open class BaseCommon {
             }
             //            uiScrollable.scrollIntoView(new UiSelector().text(text));
 //            UiObject childByText = getUiObjectByText(text);
-            val childByText = uiScrollable.getChildByText(UiSelector().text(text), text, true)
+            val targetText = requireNotNull(text)
+            val childByText = uiScrollable.getChildByText(UiSelector().text(targetText), targetText, true)
             return childByText
         } catch (e: Exception) {
             e.printStackTrace()
@@ -1041,43 +932,23 @@ open class BaseCommon {
     }
 
     fun isUiObject2ExistByText(text: String, mills: Int): Boolean {
-        if (waitUiObject2ByText(text, mills) == null) {
-            return false
-        } else {
-            return true
-        }
+        return waitUiObject2ByText(text, mills) != null
     }
 
     fun isUiObject2ExistByTextContains(text: String, mills: Int): Boolean {
-        if (waitUiObject2ByTextContains(text, mills) == null) {
-            return false
-        } else {
-            return true
-        }
+        return waitUiObject2ByTextContains(text, mills) != null
     }
 
     fun isUiObject2ExistByDesc(desc: String, mills: Long): Boolean {
-        if (waitUiObject2ByDesc(desc, mills) == null) {
-            return false
-        } else {
-            return true
-        }
+        return waitUiObject2ByDesc(desc, mills) != null
     }
 
     fun isUiObject2ExistByDescContains(desc: String, mills: Long): Boolean {
-        if (waitUiObject2ByDescContains(desc, mills) == null) {
-            return false
-        } else {
-            return true
-        }
+        return waitUiObject2ByDescContains(desc, mills) != null
     }
 
     fun isUiObject2ExistByRes(res: String, mills: Long): Boolean {
-        if (waitUiObject2ByRes(res, mills) == null) {
-            return false
-        } else {
-            return true
-        }
+        return waitUiObject2ByRes(res, mills) != null
     }
 
     // 根据文本判断页面是否变化
@@ -1116,7 +987,7 @@ open class BaseCommon {
 
     fun click(x: Int, y: Int) {
         try {
-            device!!.click(x, y)
+            device.click(x, y)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1126,7 +997,7 @@ open class BaseCommon {
         try {
             val upperLeftX = uiObject2.getVisibleBounds().left
             val upperLeftY = uiObject2.getVisibleBounds().top
-            device!!.click(upperLeftX, upperLeftY)
+            device.click(upperLeftX, upperLeftY)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1134,7 +1005,7 @@ open class BaseCommon {
 
     fun longClick(x: Int, y: Int) {
         try {
-            device!!.swipe(x, y, x, y, 300)
+            device.swipe(x, y, x, y, 300)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1144,7 +1015,7 @@ open class BaseCommon {
         try {
             val centerX = uiObject2.getVisibleCenter().x
             val centerY = uiObject2.getVisibleCenter().y
-            device!!.swipe(centerX, centerY, centerX, centerY, 300)
+            device.swipe(centerX, centerY, centerX, centerY, 300)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1152,40 +1023,39 @@ open class BaseCommon {
 
     fun swip(object2: UiObject2?, direction: String) {
         try {
-            if (object2 != null) {
-                if (direction == "right") {
-                    // 向右滑动
-                    val centerY = object2.getVisibleCenter().y
-                    val objectLeft = object2.getVisibleBounds().left
-                    val objectRight = object2.getVisibleBounds().right
-                    val swipLeft = objectLeft + ((objectRight - objectLeft) * 0.2).toInt()
-                    val swipRight = objectRight + ((width - objectRight) * 0.8).toInt()
-                    device!!.swipe(swipLeft, centerY, swipRight, centerY, 10)
-                } else if (direction == "up") {
-                    // 向上滑动
-                    val centerX = object2.getVisibleCenter().x
-                    val objectTop = object2.getVisibleBounds().top
-                    val objectBottom = object2.getVisibleBounds().bottom
-                    val swipBottom = objectBottom - ((objectBottom - objectTop) * 0.2).toInt()
-                    val swipTop = objectTop - (objectTop * 0.8).toInt()
-                    device!!.swipe(centerX, swipBottom, centerX, swipTop, 10)
-                } else if (direction == "down") {
-                    // 向下滑动
-                    val centerX = object2.getVisibleCenter().x
-                    val objectTop = object2.getVisibleBounds().top
-                    val objectBottom = object2.getVisibleBounds().bottom
-                    val swipTop = objectTop + ((objectBottom - objectTop) * 0.2).toInt()
-                    val swipBottom = objectBottom + ((height - objectBottom) * 0.8).toInt()
-                    device!!.swipe(centerX, swipTop, centerX, swipBottom, 10)
-                } else {
-                    // 默认向左滑动
-                    val centerY = object2.getVisibleCenter().y
-                    val objectLeft = object2.getVisibleBounds().left
-                    val objectRight = object2.getVisibleBounds().right
-                    val swipRight = objectRight - ((objectRight - objectLeft) * 0.2).toInt()
-                    val swipLeft = objectLeft - (objectLeft * 0.8).toInt()
-                    device!!.swipe(swipRight, centerY, swipLeft, centerY, 10)
-                }
+            val target = object2 ?: return
+            if (direction == "right") {
+                // 向右滑动
+                val centerY = target.visibleCenter.y
+                val objectLeft = target.visibleBounds.left
+                val objectRight = target.visibleBounds.right
+                val swipLeft = objectLeft + ((objectRight - objectLeft) * 0.2).toInt()
+                val swipRight = objectRight + ((width - objectRight) * 0.8).toInt()
+                device.swipe(swipLeft, centerY, swipRight, centerY, 10)
+            } else if (direction == "up") {
+                // 向上滑动
+                val centerX = target.visibleCenter.x
+                val objectTop = target.visibleBounds.top
+                val objectBottom = target.visibleBounds.bottom
+                val swipBottom = objectBottom - ((objectBottom - objectTop) * 0.2).toInt()
+                val swipTop = objectTop - (objectTop * 0.8).toInt()
+                device.swipe(centerX, swipBottom, centerX, swipTop, 10)
+            } else if (direction == "down") {
+                // 向下滑动
+                val centerX = target.visibleCenter.x
+                val objectTop = target.visibleBounds.top
+                val objectBottom = target.visibleBounds.bottom
+                val swipTop = objectTop + ((objectBottom - objectTop) * 0.2).toInt()
+                val swipBottom = objectBottom + ((height - objectBottom) * 0.8).toInt()
+                device.swipe(centerX, swipTop, centerX, swipBottom, 10)
+            } else {
+                // 默认向左滑动
+                val centerY = target.visibleCenter.y
+                val objectLeft = target.visibleBounds.left
+                val objectRight = target.visibleBounds.right
+                val swipRight = objectRight - ((objectRight - objectLeft) * 0.2).toInt()
+                val swipLeft = objectLeft - (objectLeft * 0.8).toInt()
+                device.swipe(swipRight, centerY, swipLeft, centerY, 10)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -1194,7 +1064,7 @@ open class BaseCommon {
 
     fun swip(startX: Double, startY: Double, endX: Double, endY: Double) {
         try {
-            device!!.swipe(
+            device.swipe(
                 (width * startX).toInt(), (height * startY).toInt(), (width * endX).toInt(),
                 (height * endY).toInt(), 10
             )
@@ -1205,7 +1075,7 @@ open class BaseCommon {
 
     fun drag(startX: Double, startY: Double, endX: Double, endY: Double) {
         try {
-            device!!.drag(
+            device.drag(
                 (width * startX).toInt(), (height * startY).toInt(), (width * endX).toInt(),
                 (height * endY).toInt(), 10
             )
@@ -1216,7 +1086,7 @@ open class BaseCommon {
 
     fun back() {
         try {
-            device!!.pressBack()
+            device.pressBack()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1224,7 +1094,7 @@ open class BaseCommon {
 
     fun home() {
         try {
-            device!!.pressHome()
+            device.pressHome()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1232,7 +1102,7 @@ open class BaseCommon {
 
     fun delete() {
         try {
-            device!!.pressDelete()
+            device.pressDelete()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1240,7 +1110,7 @@ open class BaseCommon {
 
     fun enter() {
         try {
-            device!!.pressEnter()
+            device.pressEnter()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1248,7 +1118,7 @@ open class BaseCommon {
 
     fun power() {
         try {
-            device!!.pressKeyCode(26)
+            device.pressKeyCode(26)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1256,8 +1126,8 @@ open class BaseCommon {
 
     fun wakeUp() {
         try {
-            if (!device!!.isScreenOn()) {
-                device!!.wakeUp()
+            if (!device.isScreenOn) {
+                device.wakeUp()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -1266,7 +1136,7 @@ open class BaseCommon {
 
     fun openNotification() {
         try {
-            device!!.openNotification()
+            device.openNotification()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1298,7 +1168,7 @@ open class BaseCommon {
 
         // 创建通知
         val id = 92602
-        val mBuilder = NotificationCompat.Builder(context!!, channelId)
+        val mBuilder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.mipmap.ic_launcher) //小图标
             .setContentTitle("BBTest")
             .setContentText("Clear all notifications!")
@@ -1310,7 +1180,7 @@ open class BaseCommon {
 
     fun openRecentApps() {
         try {
-            device!!.pressRecentApps()
+            device.pressRecentApps()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1318,9 +1188,9 @@ open class BaseCommon {
 
     fun horizontalScreen() {
         try {
-            device!!.setOrientationLeft()
+            device.setOrientationLeft()
             sleep(TIMEOUT_SHORT.toLong())
-            device!!.unfreezeRotation()
+            device.unfreezeRotation()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1333,14 +1203,14 @@ open class BaseCommon {
                 file.delete()
             }
             file.createNewFile()
-            device!!.takeScreenshot(file)
+            device.takeScreenshot(file)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     fun waitUIRefresh(pkgName: String?, timeoutMillis: Long) {
-        device!!.waitForWindowUpdate(pkgName, timeoutMillis)
+        device.waitForWindowUpdate(pkgName, timeoutMillis)
     }
 
     fun sleep(mills: Long) {
@@ -1356,44 +1226,44 @@ open class BaseCommon {
      */
     @Throws(RemoteException::class)
     private fun demo() {
-        device!!.isScreenOn() //屏幕是否休眠
-        device!!.wakeUp() //点亮屏幕
-        device!!.pressBack() //点击硬件back
-        device!!.pressHome() //点击硬件home
-        device!!.pressSearch() //点击查找功能键
-        device!!.pressDelete() //点击删除键
-        device!!.pressEnter() //点击回车键
-        device!!.pressMenu() //点击菜单键
-        device!!.pressRecentApps() //点击在运行的APP键
-        device!!.openNotification() //展开通知栏
-        device!!.openQuickSettings() //展开快速设置栏
-        device!!.setOrientationLeft() //旋转屏幕
-        device!!.unfreezeRotation() //解冻屏幕
-        device!!.waitForWindowUpdate(null, 5000) // 等待加载完成
-        device!!.pressDPadLeft() //方向键，向左(可编辑框移动光标等)
-        device!!.pressDPadRight() //方向键，向右
-        device!!.pressDPadDown() //方向键，向下
-        device!!.pressDPadUp() //方向键，向上
-        device!!.pressDPadCenter() //方向键，中心点，并非pressEnter()
-        device!!.pressKeyCode(26) //发送KeyEvent:26-电源键
-        device!!.pressKeyCode(5, 8) //发送配有组合键（ALT,SHIFT）的KeyEvent。
+        device.isScreenOn //屏幕是否休眠
+        device.wakeUp() //点亮屏幕
+        device.pressBack() //点击硬件back
+        device.pressHome() //点击硬件home
+        device.pressSearch() //点击查找功能键
+        device.pressDelete() //点击删除键
+        device.pressEnter() //点击回车键
+        device.pressMenu() //点击菜单键
+        device.pressRecentApps() //点击在运行的APP键
+        device.openNotification() //展开通知栏
+        device.openQuickSettings() //展开快速设置栏
+        device.setOrientationLeft() //旋转屏幕
+        device.unfreezeRotation() //解冻屏幕
+        device.waitForWindowUpdate(null, 5000) // 等待加载完成
+        device.pressDPadLeft() //方向键，向左(可编辑框移动光标等)
+        device.pressDPadRight() //方向键，向右
+        device.pressDPadDown() //方向键，向下
+        device.pressDPadUp() //方向键，向上
+        device.pressDPadCenter() //方向键，中心点，并非pressEnter()
+        device.pressKeyCode(26) //发送KeyEvent:26-电源键
+        device.pressKeyCode(5, 8) //发送配有组合键（ALT,SHIFT）的KeyEvent。
         /**
          * 1.如果timeout内，未能完成动作，抛出异常，但等待动作完成
          * 2.如果timeout内，完成动作，不抛异常，之后执行接下来的动作
          * 3.timeout必须大于500ms，否则无意义
          */
-        device!!.waitForIdle(550)
+        device.waitForIdle(550)
         /**
          * 1.出现WindowContentUpdate事件便停止等待，若packageName为null，则立即结束等待
          * 2.核心监听AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
          * 释:represents the event of change in the content of a window. This change can be adding/removing view, changing a view size
          */
-        device!!.waitForWindowUpdate("pkg", 500)
+        device.waitForWindowUpdate("pkg", 500)
         /**
          * 1.若newWindow事件若发生，程序将不再等待，继续执行后续动作
          * 2.若scroll事件发生，程序将等待timeout，然后在继续后续动作
          */
-        device!!.performActionAndWait<Boolean?>(object : Runnable {
+        device.performActionAndWait<Boolean?>(object : Runnable {
             override fun run() {
             }
         }, Until.newWindow(), 5000)
@@ -1422,7 +1292,7 @@ open class BaseCommon {
             /* old for com.android.support.test*/
 //        PackageManager pm = InstrumentationRegistry.getContext().getPackageManager();
             val resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            return resolveInfo!!.activityInfo.packageName
+            return requireNotNull(resolveInfo).activityInfo.packageName
         }
 
     @Rule
@@ -1455,7 +1325,7 @@ open class BaseCommon {
             val service = (binder as LocalBinder).getService()
 
             // Verify that the service is working correctly.
-            Assert.assertThat<Int?>(service.getRandomInt(), CoreMatchers.`is`<Int?>(CoreMatchers.any<Int?>(Int::class.java)))
+            service.getRandomInt()
 
             //            getApplicationContext().startService(serviceIntent);
         } catch (e: Exception) {

@@ -44,7 +44,7 @@ class Debug : PhxCommon() {
     fun testDebug() {
         try {
             val startTime = System.currentTimeMillis()
-            screenshot(resultFolder.toString() + "/debug_start_" + CommonUtil.getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/debug_start_${CommonUtil.getCurTimeForFile()}.jpg")
             FileUtil.writeStrToFile("start time=$startTime", debugFile)
 
             // 启动应用
@@ -76,30 +76,28 @@ class Debug : PhxCommon() {
 
             val endTime = System.currentTimeMillis()
             val costTime = (endTime - startTime) / 1000
-            println("耗时: " + costTime + "s")
-            screenshot(resultFolder.toString() + "/debug_end_" + CommonUtil.getCurTimeForFile() + ".jpg")
+            println("耗时: ${costTime}s")
+            screenshot("${resultFolder}/debug_end_${CommonUtil.getCurTimeForFile()}.jpg")
             FileUtil.writeStrToFile("end time=$costTime", debugFile)
         } catch (e: Exception) {
             e.printStackTrace()
-            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "Debug:Exception" + "\n", debugFile)
+            FileUtil.writeStrToFile("${CommonUtil.getCurTimeForLog()}Debug:Exception\n", debugFile)
             FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), debugFile)
-            screenshot(resultFolder.toString() + "/debug_" + CommonUtil.getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/debug_${CommonUtil.getCurTimeForFile()}.jpg")
         }
     }
 
     private fun getRootUiObject2(rootContent: UiObject2): UiObject2? {
-        var curRootObject: UiObject2? = null
-        val childrens = rootContent.children
-        for (children in childrens) {
+        for (children in rootContent.children) {
             val curRect = children.visibleBounds
             val curWidth = curRect.right - curRect.left
             val curHeight = curRect.bottom - curRect.top
             Log.i("onuszhao", "curWidth:$curWidth,curHeight:$curHeight")
             if (curWidth == width && curHeight == height) {
-                curRootObject = children
+                return children
             }
         }
-        return curRootObject
+        return null
     }
 
     @Test
@@ -184,16 +182,16 @@ class Debug : PhxCommon() {
                 val appScrollableClazz = getScrollableClazz()
                 waitScrollableUiObjectByText(appScrollableClazz, "Phoenix", false)
                 sleep(TIMEOUT_SHORT.toLong())
-                screenshot(resultFolder.toString() + "/result_" + CommonUtil.getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/result_${CommonUtil.getCurTimeForFile()}.jpg")
                 swip(0.5, 0.6, 0.5, 0.4)
                 sleep(TIMEOUT_SHORT.toLong())
-                screenshot(resultFolder.toString() + "/result_" + CommonUtil.getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/result_${CommonUtil.getCurTimeForFile()}.jpg")
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "testIgnoringBatteryOptimization:Exception" + "\n", debugFile)
+            FileUtil.writeStrToFile("${CommonUtil.getCurTimeForLog()}testIgnoringBatteryOptimization:Exception\n", debugFile)
             FileUtil.writeStrToFile(CommonUtil.getExceptionMsg(e), debugFile)
-            screenshot(resultFolder.toString() + "/testIgnoringBatteryOptimization_" + CommonUtil.getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/testIgnoringBatteryOptimization_${CommonUtil.getCurTimeForFile()}.jpg")
         }
     }
 

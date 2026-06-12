@@ -5,9 +5,13 @@ import java.util.Date
 import java.util.Random
 
 object CommonUtil {
+    private const val FILE_TIME_PATTERN = "yyyyMMdd_HHmmss"
+    private const val LOG_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss:SSS"
+    private const val FULL_TIME_PATTERN = "yyyyMMddHHmmss"
+    private const val YEAR_PATTERN = "yyyy"
+
     @JvmStatic
     fun getFirstNum(str: String): Int {
-        var num = -1
         val tmpNum = StringBuilder()
         var isStart = false
         for (char in str) {
@@ -18,10 +22,7 @@ object CommonUtil {
                 break
             }
         }
-        if (tmpNum.isNotEmpty()) {
-            num = tmpNum.toString().toInt()
-        }
-        return num
+        return tmpNum.toString().toIntOrNull() ?: -1
     }
 
     @JvmStatic
@@ -41,10 +42,7 @@ object CommonUtil {
 
     @JvmStatic
     fun randomStr(length: Int): String {
-        val upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        val lower = "abcdefghijklmnopqrstuvwxyz"
-        val numbers = "0123456789"
-        val allCharacters = lower + upper + numbers
+        val allCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         val randomString = StringBuilder()
         val random = Random()
         for (i in 0 until length) {
@@ -61,38 +59,35 @@ object CommonUtil {
 
     @JvmStatic
     fun getCurYear(): String {
-        return SimpleDateFormat("yyyy").format(Date())
+        return SimpleDateFormat(YEAR_PATTERN).format(Date())
     }
 
     @JvmStatic
     fun getCurTime(): String {
-        return SimpleDateFormat("yyyyMMddHHmmss").format(Date())
+        return SimpleDateFormat(FULL_TIME_PATTERN).format(Date())
     }
 
     @JvmStatic
     fun getCurTimeForFile(): String {
-        return SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        return SimpleDateFormat(FILE_TIME_PATTERN).format(Date())
     }
 
     @JvmStatic
     fun getCurTimeForLog(): String {
-        return SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(Date())
+        return SimpleDateFormat(LOG_TIME_PATTERN).format(Date())
     }
 
     @JvmStatic
     fun getExceptionMsg(e: Exception): String {
         val exceptionMsg = StringBuilder()
         try {
-            val msg = e.message
-            if (msg != null) {
+            e.message?.let { msg ->
                 exceptionMsg.append("   ").append(msg).append('\n')
             }
-            val stacks = e.stackTrace
-            for (stack in stacks) {
-                exceptionMsg.append("   ").append(stack.toString()).append('\n')
+            e.stackTrace.forEach { stack ->
+                exceptionMsg.append("   ").append(stack).append('\n')
             }
-            val cause = e.cause
-            if (cause != null) {
+            e.cause?.let { cause ->
                 exceptionMsg.append("   Caused by: ").append(cause.message).append('\n')
             }
         } catch (e1: Exception) {

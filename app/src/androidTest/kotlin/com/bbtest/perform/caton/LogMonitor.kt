@@ -41,7 +41,7 @@ class LogMonitor private constructor() {
                 val sb = StringBuilder()
                 val stackTrace = Looper.getMainLooper().getThread().getStackTrace()
                 for (s in stackTrace) {
-                    sb.append(s.toString() + "\n")
+                    sb.append("$s\n")
                 }
                 Log.e(TAG, sb.toString())
             }

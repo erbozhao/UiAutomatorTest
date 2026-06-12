@@ -22,7 +22,7 @@ class Flowinfo(device: UiDevice, uid: Int) {
 
     fun readFlowInfo() {
         val cmd = "cat /proc/net/xt_qtaguid/stats"
-        flowInfo = ShellCommand.execCmdByUiDevice(device!!, cmd)
+        flowInfo = ShellCommand.execCmdByUiDevice(requireNotNull(device), cmd)
         if (flowInfo.isEmpty() || (flowInfo.contains("Permission") && flowInfo.contains("denied"))) {
             flowInfo = ShellCommand.execCmdBySu(cmd)
         }

@@ -23,7 +23,7 @@ class ADFilterTest : PhxCommon() {
     private val imgFolder = "/sdcard/Download/PHXDownloads"
 
     @Before
-    public override fun beforeTest() {
+    override fun beforeTest() {
         super.beforeTest()
     }
 
@@ -114,15 +114,15 @@ class ADFilterTest : PhxCommon() {
                     break
                 }
             }
-            snapshot!!.click()
+            snapshot?.click()
             sleep(TIMEOUT_VERY_LONG.toLong())
 
             // 长截图失败时，截屏
             if (!this.isLongScreenSuccess) {
-                screenshot("/sdcard/Download/PHXDownloads/" + getCurTime() + ".jpg")
+                screenshot("$imgFolder/${getCurTime()}.jpg")
             }
         } else {
-            screenshot("/sdcard/Download/PHXDownloads/" + getCurTime() + ".jpg")
+            screenshot("$imgFolder/${getCurTime()}.jpg")
         }
     }
 
@@ -301,15 +301,15 @@ class ADFilterTest : PhxCommon() {
                     break
                 }
             }
-            snapshot!!.click()
+            snapshot?.click()
             sleep(TIMEOUT_VERY_LONG.toLong())
 
             // 长截图失败时，截屏
             if (!this.isLongScreenSuccess) {
-                screenshot("/sdcard/Download/PHXDownloads/" + getCurTime() + ".jpg")
+                screenshot("$imgFolder/${getCurTime()}.jpg")
             }
         } else {
-            screenshot("/sdcard/Download/PHXDownloads/" + getCurTime() + ".jpg")
+            screenshot("$imgFolder/${getCurTime()}.jpg")
         }
     }
 
@@ -370,7 +370,7 @@ class ADFilterTest : PhxCommon() {
     }
 
     @After
-    public override fun afterTest() {
+    override fun afterTest() {
         super.afterTest()
     }
 

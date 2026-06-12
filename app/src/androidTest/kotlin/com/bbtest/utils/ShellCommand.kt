@@ -10,17 +10,14 @@ import java.io.FileInputStream
 import java.io.InputStreamReader
 
 object ShellCommand {
-    @JvmStatic
-    fun execCmd(cmd: String): String {
+    private inline fun readProcessOutput(block: () -> java.io.InputStream): String {
         val result = StringBuilder()
         try {
-            val process = Runtime.getRuntime().exec(cmd)
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                result.append(line).append('\n')
+            BufferedReader(InputStreamReader(block())).use { reader ->
+                reader.lineSequence().forEach { line ->
+                    result.append(line).append('\n')
+                }
             }
-            reader.close()
         } catch (t: Throwable) {
             t.printStackTrace()
         }
@@ -28,22 +25,16 @@ object ShellCommand {
     }
 
     @JvmStatic
-    fun execCmd(cmds: Array<String>): String {
-        val result = StringBuilder()
-        try {
-            val processBuilder = ProcessBuilder(*cmds)
-            processBuilder.redirectErrorStream(true)
-            val process = processBuilder.start()
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                result.append(line).append('\n')
-            }
-            reader.close()
-        } catch (t: Throwable) {
-            t.printStackTrace()
-        }
-        return result.toString()
+    fun execCmd(cmd: String): String = readProcessOutput {
+        Runtime.getRuntime().exec(cmd).inputStream
+    }
+
+    @JvmStatic
+    fun execCmd(cmds: Array<String>): String = readProcessOutput {
+        ProcessBuilder(*cmds)
+            .redirectErrorStream(true)
+            .start()
+            .inputStream
     }
 
     @JvmStatic
@@ -57,23 +48,10 @@ object ShellCommand {
     }
 
     @JvmStatic
-    fun execCmdByNoRoot(cmd: String): String {
-        val result = StringBuilder()
-        try {
-            val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
-            val parcelFileDescriptor: ParcelFileDescriptor = instrumentation.uiAutomation.executeShellCommand(cmd)
-            val inputStream = ParcelFileDescriptor.AutoCloseInputStream(parcelFileDescriptor)
-            val reader = BufferedReader(InputStreamReader(inputStream))
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                result.append(line).append('\n')
-            }
-            inputStream.close()
-            reader.close()
-        } catch (t: Throwable) {
-            t.printStackTrace()
-        }
-        return result.toString()
+    fun execCmdByNoRoot(cmd: String): String = readProcessOutput {
+        val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
+        val parcelFileDescriptor: ParcelFileDescriptor = instrumentation.uiAutomation.executeShellCommand(cmd)
+        ParcelFileDescriptor.AutoCloseInputStream(parcelFileDescriptor)
     }
 
     @JvmStatic
@@ -81,20 +59,17 @@ object ShellCommand {
         val result = StringBuilder()
         try {
             val process = Runtime.getRuntime().exec("sh")
-            val outputStream = DataOutputStream(process.outputStream)
-            outputStream.writeBytes("$cmd\n")
-            outputStream.flush()
-            outputStream.close()
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                if (!line.isNullOrEmpty()) {
-                    result.append(line).append('\n')
-                }
+            DataOutputStream(process.outputStream).use { outputStream ->
+                outputStream.writeBytes("$cmd\n")
+                outputStream.flush()
+            }
+            BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
+                reader.lineSequence()
+                    .filter { it.isNotEmpty() }
+                    .forEach { line -> result.append(line).append('\n') }
             }
             process.waitFor()
             process.destroy()
-            reader.close()
         } catch (t: Throwable) {
             t.printStackTrace()
         }
@@ -106,21 +81,19 @@ object ShellCommand {
         val result = StringBuilder()
         try {
             val process = Runtime.getRuntime().exec("su")
-            val outputStream = DataOutputStream(process.outputStream)
-            outputStream.writeBytes("$cmd\n")
-            outputStream.flush()
-            outputStream.writeBytes("exit\n")
-            outputStream.flush()
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                if (!line.isNullOrEmpty()) {
-                    result.append(line).append('\n')
-                }
+            DataOutputStream(process.outputStream).use { outputStream ->
+                outputStream.writeBytes("$cmd\n")
+                outputStream.flush()
+                outputStream.writeBytes("exit\n")
+                outputStream.flush()
+            }
+            BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
+                reader.lineSequence()
+                    .filter { it.isNotEmpty() }
+                    .forEach { line -> result.append(line).append('\n') }
             }
             process.waitFor()
             process.destroy()
-            reader.close()
         } catch (t: Throwable) {
             t.printStackTrace()
         }

@@ -63,7 +63,7 @@ class BrowseMutiWindowDetailPage : PerCommon() {
                     }
                     multiWindow1?.click()
                     sleep(3000)
-                    getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.get(0)?.click()
+                    getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
                     sleep(3000)
                 }
                 clickSearchBox(BROWSER_PHX, false)
@@ -100,7 +100,7 @@ class BrowseMutiWindowDetailPage : PerCommon() {
             forceStopApp(device, BROWSER_PHX, null)
         } catch (e: Exception) {
             e.printStackTrace()
-            screenshot(resultFolder.toString() + "/Img_" + model + "_BrowseMutiWindow-DetailPage-Exception_" + BROWSER_PHX + "_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/Img_${model}_BrowseMutiWindow-DetailPage-Exception_${BROWSER_PHX}_${getCurTimeForFile()}.jpg")
         }
     }
 

@@ -2,7 +2,6 @@ package com.bbtest.stable
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.text.TextUtils
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -32,15 +31,15 @@ import java.util.Random
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 18)
 class MonkeyTest : MonkeyCommon() {
-    var resultFolder: File = File(rootFolder, "monkey")
-    var monkeyFile: File = File(resultFolder, "monkey.txt")
+    private val resultFolder = File(rootFolder, "monkey")
+    private val monkeyFile = File(resultFolder, "monkey.txt")
     private val monkeyInfoFile = File(downloadsDir, "monkey.txt")
 
     private var pkgName = ""
     private var activity = ""
 
     @Before
-    public override fun beforeTest() {
+    override fun beforeTest() {
         super.beforeTest()
         // 初始化目录及文件
         createFolder(resultFolder)
@@ -50,24 +49,24 @@ class MonkeyTest : MonkeyCommon() {
         val grantState = PackageManager.PERMISSION_GRANTED
         val canRead = monkeyInfoFile.canRead()
         val testInfo = readFile(monkeyInfoFile).trim { it <= ' ' }
-        Log.d("onuszhao", "canWrite=" + canWrite + "  grantState=" + grantState + "  canRead=" + canRead + "  testInfo=" + testInfo)
+        Log.d("onuszhao", "canWrite=$canWrite  grantState=$grantState  canRead=$canRead  testInfo=$testInfo")
         val testInfoParts = testInfo.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         // 默认包名
         pkgName = testInfoParts[0]
-        if (TextUtils.isEmpty(pkgName)) {
+        if (pkgName.isEmpty()) {
             pkgName = "com.transsion.phoenix"
         }
         // 获取activity(解决一个应用存在多个主activity)
         val mainActivities: List<String> = getActivities(device, pkgName, null)
         for (mainActivity in mainActivities) {
             amStartApp(device, mainActivity, monkeyFile)
-            CommonUtil.sleep(5000)
+            CommonUtil.sleep(5_000)
             if (!isAppBackstage(device, pkgName)) {
                 activity = mainActivity
                 break
             }
         }
-        writeStrToFile(getCurTimeForLog() + "  " + pkgName + "\n", monkeyFile)
+        writeStrToFile("${getCurTimeForLog()}  $pkgName\n", monkeyFile)
     }
 
     @Test
@@ -101,7 +100,7 @@ class MonkeyTest : MonkeyCommon() {
                 }
 
                 // 发起模拟事件
-                val event = events.get(Random().nextInt(events.size))
+                val event = events[Random().nextInt(events.size)]
                 if (event == "click") {
                     click(monkeyFile)
                 } else if (event == "swipeUp") {
@@ -141,7 +140,7 @@ class MonkeyTest : MonkeyCommon() {
     }
 
     @After
-    public override fun afterTest() {
+    override fun afterTest() {
         super.afterTest()
     }
 

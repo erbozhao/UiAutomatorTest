@@ -33,7 +33,7 @@ class MonkeyTestBak : BaseCommon() {
     private val monkeyInfoFile = File(downloadsDir, "monkey.txt")
 
     @Before
-    public override fun beforeTest() {
+    override fun beforeTest() {
         super.beforeTest()
         // 初始化目录及文件
         deleteFolder(resultFolder)
@@ -72,7 +72,7 @@ class MonkeyTestBak : BaseCommon() {
                 pkgName = "com.transsion.phoenix"
             }
             val activity = getActivity(device, pkgName, runLog)
-            writeStrToFile(getCurTimeForLog() + "  start:" + runTime + "," + pkgName + "\n", runLog)
+            writeStrToFile("${getCurTimeForLog()}  start:$runTime,$pkgName\n", runLog)
 
             //录制视频
 //            ScreenrecordThread screenrecordThread = new ScreenrecordThread(runTime, device, model, rootFolder, resultFolder);
@@ -104,7 +104,7 @@ class MonkeyTestBak : BaseCommon() {
 
             // 等待模拟事件执行完成，并通知其他线程该结束了
             randomEventThread.join()
-            writeStrToFile(getCurTimeForLog() + "  randomEventThread end" + "\n", runLog)
+            writeStrToFile("${getCurTimeForLog()}  randomEventThread end\n", runLog)
 
             //            screenrecordThread.setIsTimeOver(true);
 //            memoryThread.setIsTimeOver(true);
@@ -115,18 +115,13 @@ class MonkeyTestBak : BaseCommon() {
 //            dumpheapThread.setIsTimeOver(true);
 
             //等待其他线程执行结束
-//            screenrecordThread.join();
-//            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  screenrecordThread end" + "\n", runLog);
-//            memoryThread.join();
-//            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  memoryThread end" + "\n", runLog);
+//            screenrecordThread.join()
+//            memoryThread.join()
 //            if (nativeFdThread != null) {
-//                nativeFdThread.join();
-//                FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  nativeFdThread end" + "\n", runLog);
+//                nativeFdThread.join()
 //            }
-//            logcatThread.join();
-//            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  logcatThread end" + "\n", runLog);
-//            dumpheapThread.join();
-//            FileUtil.writeStrToFile(CommonUtil.getCurTimeForLog() + "  dumpheapThread end" + "\n", runLog);
+//            logcatThread.join()
+//            dumpheapThread.join()
             // dumpheap结束后，强制关闭app
             forceStopApp(device, pkgName, runLog)
 
@@ -134,14 +129,14 @@ class MonkeyTestBak : BaseCommon() {
             deleteFile(monkeyFile)
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile(getCurTimeForLog() + "MonkeyTest:Exception" + "\n", monkeyFile)
+            writeStrToFile("${getCurTimeForLog()}MonkeyTest:Exception\n", monkeyFile)
             writeStrToFile(getExceptionMsg(e), monkeyFile)
-            screenshot(resultFolder.toString() + "/monkey_" + getCurTimeForFile() + ".jpg")
+            screenshot(File(resultFolder, "monkey_${getCurTimeForFile()}.jpg").path)
         }
     }
 
     @After
-    public override fun afterTest() {
+    override fun afterTest() {
         super.afterTest()
     }
 }

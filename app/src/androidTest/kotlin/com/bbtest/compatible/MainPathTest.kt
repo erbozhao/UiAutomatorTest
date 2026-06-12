@@ -22,7 +22,7 @@ class MainPathTest : PhxCommon() {
     private val mainPathFile = File(resultFolder, "mainpath.txt")
 
     @Before
-    public override fun beforeTest() {
+    override fun beforeTest() {
         super.beforeTest()
         // 初始化目录及文件
         createFolder(resultFolder)
@@ -63,10 +63,9 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_MEDIUM.toLong())
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("StartApp:Exception" + "\n", mainPathFile)
+            writeStrToFile("StartApp:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/StartApp_" + getCurTimeForFile() + ".jpg")
-            e.printStackTrace()
+            screenshot("${resultFolder}/StartApp_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -126,17 +125,17 @@ class MainPathTest : PhxCommon() {
                         ?: false
             }
             if (isSetDefaultSuccess) {
-                writeStrToFile("SetDefaultBrowser:PASS" + "\n", mainPathFile)
+                writeStrToFile("SetDefaultBrowser:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("SetDefaultBrowser:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/SetDefaultBrowser_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("SetDefaultBrowser:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/SetDefaultBrowser_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SetDefaultBrowser:Exception" + "\n", mainPathFile)
+            writeStrToFile("SetDefaultBrowser:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SetDefaultBrowser_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SetDefaultBrowser_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -158,17 +157,17 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_SHORT.toLong())
             val isSigned = isUiObject2ExistByText("Signed in with Google", TIMEOUT_LONG)
             if (isSigned) {
-                writeStrToFile("MeLogin:PASS" + "\n", mainPathFile)
+                writeStrToFile("MeLogin:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("MeLogin:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/MeLogin_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("MeLogin:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/MeLogin_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeLogin:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeLogin:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeLogin_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeLogin_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -186,15 +185,15 @@ class MainPathTest : PhxCommon() {
                 sleep(TIMEOUT_LONG.toLong())
                 weathers = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.4, 0.0, 0.2, 0.0, 0.4, 0.02, 0.2)
             }
-            if (weathers != null && weathers.size > 0) {
-                weathers?.get(0)?.click()
+            if (!weathers.isNullOrEmpty()) {
+                weathers.firstOrNull()?.click()
                 sleep(TIMEOUT_MEDIUM.toLong())
                 waitUiObject2ByText("Air quality", TIMEOUT_LONG)
                 var images = getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.8, 1.0, 0.02, 0.2)
-                if (images == null || images.size == 0) {
+                if (images.isNullOrEmpty()) {
                     images = getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.8, 1.0, 0.02, 0.2)
                 }
-                images?.get(0)?.click()
+                images?.firstOrNull()?.click()
                 waitUiObject2ByText("Manage city", TIMEOUT_MEDIUM)?.click()
                 waitUiObject2ByText("Add city", TIMEOUT_MEDIUM)?.click()
                 sleep(TIMEOUT_SHORT.toLong())
@@ -212,26 +211,26 @@ class MainPathTest : PhxCommon() {
                 sleep(TIMEOUT_SHORT.toLong())
                 var imageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.0, 0.2, 0.02, 0.2)
                 for (i in 0..2) {
-                    if (imageViews != null && imageViews.size > 0) {
+                    if (!imageViews.isNullOrEmpty()) {
                         break
                     } else {
                         sleep(TIMEOUT_SHORT.toLong())
                         imageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.0, 0.2, 0.02, 0.2)
                     }
                 }
-                imageViews!!.get(0).click()
+                imageViews?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
-                writeStrToFile("OperateWeather:PASS" + "\n", mainPathFile)
+                writeStrToFile("OperateWeather:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("OperateWeather:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/OperateWeather_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("OperateWeather:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/OperateWeather_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("OperateWeather:Exception" + "\n", mainPathFile)
+            writeStrToFile("OperateWeather:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/OperateWeather_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/OperateWeather_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -245,24 +244,24 @@ class MainPathTest : PhxCommon() {
         try {
             clickSearchBox(false)
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.0, 0.2, 0.02, 0.2)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.0, 0.2, 0.02, 0.2)?.firstOrNull()?.click()
             waitUiObject2ByText("Yahoo", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.3, 0.5, 0.0, 0.5, 0.0, 0.6, 0.1, 0.4)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.3, 0.5, 0.0, 0.5, 0.0, 0.6, 0.1, 0.4)?.firstOrNull()?.click()
             sleep(TIMEOUT_SHORT.toLong())
             val isSearchKeywordSuccess = isUiObject2ExistByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())
             if (isSearchKeywordSuccess) {
-                writeStrToFile("SearchKeywords:PASS" + "\n", mainPathFile)
+                writeStrToFile("SearchKeywords:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("SearchKeywords:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/SearchKeywords_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("SearchKeywords:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/SearchKeywords_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SearchKeywords:Exception" + "\n", mainPathFile)
+            writeStrToFile("SearchKeywords:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SearchKeywords_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SearchKeywords_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -280,13 +279,13 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_SHORT.toLong())
             skipAppDialog()
             skipOtherDialog()
-            writeStrToFile("OpenWebpage:PASS" + "\n", mainPathFile)
+            writeStrToFile("OpenWebpage:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("OpenWebpage:Exception" + "\n", mainPathFile)
+            writeStrToFile("OpenWebpage:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/OpenWebpage_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/OpenWebpage_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -331,13 +330,13 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("WebviewLongpressDialog:PASS" + "\n", mainPathFile)
+            writeStrToFile("WebviewLongpressDialog:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("WebviewLongpressDialog:Exception" + "\n", mainPathFile)
+            writeStrToFile("WebviewLongpressDialog:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/WebviewLongpressDialog_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/WebviewLongpressDialog_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -395,15 +394,15 @@ class MainPathTest : PhxCommon() {
             waitUiObject2ByText("Screenshot", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("Crop region", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.7, 1.0, 0.02, 0.15)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.7, 1.0, 0.02, 0.15)?.firstOrNull()?.click()
             waitUiObject2ByText("Save", TIMEOUT_MEDIUM)?.click()
-            writeStrToFile("WebpageMoreMenu:PASS" + "\n", mainPathFile)
+            writeStrToFile("WebpageMoreMenu:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("WebpageMoreMenu:Exception" + "\n", mainPathFile)
+            writeStrToFile("WebpageMoreMenu:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/WebpageMoreMenu_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/WebpageMoreMenu_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -506,14 +505,14 @@ class MainPathTest : PhxCommon() {
             // 多窗口
             waitUiObject2ByDesc("toolbar multiWindow", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.get(0)?.click()
-            writeStrToFile("WebpageMenu:PASS" + "\n", mainPathFile)
+            getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
+            writeStrToFile("WebpageMenu:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("WebpageMenu:Exception" + "\n", mainPathFile)
+            writeStrToFile("WebpageMenu:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/WebpageMenu_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/WebpageMenu_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -527,17 +526,17 @@ class MainPathTest : PhxCommon() {
         try {
             waitUiObject2ByRes("com.transsion.phoenix:id/homepage_qrcode_button", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.0, 0.3, 0.8, 1.0)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.5, 0.0, 0.5, 0.0, 0.3, 0.8, 1.0)?.firstOrNull()?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.5, 0.15, 0.5, 0.0, 1.0, 0.15, 1.0)?.get(0)?.click()
+            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.5, 0.15, 0.5, 0.0, 1.0, 0.15, 1.0)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("Scan:PASS" + "\n", mainPathFile)
+            writeStrToFile("Scan:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("Scan:Exception" + "\n", mainPathFile)
+            writeStrToFile("Scan:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/Scan_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/Scan_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -559,24 +558,24 @@ class MainPathTest : PhxCommon() {
                     sleep(TIMEOUT_SHORT.toLong())
                     waitUiObject2ByDesc("toolbar home", TIMEOUT_MEDIUM.toLong())?.click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
-                    writeStrToFile("SpeedDialAccess:PASS" + "\n", mainPathFile)
+                    writeStrToFile("SpeedDialAccess:PASS\n", mainPathFile)
                     break
                 } else {
                     sleep(TIMEOUT_SHORT.toLong())
                     if (i == 2) {
                         back()
                         sleep(TIMEOUT_VERY_SHORT.toLong())
-                        writeStrToFile("SpeedDialAccess:FAILED" + "\n", mainPathFile)
-                        screenshot(resultFolder.toString() + "/SpeedDialAccess_" + getCurTimeForFile() + ".jpg")
+                        writeStrToFile("SpeedDialAccess:FAILED\n", mainPathFile)
+                        screenshot("${resultFolder}/SpeedDialAccess_${getCurTimeForFile()}.jpg")
                     }
                 }
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SpeedDialAccess:Exception" + "\n", mainPathFile)
+            writeStrToFile("SpeedDialAccess:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SpeedDialAccess_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SpeedDialAccess_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -635,13 +634,13 @@ class MainPathTest : PhxCommon() {
                     break
                 }
             }
-            writeStrToFile("SpeedDialAdds:PASS" + "\n", mainPathFile)
+            writeStrToFile("SpeedDialAdds:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SpeedDialAdds:Exception" + "\n", mainPathFile)
+            writeStrToFile("SpeedDialAdds:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SpeedDialAdds_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SpeedDialAdds_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -667,13 +666,13 @@ class MainPathTest : PhxCommon() {
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            writeStrToFile("SpeedDialDels:PASS" + "\n", mainPathFile)
+            writeStrToFile("SpeedDialDels:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SpeedDialDels:Exception" + "\n", mainPathFile)
+            writeStrToFile("SpeedDialDels:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SpeedDialDels_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SpeedDialDels_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -686,7 +685,7 @@ class MainPathTest : PhxCommon() {
     fun testFeedsTabDels() {
         try {
             // 删除所有tab
-            getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.1, 0.8)?.get(0)?.click()
+            getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.1, 0.8)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Edit", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -707,15 +706,15 @@ class MainPathTest : PhxCommon() {
             }
             waitUiObject2ByText("Done", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.1, 0.3, 0.05, 0.2, 0.0, 0.5, 0.02, 0.5)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.1, 0.3, 0.05, 0.2, 0.0, 0.5, 0.02, 0.5)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FeedsTabDels:PASS" + "\n", mainPathFile)
+            writeStrToFile("FeedsTabDels:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FeedsTabDels:Exception" + "\n", mainPathFile)
+            writeStrToFile("FeedsTabDels:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FeedsTabDels_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FeedsTabDels_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -727,7 +726,7 @@ class MainPathTest : PhxCommon() {
     @Test
     fun testFeedsTabAdds() {
         try {
-            getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.1, 0.8)?.get(0)?.click()
+            getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.1, 0.8)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             for (i in 0..19) {
                 val addChannel = waitUiObject2ByText("Add channel", TIMEOUT_SHORT)
@@ -751,13 +750,13 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FeedsTabAdds:PASS" + "\n", mainPathFile)
+            writeStrToFile("FeedsTabAdds:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FeedsTabAdds:Exception" + "\n", mainPathFile)
+            writeStrToFile("FeedsTabAdds:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FeedsTabAdds_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FeedsTabAdds_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -772,51 +771,51 @@ class MainPathTest : PhxCommon() {
             // 打开Feeds新闻
             switchFeedsTab("Lifestyle")
             sleep(TIMEOUT_MEDIUM.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.5, 0.0, 1.0, 0.02, 0.8)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.5, 0.0, 1.0, 0.02, 0.8)?.firstOrNull()?.click()
             sleep(TIMEOUT_MEDIUM.toLong())
 
             // Feeds新闻-省流
             var topRightImgs = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)
             for (i in 0..2) {
-                if (topRightImgs != null && topRightImgs.size >= 2) {
+                if (!topRightImgs.isNullOrEmpty() && topRightImgs.size >= 2) {
                     break
                 } else {
                     sleep(TIMEOUT_SHORT.toLong())
                     topRightImgs = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)
                 }
             }
-            topRightImgs!!.get(0).click()
+            topRightImgs?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             getUiObject2ByChildText("android.widget.LinearLayout", true, "Prompt saving result", "android.widget.Switch")?.click()
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.2, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.2, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
 
             // Feeds新闻-更多按钮
             if (waitUiObject2ByText("Home", TIMEOUT_SHORT) != null) {
-                getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.5, 0.0, 1.0, 0.02, 0.8)?.get(0)?.click()
+                getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.5, 0.0, 1.0, 0.02, 0.8)?.firstOrNull()?.click()
                 sleep(TIMEOUT_MEDIUM.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.get(1)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.getOrNull(1)?.click()
             waitUiObject2ByText("Add to favorites", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.get(1)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.getOrNull(1)?.click()
             waitUiObject2ByText("Share", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.get(1)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.getOrNull(1)?.click()
             var dartLight = waitUiObject2ByText("Dark mode", TIMEOUT_SHORT)
             if (dartLight == null) {
                 dartLight = waitUiObject2ByText("Light mode", TIMEOUT_SHORT)
             }
             dartLight?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.get(1)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.getOrNull(1)?.click()
             waitUiObject2ByText("Report", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.get(1)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.02, 0.2, 0.6, 1.0, 0.02, 0.3)?.getOrNull(1)?.click()
             waitUiObject2ByText("Font size", TIMEOUT_MEDIUM)?.click()
             val seekBar = waitUiObject2sByClazz("android.widget.SeekBar", TIMEOUT_MEDIUM.toLong()).getOrNull(0) ?: return
             swip(seekBar, "right")
@@ -825,9 +824,9 @@ class MainPathTest : PhxCommon() {
 
             // Feeds新闻-底部工具栏
             val frameLayouts = getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
-            if (frameLayouts != null) {
+            if (!frameLayouts.isNullOrEmpty()) {
                 for (i in frameLayouts.indices) {
-                    frameLayouts.get(i).click()
+                    frameLayouts[i].click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                     if (i == 0) {
                         back()
@@ -840,27 +839,27 @@ class MainPathTest : PhxCommon() {
                 }
             }
             val linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.8, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
-            if (linearLayouts != null && linearLayouts.size > 0) {
-                linearLayouts?.get(0)?.click()
+            if (!linearLayouts.isNullOrEmpty()) {
+                linearLayouts.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
 
             val imageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.88, 1.0)
-            if (imageViews != null) {
-                imageViews?.get(0)?.click()
+            if (!imageViews.isNullOrEmpty()) {
+                imageViews.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            writeStrToFile("FeedsNews:PASS" + "\n", mainPathFile)
+            writeStrToFile("FeedsNews:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FeedsNews:Exception" + "\n", mainPathFile)
+            writeStrToFile("FeedsNews:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FeedsNews_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FeedsNews_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -875,15 +874,15 @@ class MainPathTest : PhxCommon() {
             switchFeedsTab("Hot Girl")
             sleep(TIMEOUT_MEDIUM.toLong())
             var bigImgLinearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.2, 0.8, 0.0, 1.0, 0.02, 1.0)
-            if (bigImgLinearLayouts == null || bigImgLinearLayouts.size == 0) {
+            if (bigImgLinearLayouts.isNullOrEmpty()) {
                 bigImgLinearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.4, 0.6, 0.1, 0.5, 0.0, 1.0, 0.02, 1.0)
             }
-            bigImgLinearLayouts?.get(0)?.click()
+            bigImgLinearLayouts?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             if (waitUiObject2ByText("Save", TIMEOUT_SHORT) == null) {
                 val bigImgs = getUiObject2s("android.widget.FrameLayout", true, 0.8, 1.0, 0.5, 0.8, 0.0, 1.0, 0.02, 1.0)
-                if (bigImgs != null && bigImgs.size > 0) {
-                    bigImgs?.get(0)?.click()
+                if (!bigImgs.isNullOrEmpty()) {
+                    bigImgs.firstOrNull()?.click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                     back()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -891,9 +890,9 @@ class MainPathTest : PhxCommon() {
 
                 // 底部工具栏
                 val frameLayouts = getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
-                if (frameLayouts != null) {
+                if (!frameLayouts.isNullOrEmpty()) {
                     for (i in frameLayouts.indices) {
-                        frameLayouts.get(i).click()
+                        frameLayouts[i].click()
                         sleep(TIMEOUT_VERY_SHORT.toLong())
                         if (i == 0) {
                             back()
@@ -906,16 +905,16 @@ class MainPathTest : PhxCommon() {
                     }
                 }
                 val linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.8, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
-                if (linearLayouts != null && linearLayouts.size > 0) {
-                    linearLayouts?.get(0)?.click()
+                if (!linearLayouts.isNullOrEmpty()) {
+                    linearLayouts.firstOrNull()?.click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                     back()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
 
                 val imageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.88, 1.0)
-                if (imageViews != null && imageViews.size > 0) {
-                    imageViews?.get(0)?.click()
+                if (!imageViews.isNullOrEmpty()) {
+                    imageViews.firstOrNull()?.click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                     back()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -926,13 +925,13 @@ class MainPathTest : PhxCommon() {
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            writeStrToFile("FeedsImg:PASS" + "\n", mainPathFile)
+            writeStrToFile("FeedsImg:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FeedsImg:Exception" + "\n", mainPathFile)
+            writeStrToFile("FeedsImg:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FeedsImg_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FeedsImg_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -947,16 +946,16 @@ class MainPathTest : PhxCommon() {
             // Feeds视频-打开
             switchFeedsTab("Video")
             sleep(TIMEOUT_MEDIUM.toLong())
-            val firstVideo = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9).get(0)
+            val firstVideo = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9).first()
             val firstVideoBottom = getChildUiObject2(firstVideo, false, "android.widget.LinearLayout", 0.8, 1.0, 0.0, 0.1, 0.0, 1.0, 0.0, 1.0, false)
             firstVideoBottom?.click()
             sleep(TIMEOUT_SHORT.toLong())
 
             // Feeds视频-底部工具栏
             val frameLayouts = getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
-            if (frameLayouts != null) {
+            if (!frameLayouts.isNullOrEmpty()) {
                 for (i in frameLayouts.indices) {
-                    frameLayouts.get(i).click()
+                    frameLayouts[i].click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                     if (i == 0) {
                         back()
@@ -969,27 +968,27 @@ class MainPathTest : PhxCommon() {
                 }
             }
             val linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.8, 0.0, 0.2, 0.0, 1.0, 0.8, 1.0)
-            if (linearLayouts != null && linearLayouts.size > 0) {
-                linearLayouts?.get(0)?.click()
+            if (!linearLayouts.isNullOrEmpty()) {
+                linearLayouts.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
 
             val imageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.19, 0.0, 0.2, 0.0, 1.0, 0.88, 1.0)
-            if (imageViews != null) {
-                imageViews?.get(0)?.click()
+            if (!imageViews.isNullOrEmpty()) {
+                imageViews.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            writeStrToFile("FeedsVideos:PASS" + "\n", mainPathFile)
+            writeStrToFile("FeedsVideos:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FeedsVideos:Exception" + "\n", mainPathFile)
+            writeStrToFile("FeedsVideos:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FeedsVideos_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FeedsVideos_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1004,29 +1003,27 @@ class MainPathTest : PhxCommon() {
             // Feeds小视频
             switchFeedsTab("Short Video")
             sleep(TIMEOUT_MEDIUM.toLong())
-            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_SHORT.toLong())
             val swipeToast = waitUiObject2ByText("Swipe up for more", TIMEOUT_SHORT)
-            if (swipeToast != null) {
-                swipeToast.click()
-            }
+            swipeToast?.click()
             swip(0.5, 0.7, 0.5, 0.3)
             sleep(TIMEOUT_SHORT.toLong())
             swip(0.5, 0.3, 0.5, 0.7)
             sleep(TIMEOUT_SHORT.toLong())
 
             // Feeds小视频-右侧工具栏
-            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.get(1)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.getOrNull(1)?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.2, 1.0)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.2, 1.0)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.get(2)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.getOrNull(2)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.get(3)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.3, 1.0)?.getOrNull(3)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Download", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_SHORT.toLong())
@@ -1035,13 +1032,13 @@ class MainPathTest : PhxCommon() {
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            writeStrToFile("FeedsSmallVideo:PASS" + "\n", mainPathFile)
+            writeStrToFile("FeedsSmallVideo:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FeedsSmallVideo:Exception" + "\n", mainPathFile)
+            writeStrToFile("FeedsSmallVideo:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FeedsSmallVideo_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FeedsSmallVideo_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1066,39 +1063,39 @@ class MainPathTest : PhxCommon() {
                 waitUiObject2ByText("Signed in with Google", TIMEOUT_LONG)
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.01, 0.2, 0.8, 1.0, 0.02, 0.2)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.01, 0.2, 0.8, 1.0, 0.02, 0.2)?.firstOrNull()?.click()
             sleep(TIMEOUT_SHORT.toLong())
             var comments = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.1, 0.8, 0.0, 1.0, 0.02, 0.9)
             for (i in 0..2) {
-                if (comments == null || comments.size == 0) {
+                if (comments.isNullOrEmpty()) {
                     back()
                     sleep(TIMEOUT_SHORT.toLong())
-                    getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.01, 0.2, 0.8, 1.0, 0.02, 0.2)?.get(0)?.click()
+                    getUiObject2s("android.widget.ImageView", true, 0.05, 0.2, 0.01, 0.2, 0.8, 1.0, 0.02, 0.2)?.firstOrNull()?.click()
                     sleep(TIMEOUT_SHORT.toLong())
                     comments = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.1, 0.8, 0.0, 1.0, 0.02, 0.9)
                 } else {
                     break
                 }
             }
-            comments!!.get(0).click()
+            comments?.firstOrNull()?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.FrameLayout", true, 0.8, 1.0, 0.1, 0.8, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.FrameLayout", true, 0.8, 1.0, 0.1, 0.8, 0.0, 1.0, 0.02, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             for (i in 0..4) {
                 if (waitUiObject2ByText("Share Phoenix", TIMEOUT_SHORT) != null) {
                     break
                 } else {
-                    getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                    getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            writeStrToFile("MeMsg:PASS" + "\n", mainPathFile)
+            writeStrToFile("MeMsg:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeMsg:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeMsg:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeMsg_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeMsg_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1119,11 +1116,11 @@ class MainPathTest : PhxCommon() {
             bookmark?.click()
             waitUiObject2ByText("New Folder", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            waitUiObject2ByText("Title", TIMEOUT_MEDIUM)?.setText("Test" ?: "")
+            waitUiObject2ByText("Title", TIMEOUT_MEDIUM)?.text = "Test"
             sleep(TIMEOUT_VERY_SHORT.toLong())
             var save = waitUiObject2ByText("Save", TIMEOUT_MEDIUM)
             if (save == null) {
-                save = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.2).get(0)
+                save = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.2).firstOrNull()
             }
             save?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -1136,8 +1133,8 @@ class MainPathTest : PhxCommon() {
             waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val bookmarkMore = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.9)
-            if (bookmarkMore != null && bookmarkMore.size > 0) {
-                bookmarkMore?.get(0)?.click()
+            if (!bookmarkMore.isNullOrEmpty()) {
+                bookmarkMore.firstOrNull()?.click()
                 waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
             }
             waitUiObject2ByText("Sync", TIMEOUT_MEDIUM)?.click()
@@ -1146,15 +1143,15 @@ class MainPathTest : PhxCommon() {
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("MeBookmark:PASS" + "\n", mainPathFile)
+            writeStrToFile("MeBookmark:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeBookmark:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeBookmark:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeBookmark_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeBookmark_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1170,27 +1167,27 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("History", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.9)?.firstOrNull()?.click()
             waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("Clear", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Clear", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val isCleared = isUiObject2ExistByText("No history", TIMEOUT_MEDIUM)
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             if (isCleared) {
-                writeStrToFile("MeHistory:PASS" + "\n", mainPathFile)
+                writeStrToFile("MeHistory:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("MeHistory:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/meHistory_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("MeHistory:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/meHistory_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeHistory:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeHistory:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeHistory_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeHistory_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1207,13 +1204,13 @@ class MainPathTest : PhxCommon() {
             waitUiObject2ByText("My Video", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("Local videos", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             click(width / 2, height / 2)
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByTextContains("Watched", TIMEOUT_MEDIUM)?.let {
                 longClick(it)
@@ -1221,20 +1218,20 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Remove", TIMEOUT_MEDIUM)?.click()
             val isRemoved = isUiObject2ExistByTextContains("No history", TIMEOUT_MEDIUM)
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             if (isRemoved) {
-                writeStrToFile("MeMyVideo:PASS" + "\n", mainPathFile)
+                writeStrToFile("MeMyVideo:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("MeMyVideo:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/meMyVideo_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("MeMyVideo:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/meMyVideo_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeMyVideo:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeMyVideo:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeMyVideo_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeMyVideo_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1251,11 +1248,11 @@ class MainPathTest : PhxCommon() {
             waitUiObject2ByText("My Music", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("Local music", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.5, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.5, 0.0, 1.0, 0.02, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(1)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.getOrNull(1)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("New playlist", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -1264,10 +1261,10 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Add songs", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.1, 0.5, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.1, 0.5, 0.0, 1.0, 0.02, 0.9)?.firstOrNull()?.click()
             waitUiObject2ByText("Add", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Test", TIMEOUT_MEDIUM)?.let {
                 longClick(it)
@@ -1277,15 +1274,15 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 0.5, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("MeMyMusic:PASS" + "\n", mainPathFile)
+            writeStrToFile("MeMyMusic:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeMyMusic:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeMyMusic:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeMyMusic_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeMyMusic_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1324,19 +1321,19 @@ class MainPathTest : PhxCommon() {
                     0.5,
                     1.0,
                     true
-                )?.click()
+            )?.click()
             }
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Clear", TIMEOUT_MEDIUM)?.click()
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("MeAdblock:PASS" + "\n", mainPathFile)
+            writeStrToFile("MeAdblock:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeAdblock:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeAdblock:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeAdblock_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeAdblock_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1355,13 +1352,13 @@ class MainPathTest : PhxCommon() {
                 darkLight = waitUiObject2ByText("Light", TIMEOUT_MEDIUM)
             }
             darkLight?.click()
-            writeStrToFile("MeDarkLight:PASS" + "\n", mainPathFile)
+            writeStrToFile("MeDarkLight:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeDarkLight:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeDarkLight:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeDarkLight_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeDarkLight_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1384,13 +1381,13 @@ class MainPathTest : PhxCommon() {
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            writeStrToFile("MeFacebook:PASS" + "\n", mainPathFile)
+            writeStrToFile("MeFacebook:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeFacebook:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeFacebook:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeFacebook_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeFacebook_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1413,13 +1410,13 @@ class MainPathTest : PhxCommon() {
                     break
                 }
             }
-            writeStrToFile("MeShare:PASS" + "\n", mainPathFile)
+            writeStrToFile("MeShare:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeShare:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeShare:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeShare_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeShare_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1449,7 +1446,7 @@ class MainPathTest : PhxCommon() {
                     break
                 }
             }
-            views!!.get(1).click()
+            views?.getOrNull(1)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             for (i in 0..9) {
                 swip(0.5, 0.7, 0.5, 0.3)
@@ -1491,28 +1488,28 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_MEDIUM.toLong())
             waitUiObject2ByRes("J_Feedback_Btn", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            waitUiObject2ByRes("J_Email", TIMEOUT_MEDIUM.toLong())?.setText("test@qq.com" ?: "")
-            waitUiObject2ByRes("J_Desc", TIMEOUT_MEDIUM.toLong())?.setText("test" ?: "")
+            waitUiObject2ByRes("J_Email", TIMEOUT_MEDIUM.toLong())?.text = "test@qq.com"
+            waitUiObject2ByRes("J_Desc", TIMEOUT_MEDIUM.toLong())?.text = "test"
             swip(0.5, 0.7, 0.5, 0.3)
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByRes("J_UploadTrigger", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.3, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.3, 0.0, 1.0, 0.02, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByRes("J_Btn", TIMEOUT_MEDIUM.toLong())?.click()
             val isSuccess = isUiObject2ExistByText("Thank you for the feedback!", TIMEOUT_MEDIUM)
             if (isSuccess) {
-                writeStrToFile("MeHelpFeedback:PASS" + "\n", mainPathFile)
+                writeStrToFile("MeHelpFeedback:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("MeHelpFeedback:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/MeHelpFeedback_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("MeHelpFeedback:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/MeHelpFeedback_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeHelpFeedback:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeHelpFeedback:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeHelpFeedback_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeHelpFeedback_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1532,17 +1529,17 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val isCallSuccess = isUiObject2ExistByRes("com.android.vending:id/0_resource_name_obfuscated", TIMEOUT_LONG.toLong())
             if (isCallSuccess) {
-                writeStrToFile("MeReward:PASS" + "\n", mainPathFile)
+                writeStrToFile("MeReward:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("MeReward:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/MeReward_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("MeReward:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/MeReward_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeReward:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeReward:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeReward_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeReward_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1561,14 +1558,14 @@ class MainPathTest : PhxCommon() {
             // 搜索引擎
             waitUiObject2ByText("Search engine", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("Bing", TIMEOUT_MEDIUM)?.click()
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
-            writeStrToFile("SettingSearchEngine:PASS" + "\n", mainPathFile)
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
+            writeStrToFile("SettingSearchEngine:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingSearchEngine:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingSearchEngine:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingSearchEngine_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingSearchEngine_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1586,14 +1583,14 @@ class MainPathTest : PhxCommon() {
             // 图片
             waitUiObject2ByText("Image", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("Always no image", TIMEOUT_MEDIUM)?.click()
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
-            writeStrToFile("SettingImage:PASS" + "\n", mainPathFile)
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
+            writeStrToFile("SettingImage:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingImage:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingImage:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingImage_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingImage_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1610,16 +1607,16 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             // 字体大小
             waitUiObject2ByText("Font size", TIMEOUT_MEDIUM)?.click()
-            val seekBar = waitUiObject2sByClazz("android.widget.SeekBar", TIMEOUT_MEDIUM.toLong()).get(0)
+            val seekBar = waitUiObject2sByClazz("android.widget.SeekBar", TIMEOUT_MEDIUM.toLong()).first()
             swip(seekBar, "left")
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
-            writeStrToFile("SettingFontSize:PASS" + "\n", mainPathFile)
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
+            writeStrToFile("SettingFontSize:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingFontSize:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingFontSize:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingFontSize_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingFontSize_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1637,14 +1634,14 @@ class MainPathTest : PhxCommon() {
             // 语言
             waitUiObject2ByText("Language", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
-            writeStrToFile("SettingLanguage:PASS" + "\n", mainPathFile)
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
+            writeStrToFile("SettingLanguage:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingLanguage:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingLanguage:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingLanguage_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingLanguage_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1678,16 +1675,16 @@ class MainPathTest : PhxCommon() {
             } ?: return
             waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.8, 1.0, topY - 0.02, bottomY + 0.02)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.8, 1.0, topY - 0.02, bottomY + 0.02)?.firstOrNull()?.click()
             waitUiObject2ByText("Clear", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("SettingHomepage:PASS" + "\n", mainPathFile)
+            writeStrToFile("SettingHomepage:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingHomepage:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingHomepage:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingHomepage_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingHomepage_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1706,23 +1703,21 @@ class MainPathTest : PhxCommon() {
             waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("Concurrent downloads", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("6", TIMEOUT_MEDIUM)?.click()
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             waitUiObject2ByText("Download folder", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val storage = getUiObject2("Internal Storage", "android.widget.TextView", 0.8, 0.0)
-            if (storage != null) {
-                storage.click()
-            }
+            storage?.click()
             waitUiObject2ByText("Choose it", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
-            writeStrToFile("SettingDownloads:PASS" + "\n", mainPathFile)
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
+            writeStrToFile("SettingDownloads:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingDownloads:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingDownloads:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingDownloads_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingDownloads_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1741,19 +1736,19 @@ class MainPathTest : PhxCommon() {
             waitUiObject2ByText("Notification", TIMEOUT_MEDIUM)?.click()
             val notificationSwitchs = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong())
             for (notificationSwitch in notificationSwitchs) {
-                if (notificationSwitch.isChecked()) {
+                if (notificationSwitch.isChecked) {
                     notificationSwitch.click()
                 }
             }
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
-            writeStrToFile("SettingNotification:PASS" + "\n", mainPathFile)
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
+            writeStrToFile("SettingNotification:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingNotification:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingNotification:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingNotification_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingNotification_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1774,25 +1769,18 @@ class MainPathTest : PhxCommon() {
             waitUiObject2ByText("Account and password", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("Video and Document browsing history", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            var cleanPhoenix: UiObject2? = null
             val tmpCleanPhoenixs = waitUiObject2sByTextContains("Clean up", TIMEOUT_MEDIUM)
-            for (tmpCleanPhoenix in tmpCleanPhoenixs) {
-                if (tmpCleanPhoenix.isClickable()) {
-                    cleanPhoenix = tmpCleanPhoenix
-                    break
-                }
-            }
-            if (cleanPhoenix != null && cleanPhoenix.isEnabled()) {
+            val cleanPhoenix = tmpCleanPhoenixs.firstOrNull { tmpCleanPhoenix -> tmpCleanPhoenix.isClickable }
+            if (cleanPhoenix != null && cleanPhoenix.isEnabled) {
                 cleanPhoenix.click()
                 for (i in 0..9) {
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                     val cleanPhoenixBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
-                    if (cleanPhoenixBacks == null || cleanPhoenixBacks.size == 0) {
+                    if (cleanPhoenixBacks.isEmpty()) {
                         back()
                     } else {
-                        // uiautomator有时点击时会报异常
                         try {
-                            cleanPhoenixBacks?.get(0)?.click()
+                            cleanPhoenixBacks.first().click()
                         } catch (e: Exception) {
                             back()
                         }
@@ -1803,15 +1791,15 @@ class MainPathTest : PhxCommon() {
                     }
                 }
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             }
-            writeStrToFile("SettingClearData:PASS" + "\n", mainPathFile)
+            writeStrToFile("SettingClearData:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingClearData:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingClearData:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingClearData_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingClearData_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1836,13 +1824,13 @@ class MainPathTest : PhxCommon() {
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            writeStrToFile("SettingCheckUpdates:PASS" + "\n", mainPathFile)
+            writeStrToFile("SettingCheckUpdates:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingCheckUpdates:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingCheckUpdates:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingCheckUpdates_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingCheckUpdates_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1868,7 +1856,7 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val aboutSwitchs = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong())
             for (aboutSwitch in aboutSwitchs) {
-                if (aboutSwitch.isChecked()) {
+                if (aboutSwitch.isChecked) {
                     aboutSwitch.click()
                 }
             }
@@ -1880,14 +1868,14 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
-            writeStrToFile("SettingAbout:PASS" + "\n", mainPathFile)
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
+            writeStrToFile("SettingAbout:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingAbout:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingAbout:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingAbout_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingAbout_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1915,13 +1903,13 @@ class MainPathTest : PhxCommon() {
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            writeStrToFile("SettingFacebook:PASS" + "\n", mainPathFile)
+            writeStrToFile("SettingFacebook:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingFacebook:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingFacebook:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingFacebook_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingFacebook_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1944,13 +1932,13 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("SettingFeedback:PASS" + "\n", mainPathFile)
+            writeStrToFile("SettingFeedback:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingFeedback:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingFeedback:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingFeedback_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingFeedback_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -1975,13 +1963,13 @@ class MainPathTest : PhxCommon() {
                 amStartApp(device, activity, null)
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            writeStrToFile("SettingRateUs:PASS" + "\n", mainPathFile)
+            writeStrToFile("SettingRateUs:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingRateUs:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingRateUs:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingRateUs_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingRateUs_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2004,13 +1992,13 @@ class MainPathTest : PhxCommon() {
             waitUiObject2ByText("Restore", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             backToHome()
-            writeStrToFile("SettingReset:PASS" + "\n", mainPathFile)
+            writeStrToFile("SettingReset:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("SettingReset:Exception" + "\n", mainPathFile)
+            writeStrToFile("SettingReset:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/SettingReset_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/SettingReset_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2035,14 +2023,14 @@ class MainPathTest : PhxCommon() {
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             if (normal != null && incognito != null) {
-                getUiObject2s("android.widget.ImageView", true, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
             } else {
-                getUiObject2s("android.widget.FrameLayout", false, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.get(0)?.click()
+                getUiObject2s("android.widget.FrameLayout", false, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
             }
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
@@ -2052,21 +2040,21 @@ class MainPathTest : PhxCommon() {
             swip(0.5, 0.3, 0.5, 0.7)
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val normalImageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.7, 1.0, 0.2, 0.8)
-            if (normalImageViews != null && normalImageViews.size > 0) {
-                normalImageViews?.get(0)?.click()
+            if (!normalImageViews.isNullOrEmpty()) {
+                normalImageViews.firstOrNull()?.click()
             } else {
                 swip(0.3, 0.5, 0.7, 0.5)
             }
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("TabsNormal:PASS" + "\n", mainPathFile)
+            writeStrToFile("TabsNormal:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("TabsNormal:Exception" + "\n", mainPathFile)
+            writeStrToFile("TabsNormal:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/TabsNormal_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/TabsNormal_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2086,7 +2074,7 @@ class MainPathTest : PhxCommon() {
                 incognito.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 waitUiObject2ByText("New incognito tab", TIMEOUT_MEDIUM)?.click()
                 sleep(TIMEOUT_SHORT.toLong())
@@ -2098,14 +2086,14 @@ class MainPathTest : PhxCommon() {
                 waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             if (normal != null && incognito != null) {
-                getUiObject2s("android.widget.ImageView", true, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
             } else {
-                getUiObject2s("android.widget.FrameLayout", false, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.get(0)?.click()
+                getUiObject2s("android.widget.FrameLayout", false, 0.01, 0.3, 0.01, 0.5, 0.5, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
             }
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
@@ -2115,8 +2103,8 @@ class MainPathTest : PhxCommon() {
             swip(0.5, 0.3, 0.5, 0.7)
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val incognitoImageViews = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.7, 1.0, 0.2, 0.8)
-            if (incognitoImageViews != null && incognitoImageViews.size > 0) {
-                incognitoImageViews?.get(0)?.click()
+            if (!incognitoImageViews.isNullOrEmpty()) {
+                incognitoImageViews.firstOrNull()?.click()
             } else {
                 swip(0.7, 0.5, 0.3, 0.5)
             }
@@ -2125,13 +2113,13 @@ class MainPathTest : PhxCommon() {
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            writeStrToFile("TabsIncognito:PASS" + "\n", mainPathFile)
+            writeStrToFile("TabsIncognito:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("TabsIncognito:Exception" + "\n", mainPathFile)
+            writeStrToFile("TabsIncognito:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/TabsIncognito_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/TabsIncognito_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2147,19 +2135,19 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val normal = waitUiObject2ByText("Normal", TIMEOUT_SHORT)
             val incognito = waitUiObject2ByText("Incognito", TIMEOUT_SHORT)
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("New normal tab", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("New incognito tab", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_MEDIUM.toLong())
             waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Close all incognito tabs", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_SHORT.toLong())
@@ -2167,16 +2155,16 @@ class MainPathTest : PhxCommon() {
                 waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Close all tabs", TIMEOUT_MEDIUM)?.click()
-            writeStrToFile("TabsMore:PASS" + "\n", mainPathFile)
+            writeStrToFile("TabsMore:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("TabsMore:Exception" + "\n", mainPathFile)
+            writeStrToFile("TabsMore:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/TabsMore_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/TabsMore_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2198,7 +2186,7 @@ class MainPathTest : PhxCommon() {
             // 下载
             waitUiObject2ByText("Downloads", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.firstOrNull()?.click()
             waitUiObject2ByText("Add download link", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2sByClazz("android.widget.EditText", TIMEOUT_MEDIUM.toLong()).getOrNull(0)
@@ -2207,26 +2195,26 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Download", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.firstOrNull()?.click()
             waitUiObject2ByText("Start all", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.firstOrNull()?.click()
             waitUiObject2ByText("Pause all", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.firstOrNull()?.click()
             waitUiObject2ByText("Settings", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesDownloads:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesDownloads:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesDownloads:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesDownloads:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesDownloads_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesDownloads_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2255,15 +2243,15 @@ class MainPathTest : PhxCommon() {
                 whatsAppTips.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesStatusSaver:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesStatusSaver:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesStatusSaver:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesStatusSaver:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesStatusSaver_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesStatusSaver_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2283,15 +2271,15 @@ class MainPathTest : PhxCommon() {
                 swip(0.7, 0.5, 0.3, 0.5)
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesWhatsApp:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesWhatsApp:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesWhatsApp:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesWhatsApp:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesWhatsApp_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesWhatsApp_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2313,19 +2301,19 @@ class MainPathTest : PhxCommon() {
                     swip(0.7, 0.5, 0.3, 0.5)
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
-                writeStrToFile("FilesTelegram:PASS" + "\n", mainPathFile)
+                writeStrToFile("FilesTelegram:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FilesTelegram:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/FilesTelegram_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("FilesTelegram:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/FilesTelegram_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesTelegram:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesTelegram:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesTelegram_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesTelegram_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2345,20 +2333,20 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             swip(0.3, 0.5, 0.7, 0.5)
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.5, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.5, 0.0, 1.0, 0.1, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_SHORT.toLong())
             horizontalScreen()
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesVideos:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesVideos:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesVideos:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesVideos:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesVideos_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesVideos_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2378,19 +2366,19 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             swip(0.3, 0.5, 0.7, 0.5)
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(1)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.getOrNull(1)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesMusic:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesMusic:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesMusic:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesMusic:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesMusic_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesMusic_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2410,7 +2398,7 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             swip(0.3, 0.5, 0.7, 0.5)
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.3, 0.0, 1.0, 0.1, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             for (i in 0..9) {
                 swip(0.7, 0.5, 0.3, 0.5)
@@ -2418,15 +2406,15 @@ class MainPathTest : PhxCommon() {
             }
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesImages:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesImages:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesImages:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesImages:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesImages_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesImages_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2445,23 +2433,23 @@ class MainPathTest : PhxCommon() {
             for (i in 0..5) {
                 swip(0.7, 0.5, 0.3, 0.5)
                 sleep(TIMEOUT_VERY_SHORT.toLong())
-                val firstDoc = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9).get(0)
+                val firstDoc = getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9).firstOrNull()
                 if (firstDoc != null) {
                     firstDoc.click()
                     sleep(TIMEOUT_SHORT.toLong())
-                    getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                    getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesDocuments:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesDocuments:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesDocuments:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesDocuments:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesDocuments_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesDocuments_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2485,13 +2473,13 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesStorage:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesStorage:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesStorage:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesStorage:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesStorage_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesStorage_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2513,19 +2501,19 @@ class MainPathTest : PhxCommon() {
             }
             archives?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_MEDIUM.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesArchives:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesArchives:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesArchives:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesArchives:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesArchives_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesArchives_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2549,15 +2537,15 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             swip(0.7, 0.5, 0.3, 0.5)
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesInstagram:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesInstagram:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesInstagram:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesInstagram:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesInstagram_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesInstagram_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2581,13 +2569,13 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesOfflinePages:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesOfflinePages:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesOfflinePages:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesOfflinePages:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesOfflinePages_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesOfflinePages_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2611,13 +2599,13 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesApps:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesApps:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesApps:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesApps:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesApps_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesApps_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2641,13 +2629,13 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             back()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesOthers:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesOthers:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesOthers:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesOthers:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesOthers_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesOthers_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2667,7 +2655,7 @@ class MainPathTest : PhxCommon() {
             if (cleanJunkFiles == null) {
                 cleanJunkFiles = waitUiObject2ByTextContains("Safe clean", TIMEOUT_MEDIUM)
             }
-            if (cleanJunkFiles != null && cleanJunkFiles.isEnabled()) {
+            if (cleanJunkFiles != null && cleanJunkFiles.isEnabled) {
                 cleanJunkFiles.click()
                 sleep(TIMEOUT_LONG.toLong())
                 // 关闭广告
@@ -2675,7 +2663,7 @@ class MainPathTest : PhxCommon() {
                 for (i in 0..9) {
                     // 返回
                     val junkFilesBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
-                    if (junkFilesBacks == null || junkFilesBacks.size == 0) {
+                    if (junkFilesBacks.isEmpty()) {
                         // 处理退出清理确认弹窗
                         val exit = waitUiObject2ByText("Exit", TIMEOUT_SHORT)
                         if (exit != null) {
@@ -2687,7 +2675,7 @@ class MainPathTest : PhxCommon() {
                     } else {
                         // uiautomator有时点击时会报异常
                         try {
-                            junkFilesBacks?.get(0)?.click()
+                            junkFilesBacks.first().click()
                         } catch (e: Exception) {
                             back()
                         }
@@ -2699,7 +2687,7 @@ class MainPathTest : PhxCommon() {
                     }
                 }
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 // 处理退出确认弹窗
                 val exit = waitUiObject2ByText("Exit", TIMEOUT_SHORT)
@@ -2708,13 +2696,13 @@ class MainPathTest : PhxCommon() {
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
             }
-            writeStrToFile("FilesJunkfiles:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesJunkfiles:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesJunkfiles:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesJunkfiles:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesJunkfiles_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesJunkfiles_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2739,12 +2727,12 @@ class MainPathTest : PhxCommon() {
             }
             for (i in 0..9) {
                 val boostBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
-                if (boostBacks == null || boostBacks.size == 0) {
+                if (boostBacks.isEmpty()) {
                     back()
                 } else {
                     // uiautomator有时点击时会报异常
                     try {
-                        boostBacks?.get(0)?.click()
+                        boostBacks.first().click()
                     } catch (e: Exception) {
                         back()
                     }
@@ -2754,13 +2742,13 @@ class MainPathTest : PhxCommon() {
                     break
                 }
             }
-            writeStrToFile("FilesPhoneBoost:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesPhoneBoost:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesPhoneBoost:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesPhoneBoost:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesPhoneBoost_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesPhoneBoost_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2786,27 +2774,21 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Account and password", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            var cleanUp: UiObject2? = null
             val tmpCleanPhoenixs = waitUiObject2sByTextContains("Clean up", TIMEOUT_MEDIUM)
-            for (tmpCleanPhoenix in tmpCleanPhoenixs) {
-                if (tmpCleanPhoenix.isClickable()) {
-                    cleanUp = tmpCleanPhoenix
-                    break
-                }
-            }
-            if (cleanUp != null && cleanUp.isEnabled()) {
+            val cleanUp = tmpCleanPhoenixs.firstOrNull { tmpCleanPhoenix -> tmpCleanPhoenix.isClickable }
+            if (cleanUp != null && cleanUp.isEnabled) {
                 cleanUp.click()
                 sleep(TIMEOUT_LONG.toLong())
                 // 关闭广告
                 closeAdDialog()
                 for (i in 0..9) {
                     val whatsAppBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
-                    if (whatsAppBacks == null || whatsAppBacks.size == 0) {
+                    if (whatsAppBacks.isEmpty()) {
                         back()
                     } else {
                         // uiautomator有时点击时会报异常
                         try {
-                            whatsAppBacks?.get(0)?.click()
+                            whatsAppBacks.first().click()
                         } catch (e: Exception) {
                             back()
                         }
@@ -2817,16 +2799,16 @@ class MainPathTest : PhxCommon() {
                     }
                 }
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            writeStrToFile("FilesCleanPhoenix:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesCleanPhoenix:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesCleanPhoenix:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesCleanPhoenix:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesCleanPhoenix_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesCleanPhoenix_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2850,8 +2832,8 @@ class MainPathTest : PhxCommon() {
             cleanLargeFile?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             var cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM)
-            if (cleanUp != null && !cleanUp.isEnabled()) {
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.5, 1.0, 0.02, 0.5)?.get(0)?.click()
+            if (cleanUp != null && !cleanUp.isEnabled) {
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.5, 1.0, 0.02, 0.5)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM)
             }
@@ -2863,12 +2845,12 @@ class MainPathTest : PhxCommon() {
             closeAdDialog()
             for (i in 0..9) {
                 val videosBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
-                if (videosBacks == null || videosBacks.size == 0) {
+                if (videosBacks.isEmpty()) {
                     back()
                 } else {
                     // uiautomator有时点击时会报异常
                     try {
-                        videosBacks?.get(0)?.click()
+                        videosBacks.first().click()
                     } catch (e: Exception) {
                         back()
                     }
@@ -2879,13 +2861,13 @@ class MainPathTest : PhxCommon() {
                     break
                 }
             }
-            writeStrToFile("FilesCleanLargeFile:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesCleanLargeFile:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesCleanLargeFile:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesCleanLargeFile:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesCleanLargeFile_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesCleanLargeFile_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2910,24 +2892,24 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Other videos", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            val firstVideo = getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.5, 0.0, 1.0, 0.1, 0.9).get(0)
+            val firstVideo = getUiObject2s("android.widget.FrameLayout", true, 0.2, 0.4, 0.1, 0.5, 0.0, 1.0, 0.1, 0.9).firstOrNull()
             if (firstVideo != null) {
                 firstVideo.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 back()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
-                val checkBox = waitUiObject2sByClazz("android.widget.CheckBox", TIMEOUT_MEDIUM.toLong()).get(0)
-                if (!checkBox.isChecked()) {
+                val checkBox = waitUiObject2sByClazz("android.widget.CheckBox", TIMEOUT_MEDIUM.toLong()).first()
+                if (!checkBox.isChecked) {
                     checkBox.click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             }
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM)
-            if (cleanUp != null && cleanUp.isEnabled()) {
+            if (cleanUp != null && cleanUp.isEnabled) {
                 cleanUp.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
@@ -2936,12 +2918,12 @@ class MainPathTest : PhxCommon() {
                 closeAdDialog()
                 for (i in 0..9) {
                     val videosBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
-                    if (videosBacks == null || videosBacks.size == 0) {
+                    if (videosBacks.isEmpty()) {
                         back()
                     } else {
                         // uiautomator有时点击时会报异常
                         try {
-                            videosBacks?.get(0)?.click()
+                            videosBacks.first().click()
                         } catch (e: Exception) {
                             back()
                         }
@@ -2953,16 +2935,16 @@ class MainPathTest : PhxCommon() {
                     }
                 }
             } else {
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            writeStrToFile("FilesCleanVideos:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesCleanVideos:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesCleanVideos:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesCleanVideos:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesCleanVideos_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesCleanVideos_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -2987,7 +2969,7 @@ class MainPathTest : PhxCommon() {
                 cleanWhatsApp.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 val cleanUp = waitUiObject2ByTextContains("Clean up", TIMEOUT_MEDIUM)
-                if (cleanUp != null && cleanUp.isEnabled()) {
+                if (cleanUp?.isEnabled == true) {
                     cleanUp.click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                     for (i in 0..9) {
@@ -2997,7 +2979,7 @@ class MainPathTest : PhxCommon() {
                         } else {
                             // uiautomator有时点击时会报异常
                             try {
-                                whatsAppBacks?.get(0)?.click()
+                                whatsAppBacks.firstOrNull()?.click()
                             } catch (e: Exception) {
                                 back()
                             }
@@ -3009,20 +2991,20 @@ class MainPathTest : PhxCommon() {
                         }
                     }
                 } else {
-                    getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                    getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
-                writeStrToFile("FilesCleanWhatsApp:PASS" + "\n", mainPathFile)
+                writeStrToFile("FilesCleanWhatsApp:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FilesCleanWhatsApp:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/FilesCleanWhatsApp_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("FilesCleanWhatsApp:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/FilesCleanWhatsApp_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesCleanWhatsApp:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesCleanWhatsApp:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesCleanWhatsApp_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesCleanWhatsApp_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -3046,18 +3028,18 @@ class MainPathTest : PhxCommon() {
             if (cleanTelegram != null) {
                 cleanTelegram.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
-                writeStrToFile("FilesCleanTelegram:PASS" + "\n", mainPathFile)
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
+                writeStrToFile("FilesCleanTelegram:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FilesCleanTelegram:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/filesCleanTelegram_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("FilesCleanTelegram:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/filesCleanTelegram_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesCleanTelegram:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesCleanTelegram:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesCleanTelegram_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesCleanTelegram_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -3082,19 +3064,19 @@ class MainPathTest : PhxCommon() {
             if (recentDocuments != null) {
                 waitUiObject2ByText("More", TIMEOUT_MEDIUM)?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
-                writeStrToFile("FilesRecentDocuments:PASS" + "\n", mainPathFile)
+                writeStrToFile("FilesRecentDocuments:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FilesRecentDocuments:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/FilesRecentDocuments_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("FilesRecentDocuments:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/FilesRecentDocuments_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesRecentDocuments:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesRecentDocuments:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesRecentDocuments_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesRecentDocuments_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -3121,7 +3103,7 @@ class MainPathTest : PhxCommon() {
                 sleep(TIMEOUT_SHORT.toLong())
                 val firstImgs = getUiObject2s("android.view.View", true, 0.2, 0.4, 0.2, 0.5, 0.0, 1.0, 0.05, 0.9)
                 if (firstImgs != null && firstImgs.size > 6) {
-                    firstImgs?.get(0)?.click()
+                    firstImgs.firstOrNull()?.click()
                     sleep(TIMEOUT_MEDIUM.toLong())
                     break
                 }
@@ -3132,19 +3114,19 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_SHORT.toLong())
             waitUiObject2ByText("Download", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesWallpaper:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesWallpaper:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesWallpaper:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesWallpaper:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesWallpaper_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesWallpaper_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -3168,7 +3150,7 @@ class MainPathTest : PhxCommon() {
             ringtones?.click()
             waitUiObject2ByText("Select ringtone", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val uiObject2s = waitUiObject2sByText("Set", TIMEOUT_MEDIUM)
             if (uiObject2s != null && uiObject2s.size > 0) {
@@ -3179,8 +3161,8 @@ class MainPathTest : PhxCommon() {
                         val goSetting = waitUiObject2ByText("Go to settings", TIMEOUT_SHORT)
                         if (goSetting != null) {
                             goSetting.click()
-                            val settingSwitch = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong()).get(0)
-                            if (!settingSwitch.isChecked()) {
+                            val settingSwitch = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong()).firstOrNull() ?: continue
+                            if (!settingSwitch.isChecked) {
                                 settingSwitch.click()
                             }
                             back()
@@ -3191,19 +3173,19 @@ class MainPathTest : PhxCommon() {
                     }
                 }
             }
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("FilesRingtones:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesRingtones:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesRingtones:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesRingtones:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesRingtones_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesRingtones_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -3234,7 +3216,7 @@ class MainPathTest : PhxCommon() {
                 checkBox.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Compress 1 file", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -3242,21 +3224,21 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_MEDIUM.toLong())
             val compressed = waitUiObject2ByTextContains("have been compressed", TIMEOUT_LONG)
             if (compressed != null) {
-                writeStrToFile("FilesCompressFiles:PASS" + "\n", mainPathFile)
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                writeStrToFile("FilesCompressFiles:PASS\n", mainPathFile)
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             } else {
-                writeStrToFile("FilesCompressFiles:FAILED" + "\n", mainPathFile)
-                screenshot(resultFolder.toString() + "/FilesCompressFiles_" + getCurTimeForFile() + ".jpg")
+                writeStrToFile("FilesCompressFiles:FAILED\n", mainPathFile)
+                screenshot("${resultFolder}/FilesCompressFiles_${getCurTimeForFile()}.jpg")
             }
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesCompressFiles:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesCompressFiles:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesCompressFiles_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesCompressFiles_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -3280,23 +3262,23 @@ class MainPathTest : PhxCommon() {
             unzipFiles?.click()
             waitUiObject2ByText("Select files", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.8, 1.0, 0.05, 0.3, 0.0, 1.0, 0.1, 0.9)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             val unzip = waitUiObject2ByText("Unzip", TIMEOUT_MEDIUM)
             if (unzip != null) {
                 unzip.click()
                 sleep(TIMEOUT_SHORT.toLong())
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
             val unzipView = waitUiObject2ByText("Unzip and view", TIMEOUT_MEDIUM)
-            if (unzipView != null && unzipView.isEnabled()) {
+            if (unzipView != null && unzipView.isEnabled) {
                 unzipView.click()
                 sleep(TIMEOUT_SHORT.toLong())
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+                getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
             }
-            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.LinearLayout", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             swip(0.5, 0.3, 0.5, 0.7)
             sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -3315,20 +3297,20 @@ class MainPathTest : PhxCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Delete", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Home", TIMEOUT_MEDIUM)?.click()
-            writeStrToFile("FilesUnzipFiles:PASS" + "\n", mainPathFile)
+            writeStrToFile("FilesUnzipFiles:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FilesUnzipFiles:Exception" + "\n", mainPathFile)
+            writeStrToFile("FilesUnzipFiles:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FilesUnzipFiles_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FilesUnzipFiles_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -3350,20 +3332,20 @@ class MainPathTest : PhxCommon() {
             // 退出登录
             waitUiObject2ByText("Signed in with Google", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.2)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.02, 0.2)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Sign out", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("Sign out", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            writeStrToFile("MeLogout:PASS" + "\n", mainPathFile)
+            writeStrToFile("MeLogout:PASS\n", mainPathFile)
             backToHome()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeLogout:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeLogout:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeLogout_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeLogout_${getCurTimeForFile()}.jpg")
             backToApp()
             backToHome()
         }
@@ -3386,13 +3368,13 @@ class MainPathTest : PhxCommon() {
             waitUiObject2ByDesc("toolbar menu", TIMEOUT_MEDIUM.toLong())?.click()
             waitUiObject2ByText("Exit", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            execCmdByUiDevice(device, "am force-stop " + pkgName)
-            writeStrToFile("WebpageMenuExit:PASS" + "\n", mainPathFile)
+            execCmdByUiDevice(device, "am force-stop $pkgName")
+            writeStrToFile("WebpageMenuExit:PASS\n", mainPathFile)
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("WebpageMenuExit:Exception" + "\n", mainPathFile)
+            writeStrToFile("WebpageMenuExit:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/WebpageMenuExit_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/WebpageMenuExit_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3412,13 +3394,13 @@ class MainPathTest : PhxCommon() {
             waitUiObject2ByText("Me", TIMEOUT_MEDIUM)?.click()
             waitUiObject2ByText("Exit", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            execCmdByUiDevice(device, "am force-stop " + pkgName)
-            writeStrToFile("MeExit:PASS" + "\n", mainPathFile)
+            execCmdByUiDevice(device, "am force-stop $pkgName")
+            writeStrToFile("MeExit:PASS\n", mainPathFile)
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("MeExit:Exception" + "\n", mainPathFile)
+            writeStrToFile("MeExit:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/MeExit_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/MeExit_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3437,12 +3419,12 @@ class MainPathTest : PhxCommon() {
             // 硬件back弹窗退出
             backToHome()
             backExitBrowser()
-            writeStrToFile("BackExit:PASS" + "\n", mainPathFile)
+            writeStrToFile("BackExit:PASS\n", mainPathFile)
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("BackExit:Exception" + "\n", mainPathFile)
+            writeStrToFile("BackExit:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/BackExit_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/BackExit_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3457,7 +3439,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallWebpage_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3471,18 +3453,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallWebpage:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallWebpage:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallWebpage:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallWebpage:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallWebpage_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallWebpage:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallWebpage:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallWebpage_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3497,7 +3479,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallVideo_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallVideo_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3511,18 +3493,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallVideo:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallVideo:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallVideo:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallVideo:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallVideo_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallVideo_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallVideo:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallVideo:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallVideo_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallVideo_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3537,7 +3519,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallMusic_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallMusic_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3551,18 +3533,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallMusic:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallMusic:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallMusic:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallMusic:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallMusic_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallMusic_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallMusic:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallMusic:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallMusic_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallMusic_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3577,7 +3559,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallDoc_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallDoc_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3591,18 +3573,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallDoc:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallDoc:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallDoc:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallDoc:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallDoc_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallDoc_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallDoc:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallDoc:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallDoc_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallDoc_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3617,7 +3599,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallPpt_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallPpt_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3631,18 +3613,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallPpt:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallPpt:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallPpt:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallPpt:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallPpt_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallPpt_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallPpt:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallPpt:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallPpt_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallPpt_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3657,7 +3639,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallXls_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallXls_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3671,18 +3653,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallXls:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallXls:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallXls:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallXls:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallXls_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallXls_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallXls:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallXls:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallXls_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallXls_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3697,7 +3679,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallPdf_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallPdf_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3711,18 +3693,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallPdf:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallPdf:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallPdf:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallPdf:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallPdf_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallPdf_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallPdf:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallPdf:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallPdf_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallPdf_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3737,7 +3719,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallEpub_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallEpub_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3751,18 +3733,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallEpub:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallEpub:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallEpub:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallEpub:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallEpub_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallEpub_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallEpub:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallEpub:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallEpub_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallEpub_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3777,7 +3759,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallImg_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallImg_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3791,18 +3773,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallImg:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallImg:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallImg:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallImg:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallImg_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallImg_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallImg:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallImg:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallImg_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallImg_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3817,7 +3799,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallZip_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallZip_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3831,18 +3813,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallZip:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallZip:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallZip:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallZip:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallZip_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallZip_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallZip:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallZip:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallZip_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallZip_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3857,7 +3839,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/FirstThirdCallTxt_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/FirstThirdCallTxt_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3871,18 +3853,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("FirstThirdCallTxt:PASS" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallTxt:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("FirstThirdCallTxt:FAILED" + "\n", mainPathFile)
+                writeStrToFile("FirstThirdCallTxt:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/FirstThirdCallTxt_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/FirstThirdCallTxt_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("FirstThirdCallTxt:Exception" + "\n", mainPathFile)
+            writeStrToFile("FirstThirdCallTxt:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/FirstThirdCallTxt_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/FirstThirdCallTxt_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3897,7 +3879,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallWebpage_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3911,18 +3893,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallWebpage:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallWebpage:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallWebpage:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallWebpage:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallWebpage_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallWebpage:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallWebpage:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallWebpage_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallWebpage_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3937,7 +3919,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallVideo_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallVideo_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3951,18 +3933,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallVideo:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallVideo:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallVideo:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallVideo:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallVideo_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallVideo_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallVideo:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallVideo:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallVideo_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallVideo_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -3977,7 +3959,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallMusic_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallMusic_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -3991,18 +3973,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallMusic:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallMusic:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallMusic:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallMusic:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallMusic_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallMusic_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallMusic:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallMusic:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallMusic_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallMusic_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -4017,7 +3999,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallMusic_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallMusic_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -4031,18 +4013,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallDoc:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallDoc:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallDoc:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallDoc:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallDoc_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallDoc_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallDoc:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallDoc:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallDoc_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallDoc_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -4057,7 +4039,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallPpt_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallPpt_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -4071,18 +4053,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallPpt:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallPpt:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallPpt:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallPpt:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallPpt_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallPpt_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallPpt:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallPpt:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallPpt_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallPpt_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -4097,7 +4079,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallXls_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallXls_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -4111,18 +4093,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallXls:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallXls:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallXls:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallXls:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallXls_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallXls_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallXls:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallXls:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallXls_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallXls_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -4137,7 +4119,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallXls_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallXls_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -4151,18 +4133,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallPdf:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallPdf:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallPdf:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallPdf:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallPdf_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallPdf_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallPdf:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallPdf:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallPdf_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallPdf_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -4177,7 +4159,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallEpub_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallEpub_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -4191,18 +4173,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallEpub:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallEpub:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallEpub:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallEpub:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallEpub_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallEpub_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallEpub:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallEpub:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallEpub_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallEpub_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -4217,7 +4199,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallImg_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallImg_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -4231,18 +4213,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallImg:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallImg:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallImg:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallImg:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallImg_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallImg_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallImg:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallImg:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallImg_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallImg_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -4257,7 +4239,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallZip_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallZip_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -4271,18 +4253,18 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallZip:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallZip:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallZip:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallZip:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallZip_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallZip_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallZip:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallZip:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallZip_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallZip_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -4297,7 +4279,7 @@ class MainPathTest : PhxCommon() {
             // 失败截图
             var isScreenshot = false
             if (!isSuccess) {
-                screenshot(resultFolder.toString() + "/ThirdCallTxt_" + getCurTimeForFile() + ".jpg")
+                screenshot("${resultFolder}/ThirdCallTxt_${getCurTimeForFile()}.jpg")
                 isScreenshot = true
             }
 
@@ -4311,28 +4293,28 @@ class MainPathTest : PhxCommon() {
 
             // 处理日志信息
             if (isSuccess) {
-                writeStrToFile("ThirdCallTxt:PASS" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallTxt:PASS\n", mainPathFile)
             } else {
-                writeStrToFile("ThirdCallTxt:FAILED" + "\n", mainPathFile)
+                writeStrToFile("ThirdCallTxt:FAILED\n", mainPathFile)
                 if (!isScreenshot) {
-                    screenshot(resultFolder.toString() + "/ThirdCallTxt_" + getCurTimeForFile() + ".jpg")
+                    screenshot("${resultFolder}/ThirdCallTxt_${getCurTimeForFile()}.jpg")
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile("ThirdCallTxt:Exception" + "\n", mainPathFile)
+            writeStrToFile("ThirdCallTxt:Exception\n", mainPathFile)
             writeStrToFile(getExceptionMsg(e), mainPathFile)
-            screenshot(resultFolder.toString() + "/ThirdCallTxt_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/ThirdCallTxt_${getCurTimeForFile()}.jpg")
         }
     }
 
     private fun testThirdCall(file: String, isFirst: Boolean): Boolean {
         // 强制结束，避免anr弹窗遮挡
-        execCmdByUiDevice(device, "am force-stop " + pkgName)
+        execCmdByUiDevice(device, "am force-stop $pkgName")
 
         if (isFirst) {
             // 清理数据
-            execCmdByUiDevice(device, "pm clear " + pkgName)
+            execCmdByUiDevice(device, "pm clear $pkgName")
         }
 
         // 执行第三方调用
@@ -4492,7 +4474,7 @@ class MainPathTest : PhxCommon() {
     }
 
     @After
-    public override fun afterTest() {
+    override fun afterTest() {
         super.afterTest()
     }
 }

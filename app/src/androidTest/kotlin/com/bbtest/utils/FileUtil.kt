@@ -2,7 +2,6 @@ package com.bbtest.utils
 
 import android.os.Environment
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.LineIterator
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.BufferedReader
@@ -161,12 +160,11 @@ object FileUtil {
     fun readFile(file: File, charsetName: String): String {
         val sb = StringBuilder()
         try {
-            val lineIterator: LineIterator = FileUtils.lineIterator(file, charsetName)
-            while (lineIterator.hasNext()) {
-                val line = lineIterator.nextLine()
-                sb.append(line).append("\n")
+            FileUtils.lineIterator(file, charsetName).use { lineIterator ->
+                while (lineIterator.hasNext()) {
+                    sb.append(lineIterator.next()).append("\n")
+                }
             }
-            lineIterator.close()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -203,23 +201,14 @@ object FileUtil {
         val sb = StringBuilder()
         val file = File(filePath)
         if (file.exists()) {
-            var reader: BufferedReader? = null
             try {
-                reader = BufferedReader(InputStreamReader(FileInputStream(file)))
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    sb.append(line).append("\n")
-                }
-                reader.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close()
-                    } catch (_: IOException) {
+                BufferedReader(InputStreamReader(FileInputStream(file))).use { reader ->
+                    reader.lineSequence().forEach { line ->
+                        sb.append(line).append("\n")
                     }
                 }
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
         return sb.toString()
@@ -230,23 +219,14 @@ object FileUtil {
         val sb = StringBuilder()
         val file = File(filePath)
         if (file.exists()) {
-            var reader: BufferedReader? = null
             try {
-                reader = BufferedReader(InputStreamReader(FileInputStream(file), charsetName))
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    sb.append(line).append("\n")
-                }
-                reader.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close()
-                    } catch (_: IOException) {
+                BufferedReader(InputStreamReader(FileInputStream(file), charsetName)).use { reader ->
+                    reader.lineSequence().forEach { line ->
+                        sb.append(line).append("\n")
                     }
                 }
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
         return sb.toString()
@@ -278,27 +258,20 @@ object FileUtil {
     @JvmStatic
     fun scanLine(filePath: String, str: String): Boolean {
         var isContain = false
-        var inputStream: FileInputStream? = null
-        var scanner: Scanner? = null
         try {
-            inputStream = FileInputStream(filePath)
-            scanner = Scanner(inputStream)
-            while (scanner.hasNextLine()) {
-                val line = scanner.nextLine()
-                if (line.contains(str)) {
-                    isContain = true
-                    break
+            FileInputStream(filePath).use { inputStream ->
+                Scanner(inputStream).use { scanner ->
+                    while (scanner.hasNextLine()) {
+                        val line = scanner.next()
+                        if (line.contains(str)) {
+                            isContain = true
+                            break
+                        }
+                    }
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-        } finally {
-            try {
-                inputStream?.close()
-                scanner?.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
         }
         return isContain
     }
@@ -312,12 +285,12 @@ object FileUtil {
     fun writeFile(str: String, filePath: String, charsetName: Charset) {
         try {
             val file = File(filePath)
-            val fos = FileOutputStream(file)
-            val osw = OutputStreamWriter(fos, charsetName)
-            osw.write(str)
-            osw.flush()
-            osw.close()
-            fos.close()
+            FileOutputStream(file).use { fos ->
+                OutputStreamWriter(fos, charsetName).use { osw ->
+                    osw.write(str)
+                    osw.flush()
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -359,10 +332,10 @@ object FileUtil {
                     if (lines[i].endsWith("\n")) {
                         osw.write(lines[i])
                     } else {
-                        osw.write(lines[i] + "\n")
+                        osw.write("${lines[i]}\n")
                     }
                 } else {
-                    osw.write(lines[i] + "\n")
+                    osw.write("${lines[i]}\n")
                 }
             }
             osw.close()
@@ -381,12 +354,12 @@ object FileUtil {
             for (i in lines.indices) {
                 if (i == lines.size - 1) {
                     if (str.endsWith("\n")) {
-                        bw.write(lines[i] + "\n")
+                        bw.write("${lines[i]}\n")
                     } else {
                         bw.write(lines[i])
                     }
                 } else {
-                    bw.write(lines[i] + "\n")
+                    bw.write("${lines[i]}\n")
                 }
             }
             bw.close()
@@ -399,26 +372,18 @@ object FileUtil {
     @JvmStatic
     @Synchronized
     fun writeStrToFile2(str: String, filePath: String) {
-        var out: BufferedWriter? = null
         try {
             val file = File(filePath)
             if (file.exists()) {
-                val fos = FileOutputStream(file, true)
-                out = BufferedWriter(OutputStreamWriter(fos))
-                out.write(str)
-                out.flush()
-                out.close()
+                FileOutputStream(file, true).use { fos ->
+                    BufferedWriter(OutputStreamWriter(fos)).use { out ->
+                        out.write(str)
+                        out.flush()
+                    }
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-        } finally {
-            if (out != null) {
-                try {
-                    out.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
         }
     }
 
@@ -472,15 +437,13 @@ object FileUtil {
         val inFile = File(inFilePath)
         val outFile = File(outFilePath)
         try {
-            val inFileStream = FileInputStream(inFile)
-            val outFileStream = FileOutputStream(outFile)
-            val inChannel: FileChannel = inFileStream.channel
-            val outChannel: FileChannel = outFileStream.channel
-            inChannel.transferTo(0, inChannel.size(), outChannel)
-            inFileStream.close()
-            inChannel.close()
-            outFileStream.close()
-            outChannel.close()
+            FileInputStream(inFile).use { inFileStream ->
+                FileOutputStream(outFile).use { outFileStream ->
+                    val inChannel: FileChannel = inFileStream.channel
+                    val outChannel: FileChannel = outFileStream.channel
+                    inChannel.transferTo(0, inChannel.size(), outChannel)
+                }
+            }
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
@@ -493,15 +456,15 @@ object FileUtil {
         val inFile = File(inFilePath)
         val outFile = File(outFilePath)
         try {
-            val inStream: InputStream = BufferedInputStream(FileInputStream(inFile))
-            val outStream: OutputStream = BufferedOutputStream(FileOutputStream(outFile))
-            val buf = ByteArray(2048)
-            var i: Int
-            while (inStream.read(buf).also { i = it } != -1) {
-                outStream.write(buf, 0, i)
+            BufferedInputStream(FileInputStream(inFile)).use { inStream ->
+                BufferedOutputStream(FileOutputStream(outFile)).use { outStream ->
+                    val buf = ByteArray(2048)
+                    var i: Int
+                    while (inStream.read(buf).also { i = it } != -1) {
+                        outStream.write(buf, 0, i)
+                    }
+                }
             }
-            inStream.close()
-            outStream.close()
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
@@ -561,7 +524,7 @@ object FileUtil {
             while (ze != null) {
                 val fileName = ze.name.replace(";|\\\\|:|\\*|\\?|\"|<|>|\\|".toRegex(), "")
                 val newFile = File(destDir + File.separator + fileName)
-                File(newFile.parent).mkdirs()
+                File(requireNotNull(newFile.parent)).mkdirs()
                 val fos = FileOutputStream(newFile)
                 var len: Int
                 while (zis.read(buffer).also { len = it } > 0) {

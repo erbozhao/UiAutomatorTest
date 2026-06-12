@@ -38,7 +38,7 @@ class InitTest : PhxCommon() {
     private val ignoreFile = File(rootFolder, "ignore.txt")
 
     @Before
-    public override fun beforeTest() {
+    override fun beforeTest() {
         super.beforeTest()
         // 初始化目录
         deleteFolder(resultFolder)
@@ -48,12 +48,12 @@ class InitTest : PhxCommon() {
         if (!wifiTools.isNetworkConnected() && !wifiTools.isNetworkAvailable()) {
             wifiTools.openWifi()
             wifiTools.startScantWifi()
-            CommonUtil.sleep(5000)
+            CommonUtil.sleep(5_000)
             wifiTools.connectWifi("YLKJ", "phxbrowser2020")
-            CommonUtil.sleep(5000)
+            CommonUtil.sleep(5_000)
             if (!wifiTools.isNetworkConnected() && !wifiTools.isNetworkAvailable()) {
                 wifiTools.connectWifi("YLKJ-2.4G", "phxbrowser2020")
-                CommonUtil.sleep(5000)
+                CommonUtil.sleep(5_000)
             }
         }
     }
@@ -77,34 +77,34 @@ class InitTest : PhxCommon() {
     fun testInitReleaseEnv() {
         try {
             if (isAppBackstage(device, pkgName)) {
-                writeStrToFile(getCurTimeForLog() + "InitReleaseEnv:启动应用" + "\n", initFile)
+                writeStrToFile("${getCurTimeForLog()}InitReleaseEnv:启动应用\n", initFile)
                 startApp(pkgName)
                 sleep(TIMEOUT_LONG.toLong())
             }
-            writeStrToFile(getCurTimeForLog() + "InitReleaseEnv:回到首页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitReleaseEnv:回到首页\n", initFile)
             backToHome()
-            writeStrToFile(getCurTimeForLog() + "InitReleaseEnv:切换正式环境" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitReleaseEnv:切换正式环境\n", initFile)
             switchGrayEnv(false)
             if (isAppBackstage(device, pkgName)) {
-                writeStrToFile(getCurTimeForLog() + "InitReleaseEnv:启动应用" + "\n", initFile)
+                writeStrToFile("${getCurTimeForLog()}InitReleaseEnv:启动应用\n", initFile)
                 startApp(pkgName)
                 sleep(TIMEOUT_LONG.toLong())
             }
-            writeStrToFile(getCurTimeForLog() + "InitReleaseEnv:回到首页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitReleaseEnv:回到首页\n", initFile)
             backToHome()
-            screenshot(resultFolder.toString() + "/init_release_" + getCurTimeForFile() + ".jpg")
-            writeStrToFile(getCurTimeForLog() + "InitReleaseEnv:back退出应用" + "\n", initFile)
+            screenshot("${resultFolder}/init_release_${getCurTimeForFile()}.jpg")
+            writeStrToFile("${getCurTimeForLog()}InitReleaseEnv:back退出应用\n", initFile)
             backExitBrowser()
-            writeStrToFile(getCurTimeForLog() + "InitReleaseEnv:强杀进程" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitReleaseEnv:强杀进程\n", initFile)
             forceStopApp(device, pkgName, null)
             sleep(3000)
 
-            writeStrToFile(getCurTimeForLog() + "InitReleaseEnv:Success" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitReleaseEnv:Success\n", initFile)
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile(getCurTimeForLog() + "InitReleaseEnv:Exception" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitReleaseEnv:Exception\n", initFile)
             writeStrToFile(getExceptionMsg(e), initFile)
-            screenshot(resultFolder.toString() + "/init_release_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/init_release_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -112,34 +112,34 @@ class InitTest : PhxCommon() {
     fun testInitGrayEnv() {
         try {
             if (isAppBackstage(device, pkgName)) {
-                writeStrToFile(getCurTimeForLog() + "InitGrayEnv:启动应用" + "\n", initFile)
+                writeStrToFile("${getCurTimeForLog()}InitGrayEnv:启动应用\n", initFile)
                 startApp(pkgName)
                 sleep(TIMEOUT_LONG.toLong())
             }
-            writeStrToFile(getCurTimeForLog() + "InitGrayEnv:回到首页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitGrayEnv:回到首页\n", initFile)
             backToHome()
-            writeStrToFile(getCurTimeForLog() + "InitGrayEnv:切换灰度环境" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitGrayEnv:切换灰度环境\n", initFile)
             switchGrayEnv(true)
             if (isAppBackstage(device, pkgName)) {
-                writeStrToFile(getCurTimeForLog() + "InitGrayEnv:启动应用" + "\n", initFile)
+                writeStrToFile("${getCurTimeForLog()}InitGrayEnv:启动应用\n", initFile)
                 startApp(pkgName)
                 sleep(TIMEOUT_LONG.toLong())
             }
-            writeStrToFile(getCurTimeForLog() + "InitGrayEnv:回到首页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitGrayEnv:回到首页\n", initFile)
             backToHome()
-            screenshot(resultFolder.toString() + "/init_gray_" + getCurTimeForFile() + ".jpg")
-            writeStrToFile(getCurTimeForLog() + "InitGrayEnv:back退出应用" + "\n", initFile)
+            screenshot("${resultFolder}/init_gray_${getCurTimeForFile()}.jpg")
+            writeStrToFile("${getCurTimeForLog()}InitGrayEnv:back退出应用\n", initFile)
             backExitBrowser()
-            writeStrToFile(getCurTimeForLog() + "InitGrayEnv:强杀进程" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitGrayEnv:强杀进程\n", initFile)
             forceStopApp(device, pkgName, null)
             sleep(3000)
 
-            writeStrToFile(getCurTimeForLog() + "InitGrayEnv:Success" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitGrayEnv:Success\n", initFile)
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile(getCurTimeForLog() + "InitGrayEnv:Exception" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitGrayEnv:Exception\n", initFile)
             writeStrToFile(getExceptionMsg(e), initFile)
-            screenshot(resultFolder.toString() + "/init_gray_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/init_gray_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -149,11 +149,11 @@ class InitTest : PhxCommon() {
             createFile(initFile)
 
             //启动应用->跳过闪屏->切换语言->停止应用
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:启动应用" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:启动应用\n", initFile)
             startApp(pkgName)
             sleep(TIMEOUT_LONG.toLong())
             if (!isAppBackstage(device, pkgName)) {
-                writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:跳过闪屏" + "\n", initFile)
+                writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:跳过闪屏\n", initFile)
                 skipSplash()
             }
             var isClickIgnoreLimit = false
@@ -163,7 +163,7 @@ class InitTest : PhxCommon() {
                 }
 
                 if (!isClickIgnoreLimit) {
-                    writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:忽略限制" + "\n", initFile)
+                    writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:忽略限制\n", initFile)
                     var cnLimit = waitUiObject2ByText(
                         "Sorry, the service is unavailable for policy reasons. The browser will quit in 3 seconds.",
                         TIMEOUT_MEDIUM
@@ -193,74 +193,74 @@ class InitTest : PhxCommon() {
                     break
                 }
             }
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:回到主页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:回到主页\n", initFile)
             backToHome()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:跳过文件引导" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:跳过文件引导\n", initFile)
             skipFilesGuide()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:回到主页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:回到主页\n", initFile)
             backToHome()
             if (country != null && language != null) {
                 if (language == "en") {
                     val forYou = waitUiObject2ByText("For you", TIMEOUT_MEDIUM)
                     if (forYou == null) {
-                        writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:切换英语" + "\n", initFile)
+                        writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:切换英语\n", initFile)
                         switchLanguage(country, language)
                     }
                 } else if (language == "ar") {
                     val forYou = waitUiObject2ByText("مُختار لك", TIMEOUT_MEDIUM)
                     if (forYou == null) {
-                        writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:切换阿语" + "\n", initFile)
+                        writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:切换阿语\n", initFile)
                         switchLanguage(country, language)
                     }
                 }
             }
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:回到主页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:回到主页\n", initFile)
             backToHome()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:back退出应用" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:back退出应用\n", initFile)
             backExitBrowser()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:强杀进程" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:强杀进程\n", initFile)
             forceStopApp(device, pkgName, null)
             sleep(3000)
 
             //再次启动应用->跳过Feeds上滑->停止应用
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:启动应用" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:启动应用\n", initFile)
             startApp(pkgName)
             sleep(TIMEOUT_LONG.toLong())
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:回到主页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:回到主页\n", initFile)
             backToHome()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:跳过Feeds引导" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:跳过Feeds引导\n", initFile)
             skipFeedsGuide()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:回到主页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:回到主页\n", initFile)
             backToHome()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:back退出应用" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:back退出应用\n", initFile)
             backExitBrowser()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:强杀进程" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:强杀进程\n", initFile)
             forceStopApp(device, pkgName, null)
             sleep(3000)
 
             //再次启动应用->跳过视频嗅探引导->停止应用
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:启动应用" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:启动应用\n", initFile)
             startApp(pkgName)
             sleep(TIMEOUT_LONG.toLong())
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:回到主页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:回到主页\n", initFile)
             backToHome()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:跳过快链引导" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:跳过快链引导\n", initFile)
             skipSniffVideosGuide()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:回到主页" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:回到主页\n", initFile)
             backToHome()
-            screenshot(resultFolder.toString() + "/init_" + getCurTimeForFile() + ".jpg")
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:back退出应用" + "\n", initFile)
+            screenshot("${resultFolder}/init_${getCurTimeForFile()}.jpg")
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:back退出应用\n", initFile)
             backExitBrowser()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:强杀进程" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:强杀进程\n", initFile)
             forceStopApp(device, pkgName, null)
             sleep(3000)
 
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:Success" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:Success\n", initFile)
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile(getCurTimeForLog() + "InitCountryLanguage:Exception" + "\n", initFile)
+            writeStrToFile("${getCurTimeForLog()}InitCountryLanguage:Exception\n", initFile)
             writeStrToFile(getExceptionMsg(e), initFile)
-            screenshot(resultFolder.toString() + "/init_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/init_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -275,9 +275,8 @@ class InitTest : PhxCommon() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // 初始化需要忽略app的包名
-                val ignorePkgNames: MutableList<String?> = ArrayList<String?>()
-                ignorePkgNames.add(ApplicationProvider.getApplicationContext<Context?>().getPackageName())
-                ignorePkgNames.add(ApplicationProvider.getApplicationContext<Context?>().getPackageName() + ".test")
+                val packageName = ApplicationProvider.getApplicationContext<Context?>().packageName
+                val ignorePkgNames = listOf(packageName, "$packageName.test")
 
                 // 开始设置
                 val powerManager = ApplicationProvider.getApplicationContext<Context?>().getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -285,9 +284,10 @@ class InitTest : PhxCommon() {
                     //  判断当前APP是否有加入电池优化的白名单，如果没有，弹出加入电池优化的白名单的设置对话框
                     val hasIgnored = powerManager.isIgnoringBatteryOptimizations(ignorePkgName)
                     if (!hasIgnored) {
-                        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-                        intent.setData(Uri.parse("package:" + ignorePkgName))
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                            data = Uri.parse("package:$ignorePkgName")
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
                         ApplicationProvider.getApplicationContext<Context?>().startActivity(intent)
                         sleep(TIMEOUT_VERY_SHORT.toLong())
                         var allow = waitUiObject2ByText("ALLOW", TIMEOUT_MEDIUM)
@@ -299,13 +299,13 @@ class InitTest : PhxCommon() {
                     }
                 }
             }
-            writeStrToFile(getCurTimeForLog() + "backgroundRestriction:Success" + "\n", ignoreFile)
-            screenshot(resultFolder.toString() + "/backgroundRestriction_" + getCurTimeForFile() + ".jpg")
+            writeStrToFile("${getCurTimeForLog()}backgroundRestriction:Success\n", ignoreFile)
+            screenshot("${resultFolder}/backgroundRestriction_${getCurTimeForFile()}.jpg")
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile(getCurTimeForLog() + "backgroundRestriction:Exception" + "\n", ignoreFile)
+            writeStrToFile("${getCurTimeForLog()}backgroundRestriction:Exception\n", ignoreFile)
             writeStrToFile(getExceptionMsg(e), initFile)
-            screenshot(resultFolder.toString() + "/backgroundRestriction_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/backgroundRestriction_${getCurTimeForFile()}.jpg")
         }
 
         /**
@@ -314,15 +314,13 @@ class InitTest : PhxCommon() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // 初始化需要忽略app的包名
-                val ignoreAppNames: MutableList<String?> = ArrayList<String?>()
-                ignoreAppNames.add("BBTest")
-                ignoreAppNames.add("BBTest Test")
+                val ignoreAppNames = listOf("BBTest", "BBTest Test")
 
                 // 开始设置
-                val intent = Intent()
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.setData(Uri.fromParts("package", ApplicationProvider.getApplicationContext<Context?>().getPackageName(), null))
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", ApplicationProvider.getApplicationContext<Context?>().packageName, null)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
                 ApplicationProvider.getApplicationContext<Context?>().startActivity(intent)
                 sleep(TIMEOUT_SHORT.toLong())
                 val batteryScrollableClazz = getScrollableClazz()
@@ -335,7 +333,7 @@ class InitTest : PhxCommon() {
                         battery = waitScrollableUiObjectByText(batteryScrollableClazz, "Battery", false)
                     }
                 }
-                battery!!.click()
+                requireNotNull(battery) { "Battery option not found in settings" }.click()
                 sleep(TIMEOUT_SHORT.toLong())
                 var batteryOptimization = waitScrollableUiObjectByText(batteryScrollableClazz, "Battery optimisation", false)
                 if (batteryOptimization == null) {
@@ -360,7 +358,7 @@ class InitTest : PhxCommon() {
                         waitScrollableUiObjectByText(appScrollableClazz, ignoreAppName, false)
                         sleep(TIMEOUT_SHORT.toLong())
                         val appSwitch = getUiObject2ByChildText("android.widget.LinearLayout", true, "BBTest", "android.widget.Switch")
-                        if (appSwitch?.isChecked() == true) {
+                        if (appSwitch?.isChecked == true) {
                             appSwitch.click()
                             sleep(TIMEOUT_SHORT.toLong())
                         }
@@ -388,13 +386,13 @@ class InitTest : PhxCommon() {
                 }
             }
 
-            writeStrToFile(getCurTimeForLog() + "batteryOptimization:Success" + "\n", ignoreFile)
-            screenshot(resultFolder.toString() + "/batteryOptimization_" + getCurTimeForFile() + ".jpg")
+            writeStrToFile("${getCurTimeForLog()}batteryOptimization:Success\n", ignoreFile)
+            screenshot("${resultFolder}/batteryOptimization_${getCurTimeForFile()}.jpg")
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile(getCurTimeForLog() + "batteryOptimization:Exception" + "\n", ignoreFile)
+            writeStrToFile("${getCurTimeForLog()}batteryOptimization:Exception\n", ignoreFile)
             writeStrToFile(getExceptionMsg(e), ignoreFile)
-            screenshot(resultFolder.toString() + "/batteryOptimization_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/batteryOptimization_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -404,7 +402,7 @@ class InitTest : PhxCommon() {
     }
 
     @After
-    public override fun afterTest() {
+    override fun afterTest() {
         super.afterTest()
     }
 }

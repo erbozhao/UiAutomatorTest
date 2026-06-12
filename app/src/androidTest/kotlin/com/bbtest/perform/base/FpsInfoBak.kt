@@ -54,8 +54,8 @@ class FpsInfoBak {
             pause = false
             Choreographer.getInstance().postFrameCallback(frameCallback)
             m_t = Thread(runnable)
-            m_t!!.start()
-            m_t!!.name = "SM calculator"
+            m_t?.start()
+            m_t?.name = "SM calculator"
         }
     }
 
@@ -92,7 +92,7 @@ class FpsInfoBak {
             if (INS == null) {
                 INS = FpsInfoBak()
             }
-            return INS!!
+            return requireNotNull(INS)
         }
 
         private fun getFPSIfPossible(): Int {

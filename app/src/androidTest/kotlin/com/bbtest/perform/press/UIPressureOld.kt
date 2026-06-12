@@ -27,12 +27,11 @@ import java.io.File
 class UIPressureOld : PhxCommon() {
     private val perFolder = File(rootFolder, "perform")
     private val resultFolder = File(perFolder, "press")
-    var resultFile: File = File(resultFolder, "press.txt")
+    private val resultFile = File(resultFolder, "press.txt")
 
     @Before
-    public override fun beforeTest() {
+    override fun beforeTest() {
         super.beforeTest()
-        // 初始化目录及文件
         createFolder(perFolder)
         createFolder(resultFolder)
         createFile(resultFile)
@@ -45,14 +44,14 @@ class UIPressureOld : PhxCommon() {
     @Test
     fun testUIPressure() {
         try {
-//           testUIPressureOld();
+//            testUIPressureOld()
             testUIPressureNew()
-            //            testUIPressureNovel();
+//            testUIPressureNovel()
         } catch (e: Exception) {
             e.printStackTrace()
-            writeStrToFile(getCurTimeForLog() + "  PressureTest:Exception" + "\n", resultFile)
+            writeStrToFile("${getCurTimeForLog()}  PressureTest:Exception\n", resultFile)
             writeStrToFile(getExceptionMsg(e), resultFile)
-            screenshot(resultFolder.toString() + "/press_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/press_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -60,7 +59,7 @@ class UIPressureOld : PhxCommon() {
         // 启动应用
         amStartApp(device, activity, null)
         sleep(TIMEOUT_LONG.toLong())
-        execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p " + pkgName + " -d https://www.qq.com")
+        execCmdByUiDevice(device, "am start -a android.intent.action.VIEW -p $pkgName -d https://www.qq.com")
         sleep(TIMEOUT_MEDIUM.toLong())
         getUiObject2ByDesc("toolbar menu")?.click()
         sleep(TIMEOUT_SHORT.toLong())
@@ -100,8 +99,8 @@ class UIPressureOld : PhxCommon() {
         sleep(TIMEOUT_VERY_SHORT.toLong())
         getUiObject2ByText("Tabs")?.click()
         sleep(TIMEOUT_MEDIUM.toLong())
-        //            getUiObject2s("android.widget.ImageView", true, 0.5, 1, 0.01, 0.5, 0, 1, 0.7, 1)?.get(0)?.click();
-//            sleep(TIMEOUT_MEDIUM);
+        // getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
+        // sleep(TIMEOUT_MEDIUM.toLong())
         back()
         sleep(TIMEOUT_VERY_SHORT.toLong())
         getUiObject2ByText("Home")?.click()
@@ -136,9 +135,7 @@ class UIPressureOld : PhxCommon() {
         setTextAndGo("www.baidu.com")
         sleep(TIMEOUT_MEDIUM.toLong())
         val accept = waitUiObject2ByText("Accept", TIMEOUT_SHORT)
-        if (accept != null) {
-            accept.click()
-        }
+        accept?.click()
         val continueDialog = waitUiObject2ByText("Continue", TIMEOUT_SHORT)
         if (continueDialog != null) {
             back()
@@ -150,7 +147,7 @@ class UIPressureOld : PhxCommon() {
         sleep(TIMEOUT_VERY_SHORT.toLong())
         waitUiObject2ByRes("index-kw", TIMEOUT_MEDIUM.toLong())?.click()
         sleep(TIMEOUT_SHORT.toLong())
-        waitUiObject2ByRes("index-kw", TIMEOUT_MEDIUM.toLong())?.setText("test" ?: "")
+        waitUiObject2ByRes("index-kw", TIMEOUT_MEDIUM.toLong())?.text = "test"
         sleep(TIMEOUT_SHORT.toLong())
         waitUiObject2ByRes("index-bn", TIMEOUT_MEDIUM.toLong())?.click()
         sleep(TIMEOUT_SHORT.toLong())
@@ -219,7 +216,7 @@ class UIPressureOld : PhxCommon() {
         // 字体大小
         waitUiObject2ByText("Font size", TIMEOUT_MEDIUM)?.click()
         sleep(TIMEOUT_VERY_SHORT.toLong())
-        val seekBar = waitUiObject2sByClazz("android.widget.SeekBar", TIMEOUT_MEDIUM.toLong()).get(0)
+        val seekBar = waitUiObject2sByClazz("android.widget.SeekBar", TIMEOUT_MEDIUM.toLong()).first()
         swip(seekBar, "left")
         sleep(TIMEOUT_VERY_SHORT.toLong())
         back()
@@ -232,8 +229,8 @@ class UIPressureOld : PhxCommon() {
         // 主页
         waitUiObject2ByText("Homepage", TIMEOUT_MEDIUM)?.click()
         sleep(TIMEOUT_VERY_SHORT.toLong())
-        val homeSwitch = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong()).get(0)
-        if (homeSwitch.isChecked()) {
+        val homeSwitch = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong()).first()
+        if (homeSwitch.isChecked) {
             homeSwitch.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
         }
@@ -251,10 +248,8 @@ class UIPressureOld : PhxCommon() {
         waitUiObject2ByText("Download location", TIMEOUT_MEDIUM)?.click()
         sleep(TIMEOUT_VERY_SHORT.toLong())
         val storage = waitUiObject2ByText("Internal Storage", TIMEOUT_SHORT)
-        if (storage != null) {
-            storage.click()
-            sleep(TIMEOUT_VERY_SHORT.toLong())
-        }
+        storage?.click()
+        if (storage != null) sleep(TIMEOUT_VERY_SHORT.toLong())
         waitUiObject2ByText("Choose it", TIMEOUT_MEDIUM)?.click()
         sleep(TIMEOUT_VERY_SHORT.toLong())
         back()
@@ -264,7 +259,7 @@ class UIPressureOld : PhxCommon() {
         sleep(TIMEOUT_VERY_SHORT.toLong())
         val notificationSwitchs = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong())
         for (notificationSwitch in notificationSwitchs) {
-            if (notificationSwitch.isChecked()) {
+            if (notificationSwitch.isChecked) {
                 notificationSwitch.click()
             }
         }
@@ -277,27 +272,21 @@ class UIPressureOld : PhxCommon() {
         waitUiObject2ByText("Account and password", TIMEOUT_MEDIUM)?.click()
         waitUiObject2ByText("Video and Document browsing history", TIMEOUT_MEDIUM)?.click()
         sleep(TIMEOUT_SHORT.toLong())
-        var cleanPhoenix: UiObject2? = null
         val tmpCleanPhoenixs = waitUiObject2sByTextContains("Clean Up", TIMEOUT_MEDIUM)
-        for (tmpCleanPhoenix in tmpCleanPhoenixs) {
-            if (tmpCleanPhoenix.isClickable()) {
-                cleanPhoenix = tmpCleanPhoenix
-                break
-            }
-        }
-        if (cleanPhoenix != null && cleanPhoenix.isEnabled()) {
+        val cleanPhoenix = tmpCleanPhoenixs.firstOrNull { tmpCleanPhoenix -> tmpCleanPhoenix.isClickable }
+        if (cleanPhoenix != null && cleanPhoenix.isEnabled) {
             cleanPhoenix.click()
             sleep(TIMEOUT_LONG.toLong())
             // 关闭广告
             closeAdDialog()
             for (i in 0..9) {
                 val cleanPhoenixBacks = getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)
-                if (cleanPhoenixBacks == null || cleanPhoenixBacks.size == 0) {
+                if (cleanPhoenixBacks.isEmpty()) {
                     back()
                 } else {
                     // uiautomator有时点击时会报异常
                     try {
-                        cleanPhoenixBacks.get(0)!!.click()
+                        cleanPhoenixBacks.first().click()
                     } catch (e: Exception) {
                         back()
                     }
@@ -308,7 +297,7 @@ class UIPressureOld : PhxCommon() {
                 }
             }
         } else {
-            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.get(0)?.click()
+            getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 0.3, 0.02, 0.3)?.firstOrNull()?.click()
         }
         // 设置默认浏览器
         waitUiObject2ByText("Set as default browser", TIMEOUT_MEDIUM)?.click()
@@ -392,7 +381,7 @@ class UIPressureOld : PhxCommon() {
         sleep(TIMEOUT_SHORT.toLong())
         waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)?.click()
         sleep(TIMEOUT_SHORT.toLong())
-        getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.get(0)?.click()
+        getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.firstOrNull()?.click()
         sleep(TIMEOUT_VERY_SHORT.toLong())
         skipAppDialog()
 
@@ -427,7 +416,7 @@ class UIPressureOld : PhxCommon() {
     }
 
     @After
-    public override fun afterTest() {
+    override fun afterTest() {
         super.afterTest()
     }
 }

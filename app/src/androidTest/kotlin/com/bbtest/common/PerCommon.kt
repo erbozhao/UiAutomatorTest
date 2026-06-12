@@ -25,7 +25,44 @@ import java.io.File
  * @author onuszhao
  */
 open class PerCommon : BaseCommon() {
-    var perFolder: File = File(rootFolder, "perform")
+    protected val perFolder = File(rootFolder, "perform")
+
+    private fun waitAnyText(vararg texts: String, timeout: Int = TIMEOUT_VERY_SHORT): UiObject2? {
+        for (text in texts) {
+            val target = waitUiObject2ByText(text, timeout)
+            if (target != null) {
+                return target
+            }
+        }
+        return null
+    }
+
+    private fun waitAnyDesc(timeoutMillis: Long = TIMEOUT_SHORT.toLong(), vararg descriptions: String): UiObject2? {
+        for (description in descriptions) {
+            val target = waitUiObject2ByDesc(description, timeoutMillis)
+            if (target != null) {
+                return target
+            }
+        }
+        return null
+    }
+
+    private fun firstUiObject2(
+        clazz: String,
+        isClickable: Boolean,
+        minWidth: Double,
+        maxWidth: Double,
+        minHeight: Double,
+        maxHeight: Double,
+        minX: Double,
+        maxX: Double,
+        minY: Double,
+        maxY: Double,
+    ): UiObject2? = getUiObject2s(clazz, isClickable, minWidth, maxWidth, minHeight, maxHeight, minX, maxX, minY, maxY).firstOrNull()
+
+    private fun phoenixTabsButton(): UiObject2? =
+        waitAnyText("Tabs", "التبويب", timeout = TIMEOUT_MEDIUM)
+            ?: waitAnyDesc(TIMEOUT_SHORT.toLong(), "toolbar multiWindow")
 
     @Before
     override fun beforeTest() {
@@ -44,54 +81,47 @@ open class PerCommon : BaseCommon() {
      */
     fun searchOrUrl(pkgName: String, textOrUrl: String?, isOpenedPage: Boolean) {
         if (pkgName == BROWSER_CHROME) {
-            var searchBox: UiObject2? = null
-            if (isOpenedPage) {
-                searchBox = waitUiObject2ByRes("com.android.chrome:id/url_bar", TIMEOUT_MEDIUM.toLong())
+            val searchBox = if (isOpenedPage) {
+                waitUiObject2ByRes("com.android.chrome:id/url_bar", TIMEOUT_MEDIUM.toLong())
             } else {
-                searchBox = waitUiObject2ByRes("com.android.chrome:id/search_box_text", TIMEOUT_MEDIUM.toLong())
+                waitUiObject2ByRes("com.android.chrome:id/search_box_text", TIMEOUT_MEDIUM.toLong())
             }
             searchBox?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            waitUiObject2ByRes("com.android.chrome:id/url_bar", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl ?: "")
+            waitUiObject2ByRes("com.android.chrome:id/url_bar", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl)
             sleep(TIMEOUT_VERY_SHORT.toLong())
             pressEnter(device, null)
         } else if (pkgName == BROWSER_OPERA) {
             waitUiObject2ByRes("com.opera.browser:id/url_field", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            waitUiObject2ByRes("com.opera.browser:id/url_field", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl ?: "")
+            waitUiObject2ByRes("com.opera.browser:id/url_field", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl)
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByRes("com.opera.browser:id/right_state_button", TIMEOUT_MEDIUM.toLong())?.click()
         } else if (pkgName == BROWSER_PHX) {
-            var searchBoxs: MutableList<UiObject2>? = null
-            if (isOpenedPage) {
-                searchBoxs = getUiObject2s("android.widget.LinearLayout", true, 0.5, 1.0, 0.04, 0.5, 0.0, 1.0, 0.02, 0.4)
+            val searchBoxes = if (isOpenedPage) {
+                getUiObject2s("android.widget.LinearLayout", true, 0.5, 1.0, 0.04, 0.5, 0.0, 1.0, 0.02, 0.4)
             } else {
-                searchBoxs = getUiObject2s("android.widget.TextSwitcher", false, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
-                if (searchBoxs == null || searchBoxs.size == 0) {
-                    searchBoxs = getUiObject2s("android.widget.TextView", false, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
-                }
+                getUiObject2s("android.widget.TextSwitcher", false, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
+                    .ifEmpty {
+                        getUiObject2s("android.widget.TextView", false, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
+                    }
             }
-            searchBoxs?.get(0)?.click()
+            searchBoxes.firstOrNull()?.click()
             sleep(TIMEOUT_SHORT.toLong())
             val textBoxs = getUiObject2s("android.widget.EditText", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
-            textBoxs?.get(0)?.setText(textOrUrl ?: "")
+            textBoxs.firstOrNull()?.setText(textOrUrl)
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            var go = waitUiObject2ByDesc("addressbar go", TIMEOUT_MEDIUM.toLong())
-            if (go == null) {
-                go = waitUiObject2ByDesc("addressbar search", TIMEOUT_SHORT.toLong())
-            }
+            val go = waitAnyDesc(TIMEOUT_MEDIUM.toLong(), "addressbar go", "addressbar search")
             go?.click()
         } else if (pkgName == BROWSER_UC) {
             val searchBoxs = getUiObject2s("android.widget.TextView", true, 0.5, 1.0, 0.04, 0.5, 0.0, 1.0, 0.02, 0.4)
-            searchBoxs?.get(0)?.click()
+            searchBoxs.firstOrNull()?.click()
             sleep(TIMEOUT_SHORT.toLong())
             val textBoxs = getUiObject2s("android.widget.EditText", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
-            textBoxs?.get(0)?.setText(textOrUrl ?: "")
+            textBoxs.firstOrNull()?.setText(textOrUrl)
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            var go = waitUiObject2ByRes("com.UCMobile.intl:id/address_bar_go_search", TIMEOUT_MEDIUM.toLong())
-            if (go == null) {
-                go = waitUiObject2ByDesc("Go button", TIMEOUT_SHORT.toLong())
-            }
+            val go = waitUiObject2ByRes("com.UCMobile.intl:id/address_bar_go_search", TIMEOUT_MEDIUM.toLong())
+                ?: waitUiObject2ByDesc("Go button", TIMEOUT_SHORT.toLong())
             go?.click()
         } else if (pkgName == BROWSER_FIREFOX) {
             if (isOpenedPage) {
@@ -100,7 +130,7 @@ open class PerCommon : BaseCommon() {
                 waitUiObject2ByRes("org.mozilla.firefox:id/toolbar", TIMEOUT_MEDIUM.toLong())?.click()
             }
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            waitUiObject2ByRes("org.mozilla.firefox:id/mozac_browser_toolbar_edit_url_view", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl ?: "")
+            waitUiObject2ByRes("org.mozilla.firefox:id/mozac_browser_toolbar_edit_url_view", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl)
             sleep(TIMEOUT_SHORT.toLong())
             enter()
         }
@@ -117,14 +147,7 @@ open class PerCommon : BaseCommon() {
             waitUiObject2ByRes("com.opera.browser:id/bottom_navigation_bar_tab_count_button", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_SHORT.toLong())
         } else if (pkgName == BROWSER_PHX) {
-            var multiWindow = waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)
-            if (multiWindow == null) {
-                multiWindow = waitUiObject2ByText("التبويب", TIMEOUT_MEDIUM)
-            }
-            if (multiWindow == null) {
-                multiWindow = waitUiObject2ByDesc("toolbar multiWindow", TIMEOUT_SHORT.toLong())
-            }
-            multiWindow?.click()
+            phoenixTabsButton()?.click()
             sleep(TIMEOUT_SHORT.toLong())
         } else if (pkgName == BROWSER_UC) {
             waitUiObject2ByDescContains("tap to switch button", TIMEOUT_MEDIUM.toLong())?.click()
@@ -150,22 +173,15 @@ open class PerCommon : BaseCommon() {
             waitUiObject2ByRes("com.opera.browser:id/tab_menu_add_tab", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
         } else if (pkgName == BROWSER_PHX) {
-            var multiWindow = waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)
-            if (multiWindow == null) {
-                multiWindow = waitUiObject2ByText("التبويب", TIMEOUT_MEDIUM)
-            }
-            if (multiWindow == null) {
-                multiWindow = waitUiObject2ByDesc("toolbar multiWindow", TIMEOUT_SHORT.toLong())
-            }
-            multiWindow?.click()
+            phoenixTabsButton()?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.get(0)?.click()
+            firstUiObject2("android.widget.ImageView", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.7, 1.0)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
         } else if (pkgName == BROWSER_UC) {
             waitUiObject2ByDescContains("tap to switch button", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_SHORT.toLong())
             val addImgs = getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.0, 1.0, 0.8, 1.0)
-            addImgs?.get(1)?.click()
+            addImgs?.getOrNull(1)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
         } else if (pkgName == BROWSER_FIREFOX) {
             waitUiObject2ByRes("org.mozilla.firefox:id/counter_root", TIMEOUT_MEDIUM.toLong())?.click()
@@ -176,7 +192,7 @@ open class PerCommon : BaseCommon() {
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByRes("org.mozilla.firefox:id/toolbar", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            waitUiObject2ByRes("org.mozilla.firefox:id/mozac_browser_toolbar_edit_url_view", TIMEOUT_MEDIUM.toLong())?.setText("about:blank" ?: "")
+            waitUiObject2ByRes("org.mozilla.firefox:id/mozac_browser_toolbar_edit_url_view", TIMEOUT_MEDIUM.toLong())?.setText("about:blank")
             sleep(TIMEOUT_SHORT.toLong())
             enter()
             sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -206,16 +222,9 @@ open class PerCommon : BaseCommon() {
             waitUiObject2ByText("CLOSE", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
         } else if (pkgName == BROWSER_PHX) {
-            var multiWindow = waitUiObject2ByText("Tabs", TIMEOUT_MEDIUM)
-            if (multiWindow == null) {
-                multiWindow = waitUiObject2ByText("التبويب", TIMEOUT_MEDIUM)
-            }
-            if (multiWindow == null) {
-                multiWindow = waitUiObject2ByDesc("toolbar multiWindow", TIMEOUT_SHORT.toLong())
-            }
-            multiWindow?.click()
+            phoenixTabsButton()?.click()
             sleep(TIMEOUT_SHORT.toLong())
-            getUiObject2s("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.get(0)?.click()
+            firstUiObject2("android.widget.ImageView", true, 0.04, 0.5, 0.02, 0.5, 0.7, 1.0, 0.03, 0.15)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Close all tabs", TIMEOUT_SHORT)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -223,10 +232,11 @@ open class PerCommon : BaseCommon() {
             waitUiObject2ByDescContains("tap to switch button", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_SHORT.toLong())
             val moreIcons = getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.3, 0.0, 0.3, 0.8, 1.0, 0.02, 0.3)
-            if (moreIcons == null || moreIcons.size == 0) {
-                getUiObject2s("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.8, 1.0, 0.02, 0.3)?.get(0)?.click()
-            }
-            moreIcons!!.get(0).click()
+                if (moreIcons.isEmpty()) {
+                    firstUiObject2("android.widget.ImageView", true, 0.0, 0.3, 0.0, 0.3, 0.8, 1.0, 0.02, 0.3)?.click()
+                } else {
+                    moreIcons[0].click()
+                }
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByText("Close All Tabs", TIMEOUT_MEDIUM)?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -402,7 +412,7 @@ open class PerCommon : BaseCommon() {
                         customDialog = waitUiObject2ByText("يمكنك تخصيص موجز الأخبار الخاص بك فى خطوتين", TIMEOUT_VERY_SHORT)
                     }
                     if (customDialog != null) {
-                        getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 1.0, 0.1, 0.5)?.get(0)?.click()
+                        getUiObject2s("android.widget.ImageView", true, 0.0, 0.2, 0.0, 0.2, 0.0, 1.0, 0.1, 0.5)?.firstOrNull()?.click()
                         sleep(TIMEOUT_VERY_SHORT.toLong())
                         continue
                     }
@@ -488,29 +498,15 @@ open class PerCommon : BaseCommon() {
 
     val scrollableClazz: String?
         get() {
-            var scrollableClazz: String? = ""
-            if (getScrollableUiObject2("androidx.recyclerview.widget.RecyclerView") != null) {
-                scrollableClazz = "androidx.recyclerview.widget.RecyclerView"
-            } else if (getScrollableUiObject2("android.support.v7.widget.RecyclerView") != null) {
-                scrollableClazz = "android.support.v7.widget.RecyclerView"
-            } else if (getScrollableUiObject2("android.webkit.WebView") != null) {
-                scrollableClazz = "android.webkit.WebView"
-            } else if (getScrollableUiObject2("android.widget.ListView") != null) {
-                scrollableClazz = "android.widget.ListView"
-            } else if (getScrollableUiObject2("android.view.ViewGroup") != null) {
-                scrollableClazz = "android.view.ViewGroup"
-            } else {
-                getRootObject().let {
-                    val uiObject2s = getAllUiObject2s(it)
-                    for (uiObject2 in uiObject2s) {
-                        if (uiObject2.isScrollable) {
-                            scrollableClazz = uiObject2.getClassName()
-                            break
-                        }
-                    }
-                }
-            }
-            return scrollableClazz
+            val preferredScrollableClazzes = listOf(
+                "androidx.recyclerview.widget.RecyclerView",
+                "android.support.v7.widget.RecyclerView",
+                "android.webkit.WebView",
+                "android.widget.ListView",
+                "android.view.ViewGroup",
+            )
+            preferredScrollableClazzes.firstOrNull { getScrollableUiObject2(it) != null }?.let { return it }
+            return getAllUiObject2s(getRootObject()).firstOrNull { it.isScrollable }?.className
         }
 
     /**
@@ -518,30 +514,28 @@ open class PerCommon : BaseCommon() {
      */
     fun clickSearchBox(pkgName: String, isOpenedPage: Boolean) {
         if (pkgName == BROWSER_CHROME) {
-            var searchBox: UiObject2? = null
-            if (isOpenedPage) {
-                searchBox = waitUiObject2ByRes("com.android.chrome:id/url_bar", TIMEOUT_MEDIUM.toLong())
+            val searchBox = if (isOpenedPage) {
+                waitUiObject2ByRes("com.android.chrome:id/url_bar", TIMEOUT_MEDIUM.toLong())
             } else {
-                searchBox = waitUiObject2ByRes("com.android.chrome:id/search_box_text", TIMEOUT_MEDIUM.toLong())
+                waitUiObject2ByRes("com.android.chrome:id/search_box_text", TIMEOUT_MEDIUM.toLong())
             }
             searchBox?.click()
         } else if (pkgName == BROWSER_OPERA) {
             waitUiObject2ByRes("com.opera.browser:id/url_field", TIMEOUT_MEDIUM.toLong())?.click()
             sleep(TIMEOUT_VERY_SHORT.toLong())
         } else if (pkgName == BROWSER_PHX) {
-            var searchBoxs: MutableList<UiObject2>? = null
-            if (isOpenedPage) {
-                searchBoxs = getUiObject2s("android.widget.LinearLayout", true, 0.5, 1.0, 0.04, 0.5, 0.0, 1.0, 0.02, 0.4)
+            val searchBoxes = if (isOpenedPage) {
+                getUiObject2s("android.widget.LinearLayout", true, 0.5, 1.0, 0.04, 0.5, 0.0, 1.0, 0.02, 0.4)
             } else {
-                searchBoxs = getUiObject2s("android.widget.TextSwitcher", false, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
-                if (searchBoxs == null || searchBoxs.size == 0) {
-                    searchBoxs = getUiObject2s("android.widget.TextView", false, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
-                }
+                getUiObject2s("android.widget.TextSwitcher", false, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
+                    .ifEmpty {
+                        getUiObject2s("android.widget.TextView", false, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
+                    }
             }
-            searchBoxs?.get(0)?.click()
+            searchBoxes.firstOrNull()?.click()
         } else if (pkgName == BROWSER_UC) {
             val searchBoxs = getUiObject2s("android.widget.TextView", true, 0.5, 1.0, 0.04, 0.5, 0.0, 1.0, 0.02, 0.4)
-            searchBoxs?.get(0)?.click()
+            searchBoxs.firstOrNull()?.click()
         } else if (pkgName == BROWSER_FIREFOX) {
             if (isOpenedPage) {
                 waitUiObject2ByRes("org.mozilla.firefox:id/mozac_browser_toolbar_url_view", TIMEOUT_MEDIUM.toLong())?.click()
@@ -556,33 +550,28 @@ open class PerCommon : BaseCommon() {
      */
     fun setTextAndGo(pkgName: String, textOrUrl: String?) {
         if (pkgName == BROWSER_CHROME) {
-            waitUiObject2ByRes("com.android.chrome:id/url_bar", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl ?: "")
+            waitUiObject2ByRes("com.android.chrome:id/url_bar", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl)
             sleep(TIMEOUT_VERY_SHORT.toLong())
             pressEnter(device, null)
         } else if (pkgName == BROWSER_OPERA) {
-            waitUiObject2ByRes("com.opera.browser:id/url_field", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl ?: "")
+            waitUiObject2ByRes("com.opera.browser:id/url_field", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl)
             sleep(TIMEOUT_VERY_SHORT.toLong())
             waitUiObject2ByRes("com.opera.browser:id/right_state_button", TIMEOUT_MEDIUM.toLong())?.click()
         } else if (pkgName == BROWSER_PHX) {
             val textBoxs = getUiObject2s("android.widget.EditText", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
-            textBoxs?.get(0)?.setText(textOrUrl ?: "")
+            textBoxs.firstOrNull()?.setText(textOrUrl)
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            var go = waitUiObject2ByDesc("addressbar go", TIMEOUT_MEDIUM.toLong())
-            if (go == null) {
-                go = waitUiObject2ByDesc("addressbar search", TIMEOUT_SHORT.toLong())
-            }
+            val go = waitAnyDesc(TIMEOUT_MEDIUM.toLong(), "addressbar go", "addressbar search")
             go?.click()
         } else if (pkgName == BROWSER_UC) {
             val textBoxs = getUiObject2s("android.widget.EditText", true, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.02, 0.4)
-            textBoxs?.get(0)?.setText(textOrUrl ?: "")
+            textBoxs.firstOrNull()?.setText(textOrUrl)
             sleep(TIMEOUT_VERY_SHORT.toLong())
-            var go = waitUiObject2ByRes("com.UCMobile.intl:id/address_bar_go_search", TIMEOUT_MEDIUM.toLong())
-            if (go == null) {
-                go = waitUiObject2ByDesc("Go button", TIMEOUT_SHORT.toLong())
-            }
+            val go = waitUiObject2ByRes("com.UCMobile.intl:id/address_bar_go_search", TIMEOUT_MEDIUM.toLong())
+                ?: waitUiObject2ByDesc("Go button", TIMEOUT_SHORT.toLong())
             go?.click()
         } else if (pkgName == BROWSER_FIREFOX) {
-            waitUiObject2ByRes("org.mozilla.firefox:id/mozac_browser_toolbar_edit_url_view", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl ?: "")
+            waitUiObject2ByRes("org.mozilla.firefox:id/mozac_browser_toolbar_edit_url_view", TIMEOUT_MEDIUM.toLong())?.setText(textOrUrl)
             sleep(TIMEOUT_SHORT.toLong())
             enter()
         }
@@ -592,7 +581,7 @@ open class PerCommon : BaseCommon() {
      * 切换指定Feeds Tab
      */
     fun switchFeedsTab(tabName: String?) {
-        getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.1, 0.6)?.get(0)?.click()
+        getUiObject2s("android.widget.FrameLayout", true, 0.0, 0.2, 0.0, 0.2, 0.8, 1.0, 0.1, 0.6)?.firstOrNull()?.click()
         sleep(TIMEOUT_SHORT.toLong())
         getUiObject2ByChildText("android.widget.FrameLayout", true, tabName, "android.widget.TextView")?.click()
         val done = waitUiObject2ByText("Done", TIMEOUT_SHORT)
@@ -606,17 +595,17 @@ open class PerCommon : BaseCommon() {
 
     fun clickFeedsNews() {
         var news = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.3, 0.0, 1.0, 0.02, 0.8)
-        if (news == null || news.size == 0) {
+        if (news.isEmpty()) {
             for (i in 0..2) {
                 swip(0.5, 0.7, 0.5, 0.3)
                 sleep(TIMEOUT_MEDIUM.toLong())
                 news = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.3, 0.0, 1.0, 0.02, 0.8)
-                if (news != null) {
+                if (news.isNotEmpty()) {
                     break
                 }
             }
         }
-        news?.get(0)?.click()
+        news.firstOrNull()?.click()
     }
 
     fun clickFeedsVideo() {
@@ -627,12 +616,9 @@ open class PerCommon : BaseCommon() {
     }
 
     fun clickFeedsMiniVideo() {
-        getUiObject2s("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9)?.get(0)?.click()
+        firstUiObject2("android.widget.FrameLayout", true, 0.4, 0.6, 0.2, 0.8, 0.0, 1.0, 0.02, 0.9)?.click()
         sleep(TIMEOUT_SHORT.toLong())
-        val swipeToast = waitUiObject2ByText("Swipe up for more", TIMEOUT_SHORT)
-        if (swipeToast != null) {
-            swipeToast.click()
-        }
+        waitUiObject2ByText("Swipe up for more", TIMEOUT_SHORT)?.click()
     }
 
     /**
@@ -707,7 +693,7 @@ open class PerCommon : BaseCommon() {
                     waitUiObject2ByText("Custom Setting", TIMEOUT_MEDIUM)?.click()
                     sleep(TIMEOUT_VERY_SHORT.toLong())
                 }
-                waitUiObject2ByText("Type to search country", TIMEOUT_MEDIUM)?.setText(country ?: "")
+                waitUiObject2ByText("Type to search country", TIMEOUT_MEDIUM)?.setText(country)
                 sleep(TIMEOUT_VERY_SHORT.toLong())
                 waitUiObject2ByTextContains(country + " |", TIMEOUT_MEDIUM)?.click()
                 sleep(TIMEOUT_VERY_SHORT.toLong())
@@ -781,13 +767,13 @@ open class PerCommon : BaseCommon() {
                 sleep(TIMEOUT_SHORT.toLong())
             } else {
                 var closeBtns = getUiObject2s("android.widget.Button", true, 0.05, 0.3, 0.05, 0.3, 0.0, 1.0, 0.0, 0.3)
-                if (closeBtns == null || closeBtns.size == 0) {
+                if (closeBtns.isEmpty()) {
                     closeBtns = getUiObject2s("android.widget.ImageButton", true, 0.05, 0.3, 0.05, 0.3, 0.0, 1.0, 0.0, 0.3)
                 }
-                if (closeBtns != null && closeBtns.size > 0) {
+                if (closeBtns.isNotEmpty()) {
                     // 处理uiautomator有时点击时会报异常
                     try {
-                        closeBtns?.get(0)?.click()
+                        closeBtns[0].click()
                     } catch (e: Exception) {
                         pressHome(device, null)
                         sleep(TIMEOUT_SHORT.toLong())
@@ -808,38 +794,38 @@ open class PerCommon : BaseCommon() {
     private var subMemThread5: MemoryThread? = null
 
     fun startMonitorMainMem(resultFolder: File?, scenesName: String?, pkgName: String) {
-        val mainMemFile = File(resultFolder, "mem_" + scenesName + "_" + pkgName + ".txt")
+        val mainMemFile = File(resultFolder, "mem_${scenesName}_${pkgName}.txt")
         deleteFile(mainMemFile)
         createFile(mainMemFile)
         mainMemThread = MemoryThread(0.5f, pkgName, device, mainMemFile, 1)
-        mainMemThread!!.start()
+        mainMemThread?.start()
     }
 
     fun startMonitorSubMem(resultFolder: File?, scenesName: String?, pkgName: String) {
         val subProcess: MutableList<String> = ProcessInfo(device, pkgName).getSubProcess().toMutableList()
         for (i in subProcess.indices) {
-            val tmpSubProcess = subProcess.get(i)
-            val subMemFile = File(resultFolder, "mem_" + scenesName + "_" + tmpSubProcess.replace(":".toRegex(), ".") + ".txt")
+            val tmpSubProcess = subProcess[i]
+            val subMemFile = File(resultFolder, "mem_${scenesName}_${tmpSubProcess.replace(":".toRegex(), ".")}.txt")
             deleteFile(subMemFile)
             createFile(subMemFile)
             if (i == 0) {
                 subMemThread0 = MemoryThread(0.5f, tmpSubProcess, device, subMemFile, 1)
-                subMemThread0!!.start()
+                subMemThread0?.start()
             } else if (i == 1) {
                 subMemThread1 = MemoryThread(0.5f, tmpSubProcess, device, subMemFile, 1)
-                subMemThread1!!.start()
+                subMemThread1?.start()
             } else if (i == 2) {
                 subMemThread2 = MemoryThread(0.5f, tmpSubProcess, device, subMemFile, 1)
-                subMemThread2!!.start()
+                subMemThread2?.start()
             } else if (i == 3) {
                 subMemThread3 = MemoryThread(0.5f, tmpSubProcess, device, subMemFile, 1)
-                subMemThread3!!.start()
+                subMemThread3?.start()
             } else if (i == 4) {
                 subMemThread4 = MemoryThread(0.5f, tmpSubProcess, device, subMemFile, 1)
-                subMemThread4!!.start()
+                subMemThread4?.start()
             } else if (i == 5) {
                 subMemThread5 = MemoryThread(0.5f, tmpSubProcess, device, subMemFile, 1)
-                subMemThread5!!.start()
+                subMemThread5?.start()
             }
         }
     }
@@ -847,8 +833,8 @@ open class PerCommon : BaseCommon() {
     fun stopMonitorMainMem() {
         try {
             if (mainMemThread != null) {
-                mainMemThread!!.setIsTimeOver(true)
-                mainMemThread!!.join()
+                mainMemThread?.setIsTimeOver(true)
+                mainMemThread?.join()
             }
             mainMemThread = null
         } catch (e: Exception) {
@@ -859,28 +845,28 @@ open class PerCommon : BaseCommon() {
     fun stopMonitorSubMem() {
         try {
             if (subMemThread0 != null) {
-                subMemThread0!!.setIsTimeOver(true)
-                subMemThread0!!.join()
+                subMemThread0?.setIsTimeOver(true)
+                subMemThread0?.join()
             }
             if (subMemThread1 != null) {
-                subMemThread1!!.setIsTimeOver(true)
-                subMemThread1!!.join()
+                subMemThread1?.setIsTimeOver(true)
+                subMemThread1?.join()
             }
             if (subMemThread2 != null) {
-                subMemThread2!!.setIsTimeOver(true)
-                subMemThread2!!.join()
+                subMemThread2?.setIsTimeOver(true)
+                subMemThread2?.join()
             }
             if (subMemThread3 != null) {
-                subMemThread3!!.setIsTimeOver(true)
-                subMemThread3!!.join()
+                subMemThread3?.setIsTimeOver(true)
+                subMemThread3?.join()
             }
             if (subMemThread4 != null) {
-                subMemThread4!!.setIsTimeOver(true)
-                subMemThread4!!.join()
+                subMemThread4?.setIsTimeOver(true)
+                subMemThread4?.join()
             }
             if (subMemThread5 != null) {
-                subMemThread5!!.setIsTimeOver(true)
-                subMemThread5!!.join()
+                subMemThread5?.setIsTimeOver(true)
+                subMemThread5?.join()
             }
             subMemThread0 = null
             subMemThread1 = null
@@ -896,20 +882,20 @@ open class PerCommon : BaseCommon() {
     private var cpuThread: CpuThread? = null
 
     fun startMonitorMainCpu(resultFolder: File?, scenesName: String?, pkgName: String) {
-        val cpuResultFile = File(resultFolder, "cpu_" + scenesName + "_" + pkgName + ".txt")
+        val cpuResultFile = File(resultFolder, "cpu_${scenesName}_${pkgName}.txt")
         deleteFile(cpuResultFile)
         createFile(cpuResultFile)
         val processInfo = ProcessInfo(device, pkgName)
         val pid = processInfo.pid
         cpuThread = CpuThread(device, pid, cpuResultFile)
-        cpuThread!!.start()
+        cpuThread?.start()
     }
 
     fun stopMonitorMainCpu() {
         try {
             if (cpuThread != null) {
-                cpuThread!!.setIsEnd(true)
-                cpuThread!!.join()
+                cpuThread?.setIsEnd(true)
+                cpuThread?.join()
             }
             cpuThread = null
         } catch (e: Exception) {
@@ -920,18 +906,18 @@ open class PerCommon : BaseCommon() {
     private var fpsThread: FpsThread? = null
 
     fun startMonitorMainFps(resultFolder: File?, scenesName: String?, pkgName: String) {
-        val fpsResultFile = File(resultFolder, "fps_" + scenesName + "_" + pkgName + ".txt")
+        val fpsResultFile = File(resultFolder, "fps_${scenesName}_${pkgName}.txt")
         deleteFile(fpsResultFile)
         createFile(fpsResultFile)
         fpsThread = FpsThread(device, pkgName, fpsResultFile)
-        fpsThread!!.start()
+        fpsThread?.start()
     }
 
     fun stopMonitorMainFps() {
         try {
             if (fpsThread != null) {
-                fpsThread!!.setIsEnd(true)
-                fpsThread!!.join()
+                fpsThread?.setIsEnd(true)
+                fpsThread?.join()
             }
             fpsThread = null
         } catch (e: Exception) {
@@ -945,23 +931,25 @@ open class PerCommon : BaseCommon() {
     private var endFlow: Long = 0
 
     fun startMonitorMainFlow(resultFolder: File?, scenesName: String?, pkgName: String) {
-        flowResultFile = File(resultFolder, "flow_" + scenesName + "_" + pkgName + ".txt")
-        FileUtil.deleteFile(flowResultFile!!)
-        FileUtil.createFile(flowResultFile!!)
+        val currentFlowResultFile = File(resultFolder, "flow_${scenesName}_${pkgName}.txt")
+        flowResultFile = currentFlowResultFile
+        FileUtil.deleteFile(currentFlowResultFile)
+        FileUtil.createFile(currentFlowResultFile)
         val processInfo = ProcessInfo(device, pkgName)
         val pid = processInfo.pid
         uid = processInfo.getUid(pid)
-        FileUtil.writeStrToFile("uid:" + uid + "\n", flowResultFile!!)
+        FileUtil.writeStrToFile("uid:$uid\n", currentFlowResultFile)
         startFlow = Flowinfo(device, uid).getFlow()
-        FileUtil.writeStrToFile("startFlow:" + startFlow + "\n", flowResultFile!!)
+        FileUtil.writeStrToFile("startFlow:$startFlow\n", currentFlowResultFile)
     }
 
     fun stopMonitorMainFlow() {
         // 获取结束流量,并计算(统计的是b，需转换为kb)
+        val currentFlowResultFile = flowResultFile ?: return
         endFlow = Flowinfo(device, uid).getFlow()
-        FileUtil.writeStrToFile("endFlow:" + endFlow + "\n", flowResultFile!!)
+        FileUtil.writeStrToFile("endFlow:$endFlow\n", currentFlowResultFile)
         val totalFlow = keepDecimalPoint((endFlow - startFlow).toDouble() / 1024, 1)
-        FileUtil.writeStrToFile("totalFlow:" + totalFlow + "\n", flowResultFile!!)
+        FileUtil.writeStrToFile("totalFlow:$totalFlow\n", currentFlowResultFile)
         // 重置
         flowResultFile = null
         uid = 0

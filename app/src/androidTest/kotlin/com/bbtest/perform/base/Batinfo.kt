@@ -34,9 +34,10 @@ class Batinfo {
         var voltage = ""
         var temperature = ""
 
-        val sdk = DeviceInfo(device!!).sdk
+        val currentDevice = requireNotNull(device)
+        val sdk = DeviceInfo(currentDevice).sdk
         val cmd = if (sdk > 22) "dumpsys battery" else "dumpsys batterymanager"
-        val result = ShellCommand.execCmdByUiDevice(device!!, cmd)
+        val result = ShellCommand.execCmdByUiDevice(currentDevice, cmd)
         val resultLines = result.split("\n")
         for (resultLine in resultLines) {
             if (resultLine.isNotEmpty()) {
@@ -72,15 +73,15 @@ class Batinfo {
         return battery
     }
 
-    fun getBatteryRemaining(): Int = batteryManager!!.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
+    fun getBatteryRemaining(): Int = requireNotNull(batteryManager).getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
 
-    fun getBatteryCurrent(): Int = batteryManager!!.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+    fun getBatteryCurrent(): Int = requireNotNull(batteryManager).getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
 
-    fun getBatteryCurrentAvg(): Int = batteryManager!!.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE)
+    fun getBatteryCurrentAvg(): Int = requireNotNull(batteryManager).getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE)
 
-    fun getBatteryPercentage(): Int = batteryManager!!.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+    fun getBatteryPercentage(): Int = requireNotNull(batteryManager).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
 
-    fun getBatteryRemainingNavat(): Int = batteryManager!!.getIntProperty(BatteryManager.BATTERY_PROPERTY_ENERGY_COUNTER)
+    fun getBatteryRemainingNavat(): Int = requireNotNull(batteryManager).getIntProperty(BatteryManager.BATTERY_PROPERTY_ENERGY_COUNTER)
 
     fun getBatteryCapacity(context: Context): Double {
         var batteryCapacity = 0.0

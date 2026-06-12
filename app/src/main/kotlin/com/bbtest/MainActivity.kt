@@ -14,12 +14,9 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.NonNull
-import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
@@ -37,7 +34,7 @@ class MainActivity : AppCompatActivity() {
                 Thread.sleep(600)
                 handler.postDelayed(this, 500)
             } catch (e: InterruptedException) {
-                e.printStackTrace()
+                Log.w("BBTest", "Runnable interrupted", e)
             }
         }
     }
@@ -111,13 +108,13 @@ class MainActivity : AppCompatActivity() {
                     val reader = BufferedReader(InputStreamReader(process.inputStream))
                     var line = ""
                     while (reader.readLine().also { line = it ?: "" } != null) {
-                        System.out.println("$line\n")
+                        println(line)
                     }
                     process.waitFor()
                     reader.close()
                     Log.i("BBTest", "end test")
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    Log.e("BBTest", "test launch failed", e)
                 }
             }
         }
@@ -126,11 +123,11 @@ class MainActivity : AppCompatActivity() {
     private fun isEnabled(): Boolean {
         val pkgName = packageName
         val flat = Settings.Secure.getString(contentResolver, "enabled_notification_listeners")
-        if (!TextUtils.isEmpty(flat)) {
+        if (!flat.isNullOrEmpty()) {
             val names = flat.split(":")
             for (name in names) {
                 val componentName = ComponentName.unflattenFromString(name)
-                if (componentName != null && TextUtils.equals(pkgName, componentName.packageName)) {
+                if (componentName?.packageName == pkgName) {
                     return true
                 }
             }
@@ -142,18 +139,18 @@ class MainActivity : AppCompatActivity() {
         if (!hasFilePermission()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 try {
-                    val uri = Uri.parse("package:\$packageName")
+                    val uri = Uri.parse("package:$packageName")
                     val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION, uri)
                     startActivityForResult(intent, keyRequestCode)
                 } catch (e: Exception) {
                     try {
-                        val uri = Uri.parse("package:\$packageName")
+                        val uri = Uri.parse("package:$packageName")
                         val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                         startActivityForResult(intent, keyRequestCode)
                     } catch (e1: Exception) {
                         val intent = Intent("android.settings.APPLICATION_DETAILS_SETTINGS")
                         intent.addCategory("android.intent.category.DEFAULT")
-                        intent.data = Uri.parse("package:\$packageName")
+                        intent.data = Uri.parse("package:$packageName")
                         startActivityForResult(intent, keyRequestCode)
                     }
                 }
@@ -188,8 +185,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        @NonNull permissions: Array<String>,
-        @NonNull grantResults: IntArray,
+        permissions: Array<String>,
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == keyRequestCode) {
@@ -197,7 +194,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == keyRequestCode) {
             if (hasFilePermission()) {
@@ -228,9 +225,9 @@ class MainActivity : AppCompatActivity() {
                     context.startActivity(intent)
                     true
                 } catch (e1: Exception) {
-                    e1.printStackTrace()
+                    Log.e("BBTest", "Notification access settings unavailable", e1)
                     Toast.makeText(context, "对不起，您的手机暂不支持", Toast.LENGTH_SHORT).show()
-                    e.printStackTrace()
+                    Log.e("BBTest", "Notification access settings fallback failed", e)
                     false
                 }
             }

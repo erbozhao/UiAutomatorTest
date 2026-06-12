@@ -28,8 +28,8 @@ import java.util.Random
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 18)
 class MonkeyEfficientTest : MonkeyCommon() {
-    var resultFolder: File = File(rootFolder, "monkey")
-    var monkeyFile: File = File(resultFolder, "monkey.txt")
+    private val resultFolder = File(rootFolder, "monkey")
+    private val monkeyFile = File(resultFolder, "monkey.txt")
     private val monkeyInfoFile = File(downloadsDir, "monkey.txt")
 
     private var pkgName = ""
@@ -42,7 +42,7 @@ class MonkeyEfficientTest : MonkeyCommon() {
     private var isPointClick = false
 
     @Before
-    public override fun beforeTest() {
+    override fun beforeTest() {
         super.beforeTest()
         // 初始化目录及文件
         createFolder(resultFolder)
@@ -84,7 +84,7 @@ class MonkeyEfficientTest : MonkeyCommon() {
                 break
             }
         }
-        writeStrToFile(getCurTimeForLog() + "  " + pkgName + "\n", monkeyFile)
+        writeStrToFile("${getCurTimeForLog()}  $pkgName\n", monkeyFile)
     }
 
     @Test
@@ -256,7 +256,7 @@ class MonkeyEfficientTest : MonkeyCommon() {
     }
 
     @After
-    public override fun afterTest() {
+    override fun afterTest() {
         super.afterTest()
     }
 }

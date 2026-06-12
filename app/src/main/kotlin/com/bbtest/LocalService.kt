@@ -14,7 +14,7 @@ import java.util.Random
 class LocalService : Service() {
     private val binder: IBinder = LocalBinder()
     private val generator = Random()
-    private var seed: Long = 0
+    private var seed = 0L
 
     override fun onCreate() {
         super.onCreate()
@@ -61,6 +61,6 @@ class LocalService : Service() {
     }
 
     companion object {
-        const val SEED_KEY: String = "SEED_KEY"
+        const val SEED_KEY = "SEED_KEY"
     }
 }

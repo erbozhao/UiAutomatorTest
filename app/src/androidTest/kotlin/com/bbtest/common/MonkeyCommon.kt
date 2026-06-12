@@ -56,8 +56,8 @@ open class MonkeyCommon : BaseCommon() {
                 homepage = waitUiObject2ByText("الصفحة الرئيسية", TIMEOUT_VERY_SHORT)
             }
             homepage?.click()
-            val homeSwitch = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong())?.get(0)
-            if (homeSwitch != null && homeSwitch.isChecked) {
+            val homeSwitch = waitUiObject2sByClazz("android.widget.Switch", TIMEOUT_MEDIUM.toLong())?.firstOrNull()
+            if (homeSwitch?.isChecked == true) {
                 homeSwitch.click()
             }
             backToHome()
@@ -266,12 +266,8 @@ open class MonkeyCommon : BaseCommon() {
             val clickableUiObject2s = getClickableUiObject2s(getRootObject(), ArrayList())
             val clickIndex = Random().nextInt(clickableUiObject2s.size)
             val clickUiObject2s = clickableUiObject2s[clickIndex]
-            if (clickUiObject2s != null) {
-                clickUiObject2s.click()
-                FileUtil.writeStrToFile("${CommonUtil.getCurTimeForLog()}  click ${clickUiObject2s.visibleBounds}\n", logFile)
-            } else {
-                isClickError = true
-            }
+            clickUiObject2s.click()
+            FileUtil.writeStrToFile("${CommonUtil.getCurTimeForLog()}  click ${clickUiObject2s.visibleBounds}\n", logFile)
         } catch (e: Exception) {
             e.printStackTrace()
             isClickError = true

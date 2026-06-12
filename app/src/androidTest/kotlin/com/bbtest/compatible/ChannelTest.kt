@@ -20,7 +20,7 @@ class ChannelTest : PhxCommon() {
     private val channelFile = File(resultFolder, "channel.txt")
 
     @Before
-    public override fun beforeTest() {
+    override fun beforeTest() {
         super.beforeTest()
         // 初始化目录及文件
         createFolder(resultFolder)
@@ -55,10 +55,10 @@ class ChannelTest : PhxCommon() {
                 waitUiObject2ByRes("com.transsion.phoenix:id/lw", TIMEOUT_MEDIUM.toLong())?.click()
                 sleep(TIMEOUT_SHORT.toLong())
             }
-            execCmdByUiDevice(device, "am force-stop " + pkgName)
+            execCmdByUiDevice(device, "am force-stop $pkgName")
         } catch (e: Exception) {
             e.printStackTrace()
-            screenshot(resultFolder.toString() + "/startOldPhx_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/startOldPhx_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -71,10 +71,10 @@ class ChannelTest : PhxCommon() {
             skipSplash()
             backToHome()
             backExitBrowser()
-            execCmdByUiDevice(device, "am force-stop " + pkgName)
+            execCmdByUiDevice(device, "am force-stop $pkgName")
         } catch (e: Exception) {
             e.printStackTrace()
-            screenshot(resultFolder.toString() + "/startNewPhx_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/startNewPhx_${getCurTimeForFile()}.jpg")
         }
     }
 
@@ -90,12 +90,12 @@ class ChannelTest : PhxCommon() {
             backExitBrowser()
         } catch (e: Exception) {
             e.printStackTrace()
-            screenshot(resultFolder.toString() + "/getChid_" + getCurTimeForFile() + ".jpg")
+            screenshot("${resultFolder}/getChid_${getCurTimeForFile()}.jpg")
         }
     }
 
     @After
-    public override fun afterTest() {
+    override fun afterTest() {
         super.afterTest()
     }
 
@@ -148,16 +148,16 @@ class ChannelTest : PhxCommon() {
                 var activeCHID = ""
                 var currentCHID = ""
                 val chidInfo = waitUiObject2ByTextContains("countrycode", TIMEOUT_MEDIUM)?.getText() ?: return
-                val chidInfoParts: Array<String?> = chidInfo.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                for (i in chidInfoParts.indices) {
-                    val chidInfoPart = chidInfoParts[i]!!.trim { it <= ' ' }
+                val chidInfoParts: List<String> = chidInfo.split("|")
+                for (chidInfoPartRaw in chidInfoParts) {
+                    val chidInfoPart = chidInfoPartRaw.trim()
                     if (chidInfoPart.contains("activeCHID")) {
                         activeCHID = chidInfoPart.substring(chidInfoPart.indexOf("activeCHID=") + 11)
                     } else if (chidInfoPart.contains("currentCHID")) {
                         currentCHID = chidInfoPart.substring(chidInfoPart.indexOf("currentCHID") + 11)
                     }
                 }
-                writeStrToFile("activeCHID=" + activeCHID + ",currentCHID=" + currentCHID, channelFile)
+                writeStrToFile("activeCHID=$activeCHID,currentCHID=$currentCHID", channelFile)
                 backToHome()
             } catch (e: Exception) {
                 e.printStackTrace()

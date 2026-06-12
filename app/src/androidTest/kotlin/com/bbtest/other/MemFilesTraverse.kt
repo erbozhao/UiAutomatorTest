@@ -84,9 +84,9 @@ class MemFilesTraverse : PerCommon() {
             }
             val files = waitUiObject2sByText("Files", TIMEOUT_MEDIUM)
             if (files.size > 1) {
-                files.get(1)!!.click()
+                files.getOrNull(1)?.click()
             } else {
-                files.get(0)!!.click()
+                files.firstOrNull()?.click()
             }
             sleep(TIMEOUT_SHORT.toLong())
             for (text in texts) {
@@ -110,7 +110,7 @@ class MemFilesTraverse : PerCommon() {
 
             // 测试后: 等待30s
             sleep((30 * 1000).toLong())
-            screenshot(resultFolder.toString() + "mem_filestraverse_" + BROWSER_PHX + ".jpg")
+            screenshot("${resultFolder}mem_filestraverse_${BROWSER_PHX}.jpg")
 
             // 结束监控
             stopMonitorMainMem()

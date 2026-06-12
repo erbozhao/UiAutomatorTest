@@ -1,18 +1,9 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import com.android.build.gradle.api.ApkVariantOutput
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
-
-val guavaVersion: String by rootProject.extra
-val androidxAnnotationVersion: String by rootProject.extra
-val coreVersion: String by rootProject.extra
-val extJUnitVersion: String by rootProject.extra
-val runnerVersion: String by rootProject.extra
-val rulesVersion: String by rootProject.extra
-val espressoVersion: String by rootProject.extra
-val uiAutomatorVersion: String by rootProject.extra
 
 android {
     compileSdk = 36
@@ -49,17 +40,6 @@ android {
         }
     }
 
-    applicationVariants.configureEach {
-        outputs.configureEach {
-            val variantOutput = this as BaseVariantOutputImpl
-            variantOutput.outputFileName = when (buildType.name) {
-                "debug" -> "bbtest.apk"
-                "release" -> "bbtest_obfs.apk"
-                else -> variantOutput.outputFileName
-            }
-        }
-    }
-
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
@@ -91,22 +71,34 @@ android {
     }
 }
 
+android {
+    applicationVariants.configureEach {
+        outputs.configureEach {
+            val variantOutput = this as ApkVariantOutput
+            variantOutput.outputFileName = when (buildType.name) {
+                "debug" -> "bbtest.apk"
+                "release" -> "bbtest_obfs.apk"
+                else -> variantOutput.outputFileName
+            }
+        }
+    }
+}
 dependencies {
-    implementation("com.google.guava:guava:$guavaVersion")
-    implementation("androidx.annotation:annotation:$androidxAnnotationVersion")
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation(libs.guava)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.ktx)
 
-    androidTestImplementation("androidx.test:core:$coreVersion")
-    androidTestImplementation("androidx.test.ext:junit:$extJUnitVersion")
-    androidTestImplementation("androidx.test:runner:$runnerVersion")
-    androidTestImplementation("androidx.test:rules:$rulesVersion")
-    androidTestImplementation("androidx.test.uiautomator:uiautomator:$uiAutomatorVersion")
-    androidTestImplementation("org.hamcrest:hamcrest-integration:1.3")
-    androidTestImplementation("org.hamcrest:hamcrest-library:1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.uiautomator)
+    androidTestImplementation(libs.hamcrest.integration)
+    androidTestImplementation(libs.hamcrest.library)
+    androidTestImplementation(libs.espresso.core)
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit4)
 
-    implementation("commons-io:commons-io:2.22.0")
+    implementation(libs.commons.io)
 }

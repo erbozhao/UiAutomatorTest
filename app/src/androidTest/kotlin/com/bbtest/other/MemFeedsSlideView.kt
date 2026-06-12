@@ -43,7 +43,7 @@ class MemFeedsSlideView : PerCommon() {
                 sleep(3000)
                 val linearLayouts = getUiObject2s("android.widget.LinearLayout", true, 0.9, 1.0, 0.1, 0.8, 0.0, 1.0, 0.02, 0.9)
                 if (linearLayouts != null && linearLayouts.size > 0) {
-                    val firstlinearLayout = linearLayouts.get(0)
+                    val firstlinearLayout = linearLayouts.first()
                     val firstVideo =
                         getChildUiObject2(firstlinearLayout, false, "android.widget.ImageView", 0.8, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, true)
                     if (firstVideo != null) {
@@ -67,7 +67,7 @@ class MemFeedsSlideView : PerCommon() {
 
             // 测试后: 等待30s
             sleep((30 * 1000).toLong())
-            screenshot(resultFolder.toString() + "mem_feeds-slideview_" + BROWSER_PHX + ".jpg")
+            screenshot("${resultFolder}mem_feeds-slideview_${BROWSER_PHX}.jpg")
 
             // 结束监控
             stopMonitorMainMem()

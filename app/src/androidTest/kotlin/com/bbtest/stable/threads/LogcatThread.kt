@@ -26,7 +26,7 @@ class LogcatThread(
     screencapThread: ScreencapThread?,
     screenrecordThread: ScreenrecordThread?,
     randomEventThread: RandomEventThread?,
-    nativeFdThread: NativeFdThread?
+    nativeFdThread: NativeFdThread?,
 ) : Thread() {
     private var runTime = -1f
     private var pkgName = ""
@@ -58,12 +58,16 @@ class LogcatThread(
 
     override fun run() {
         try {
+            val device = requireNotNull(device)
+            val uiAutomation = requireNotNull(uiAutomation)
+            val currentModel = requireNotNull(model)
+            val currentResultFolder = requireNotNull(resultFolder)
             // 初始化目录
-            val tmpLog = File(resultFolder, "Tmplog_" + model + "_" + getCurTimeForFile() + ".txt")
+            val tmpLog = File(currentResultFolder, "Tmplog_${currentModel}_${getCurTimeForFile()}.txt")
             createFile(tmpLog)
 
             // 设置logcat的buffer大小(通过命令设置buffersize也会受手机设置buffersize的限制)
-            ShellCommon.setBufferSize(device!!, 16, tmpLog)
+            ShellCommon.setBufferSize(device, 16, tmpLog)
 
             val startTime = System.currentTimeMillis()
             var curStartTime = startTime
@@ -72,26 +76,26 @@ class LogcatThread(
             while (true) {
                 //创建文件
                 if (logCatcher == null) {
-                    logcatFile = File(resultFolder, "Logcat_" + model + "_" + getCurTimeForFile() + ".log")
+                    logcatFile = File(currentResultFolder, "Logcat_${currentModel}_${getCurTimeForFile()}.log")
                     createFile(logcatFile)
-                    ShellCommon.clearBufferCache(device!!, tmpLog)
+                    ShellCommon.clearBufferCache(device, tmpLog)
                     logCatcher =
                         LogCatcher(uiAutomation, pkgName, logcatFile, screencapThread, screenrecordThread, randomEventThread, nativeFdThread, this)
-                    logCatcher!!.start()
+                    logCatcher?.start()
                 }
 
                 // logcat挂了则重启
                 if (isLogcatCrash) {
-                    ShellCommon.killLogcat(device!!, tmpLog)
-                    if (logCatcher!!.isAlive()) {
-                        logCatcher!!.interrupt()
-                        logCatcher!!.stop()
+                    ShellCommon.killLogcat(device, tmpLog)
+                    if (logCatcher?.isAlive == true) {
+                        logCatcher?.interrupt()
+                        logCatcher?.stop()
                     }
                     logCatcher = null
-                    ShellCommon.clearBufferCache(device!!, tmpLog)
+                    ShellCommon.clearBufferCache(device, tmpLog)
                     logCatcher =
-                        LogCatcher(uiAutomation, pkgName, logcatFile!!, screencapThread, screenrecordThread, randomEventThread, nativeFdThread, this)
-                    logCatcher!!.start()
+                        LogCatcher(uiAutomation, pkgName, requireNotNull(logcatFile), screencapThread, screenrecordThread, randomEventThread, nativeFdThread, this)
+                    logCatcher?.start()
                     isLogcatCrash = false
                 }
 
@@ -100,41 +104,41 @@ class LogcatThread(
                 val costTime = endTime - startTime
                 val curCostTime = endTime - curStartTime
                 if (runTime > 0 && costTime > runTime * 60 * 60 * 1000) {
-                    ShellCommon.killLogcat(device!!, tmpLog)
-                    if (logCatcher!!.isAlive()) {
-                        logCatcher!!.interrupt()
-                        logCatcher!!.stop()
+                    ShellCommon.killLogcat(device, tmpLog)
+                    if (logCatcher?.isAlive == true) {
+                        logCatcher?.interrupt()
+                        logCatcher?.stop()
                     }
                     logCatcher = null
                     break
                 } else {
                     // 判断是否退出，则直接结束
                     if (isTimeOver) {
-                        ShellCommon.killLogcat(device!!, tmpLog)
-                        if (logCatcher!!.isAlive()) {
-                            logCatcher!!.interrupt()
-                            logCatcher!!.stop()
+                        ShellCommon.killLogcat(device, tmpLog)
+                        if (logCatcher?.isAlive == true) {
+                            logCatcher?.interrupt()
+                            logCatcher?.stop()
                         }
                         logCatcher = null
                         break
                     } else {
                         // 判断是否间隔30分钟，则重新抓取日志
                         if (curCostTime > 30 * 60 * 1000) {
-                            ShellCommon.killLogcat(device!!, tmpLog)
-                            if (logCatcher!!.isAlive()) {
-                                logCatcher!!.interrupt()
-                                logCatcher!!.stop()
+                            ShellCommon.killLogcat(device, tmpLog)
+                            if (logCatcher?.isAlive == true) {
+                                logCatcher?.interrupt()
+                                logCatcher?.stop()
                             }
                             logCatcher = null
                             curStartTime = endTime
                         } else {
                             // 判断logcat是否挂了
-                            isLogcatCrash = ShellCommon.isLogcatCrash(device!!, tmpLog)
+                            isLogcatCrash = ShellCommon.isLogcatCrash(device, tmpLog)
                         }
 
                         // 如果buffer快满了，则清除缓存buffer
-                        if (ShellCommon.isNearMaxBufferSize(device!!, tmpLog)) {
-                            ShellCommon.clearBufferCache(device!!, tmpLog)
+                        if (ShellCommon.isNearMaxBufferSize(device, tmpLog)) {
+                            ShellCommon.clearBufferCache(device, tmpLog)
                         }
 
                         // 等待1s(不加，会判断isTimeOver为false，无法正常跳出)
@@ -157,8 +161,14 @@ class LogcatThread(
 }
 
 internal class LogCatcher(
-    uiAutomation: UiAutomation?, pkgName: String, logcatFile: File, screencapThread: ScreencapThread?, screenrecordThread: ScreenrecordThread?,
-    randomEventThread: RandomEventThread?, nativeFdThread: NativeFdThread?, logcatThread: LogcatThread?
+    uiAutomation: UiAutomation?,
+    pkgName: String,
+    logcatFile: File,
+    screencapThread: ScreencapThread?,
+    screenrecordThread: ScreenrecordThread?,
+    randomEventThread: RandomEventThread?,
+    nativeFdThread: NativeFdThread?,
+    logcatThread: LogcatThread?,
 ) : Thread() {
     private var uiAutomation: UiAutomation? = null
     private var pkgName = ""
@@ -188,6 +198,8 @@ internal class LogCatcher(
      */
     override fun run() {
         try {
+            val uiAutomation = requireNotNull(uiAutomation)
+            val logcatThread = requireNotNull(logcatThread)
             // 初始化crash关键词
             val crashKeywords1 = ".*FATAL\\s+EXCEPTION:\\s+.*"
             val crashKeywords1_1 = ".*Process:\\s+com.transsion.phoenix.*"
@@ -216,32 +228,25 @@ internal class LogCatcher(
             if (sdk <= 23) {
 //                pfd = getInstrumentation().getUiAutomation().executeShellCommand("logcat -v time -v year *:I");
                 pfd =
-                    uiAutomation!!.executeShellCommand("logcat -v time -s libc:F DEBUG:F ActivityManager:E AndroidRuntime:E AnrManager:I PhxPageMemoryChecker:E")
+                    uiAutomation.executeShellCommand("logcat -v time -s libc:F DEBUG:F ActivityManager:E AndroidRuntime:E AnrManager:I PhxPageMemoryChecker:E")
             } else {
 //                pfd = getInstrumentation().getUiAutomation().executeShellCommand("logcat -v time -v year *:I");
                 pfd =
-                    uiAutomation!!.executeShellCommand("logcat -v time -v year -s libc:F DEBUG:F ActivityManager:E AndroidRuntime:E AnrManager:I PhxPageMemoryChecker:E")
+                    uiAutomation.executeShellCommand("logcat -v time -v year -s libc:F DEBUG:F ActivityManager:E AndroidRuntime:E AnrManager:I PhxPageMemoryChecker:E")
             }
 
             val fis: FileInputStream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
             val bfr = BufferedReader(InputStreamReader(fis))
-            var line: String? = ""
-            while ((bfr.readLine().also { line = it }) != null) {
+            var line: String?
+            while (bfr.readLine().also { line = it } != null) {
+                val currentLine = requireNotNull(line)
                 // 判断后几行，是否出现关键词
                 if (isMayAppCrash1) {
-                    if (Pattern.compile(crashKeywords1_1).matcher(line).find()) {
-                        if (screencapThread != null) {
-                            screencapThread!!.setIsCrash(true)
-                        }
-                        if (screenrecordThread != null) {
-                            screenrecordThread!!.setIsCrash(true)
-                        }
-                        if (randomEventThread != null) {
-                            randomEventThread!!.setIsCrash(true)
-                        }
-                        if (nativeFdThread != null) {
-                            nativeFdThread!!.setIsCrash(true)
-                        }
+                    if (Pattern.compile(crashKeywords1_1).matcher(currentLine).find()) {
+                        screencapThread?.setIsCrash(true)
+                        screenrecordThread?.setIsCrash(true)
+                        randomEventThread?.setIsCrash(true)
+                        nativeFdThread?.setIsCrash(true)
                         isMayAppCrash1 = false
                         mayAppCrashCount1 = 0
                     } else {
@@ -254,19 +259,11 @@ internal class LogCatcher(
                 }
                 // 判断后几行，是否出现关键词
                 if (isMayAppCrash5) {
-                    if (Pattern.compile(crashKeywords5_1).matcher(line).find()) {
-                        if (screencapThread != null) {
-                            screencapThread!!.setIsCrash(true)
-                        }
-                        if (screenrecordThread != null) {
-                            screenrecordThread!!.setIsCrash(true)
-                        }
-                        if (randomEventThread != null) {
-                            randomEventThread!!.setIsCrash(true)
-                        }
-                        if (nativeFdThread != null) {
-                            nativeFdThread!!.setIsCrash(true)
-                        }
+                    if (Pattern.compile(crashKeywords5_1).matcher(currentLine).find()) {
+                        screencapThread?.setIsCrash(true)
+                        screenrecordThread?.setIsCrash(true)
+                        randomEventThread?.setIsCrash(true)
+                        nativeFdThread?.setIsCrash(true)
                         isMayAppCrash5 = false
                         mayAppCrashCount5 = 0
                     } else {
@@ -279,19 +276,11 @@ internal class LogCatcher(
                 }
                 // 判断后几行，是否出现关键词
                 if (isMayAppCrash6) {
-                    if (Pattern.compile(crashKeywords6_1).matcher(line).find()) {
-                        if (screencapThread != null) {
-                            screencapThread!!.setIsCrash(true)
-                        }
-                        if (screenrecordThread != null) {
-                            screenrecordThread!!.setIsCrash(true)
-                        }
-                        if (randomEventThread != null) {
-                            randomEventThread!!.setIsCrash(true)
-                        }
-                        if (nativeFdThread != null) {
-                            nativeFdThread!!.setIsCrash(true)
-                        }
+                    if (Pattern.compile(crashKeywords6_1).matcher(currentLine).find()) {
+                        screencapThread?.setIsCrash(true)
+                        screenrecordThread?.setIsCrash(true)
+                        randomEventThread?.setIsCrash(true)
+                        nativeFdThread?.setIsCrash(true)
                         isMayAppCrash6 = false
                         mayAppCrashCount6 = 0
                     } else {
@@ -304,76 +293,44 @@ internal class LogCatcher(
                 }
 
                 // 判断crash则通知随机事件线程
-                if (Pattern.compile(crashKeywords1).matcher(line).find()) {
+                if (Pattern.compile(crashKeywords1).matcher(currentLine).find()) {
                     isMayAppCrash1 = true
-                } else if (Pattern.compile(crashKeywords2).matcher(line).find()) {
-                    if (screencapThread != null) {
-                        screencapThread!!.setIsCrash(true)
-                    }
-                    if (screenrecordThread != null) {
-                        screenrecordThread!!.setIsCrash(true)
-                    }
-                    if (randomEventThread != null) {
-                        randomEventThread!!.setIsAnr(true)
-                    }
-                    if (nativeFdThread != null) {
-                        nativeFdThread!!.setIsCrash(true)
-                    }
-                } else if (Pattern.compile(crashKeywords3).matcher(line).find()) {
-                    if (screencapThread != null) {
-                        screencapThread!!.setIsCrash(true)
-                    }
-                    if (screenrecordThread != null) {
-                        screenrecordThread!!.setIsCrash(true)
-                    }
-                    if (randomEventThread != null) {
-                        randomEventThread!!.setIsAnr(true)
-                    }
-                    if (nativeFdThread != null) {
-                        nativeFdThread!!.setIsCrash(true)
-                    }
-                } else if (Pattern.compile(crashKeywords4).matcher(line).find()) {
-                    if (screencapThread != null) {
-                        screencapThread!!.setIsCrash(true)
-                    }
-                    if (screenrecordThread != null) {
-                        screenrecordThread!!.setIsCrash(true)
-                    }
-                    if (randomEventThread != null) {
-                        randomEventThread!!.setIsCrash(true)
-                    }
-                    if (nativeFdThread != null) {
-                        nativeFdThread!!.setIsCrash(true)
-                    }
-                } else if (Pattern.compile(crashKeywords5).matcher(line).find()) {
+                } else if (Pattern.compile(crashKeywords2).matcher(currentLine).find()) {
+                    screencapThread?.setIsCrash(true)
+                    screenrecordThread?.setIsCrash(true)
+                    randomEventThread?.setIsAnr(true)
+                    nativeFdThread?.setIsCrash(true)
+                } else if (Pattern.compile(crashKeywords3).matcher(currentLine).find()) {
+                    screencapThread?.setIsCrash(true)
+                    screenrecordThread?.setIsCrash(true)
+                    randomEventThread?.setIsAnr(true)
+                    nativeFdThread?.setIsCrash(true)
+                } else if (Pattern.compile(crashKeywords4).matcher(currentLine).find()) {
+                    screencapThread?.setIsCrash(true)
+                    screenrecordThread?.setIsCrash(true)
+                    randomEventThread?.setIsCrash(true)
+                    nativeFdThread?.setIsCrash(true)
+                } else if (Pattern.compile(crashKeywords5).matcher(currentLine).find()) {
                     isMayAppCrash5 = true
-                } else if (Pattern.compile(crashKeywords6).matcher(line).find()) {
+                } else if (Pattern.compile(crashKeywords6).matcher(currentLine).find()) {
                     isMayAppCrash6 = true
-                } else if (Pattern.compile(anrKeywords1).matcher(line).find()) {
-                    if (screencapThread != null) {
-                        screencapThread!!.setIsCrash(true)
-                    }
-                    if (screenrecordThread != null) {
-                        screenrecordThread!!.setIsCrash(true)
-                    }
-                    if (randomEventThread != null) {
-                        randomEventThread!!.setIsCrash(true)
-                    }
-                    if (nativeFdThread != null) {
-                        nativeFdThread!!.setIsCrash(true)
-                    }
+                } else if (Pattern.compile(anrKeywords1).matcher(currentLine).find()) {
+                    screencapThread?.setIsCrash(true)
+                    screenrecordThread?.setIsCrash(true)
+                    randomEventThread?.setIsCrash(true)
+                    nativeFdThread?.setIsCrash(true)
                 }
 
                 // 判断logcat因buffer过大而挂掉了
-                if (line!!.lowercase(Locale.getDefault()).contains("unexpected eof")) {
-                    logcatThread!!.setIsLogcatCrash(true)
+                if (currentLine.lowercase(Locale.getDefault()).contains("unexpected eof")) {
+                    logcatThread.setIsLogcatCrash(true)
                 }
 
                 //记录文件
                 if (sdk <= 23) {
-                    writeStrToFile(getCurYear() + "-" + line + "\n", logcatFile)
+                    writeStrToFile("${getCurYear()}-$currentLine\n", logcatFile)
                 } else {
-                    writeStrToFile(line + "\n", logcatFile)
+                    writeStrToFile("$currentLine\n", logcatFile)
                 }
             }
             (pfd as Object).wait()
@@ -381,7 +338,7 @@ internal class LogCatcher(
             bfr.close()
 
             // 若执行到此，说明logcat停止了，则需重启
-            logcatThread!!.setIsLogcatCrash(true)
+            logcatThread.setIsLogcatCrash(true)
         } catch (e: Exception) {
             e.printStackTrace()
         }

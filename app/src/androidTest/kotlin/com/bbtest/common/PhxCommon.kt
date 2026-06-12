@@ -486,7 +486,7 @@ open class PhxCommon : BaseCommon() {
         if (!isOpenedPage && (searchBoxs == null || searchBoxs.isEmpty())) {
             searchBoxs = getUiObject2s("android.widget.TextView", false, 0.5, 1.0, 0.01, 0.5, 0.0, 1.0, 0.01, 0.5)
         }
-        searchBoxs?.get(0)?.click()
+        searchBoxs?.firstOrNull()?.click()
         sleep(TIMEOUT_VERY_SHORT.toLong())
     }
 
@@ -522,7 +522,7 @@ open class PhxCommon : BaseCommon() {
                 if (news != null) return@repeat
             }
         }
-        news?.get(0)?.click()
+        news?.firstOrNull()?.click()
         sleep(TIMEOUT_VERY_SHORT.toLong())
     }
 

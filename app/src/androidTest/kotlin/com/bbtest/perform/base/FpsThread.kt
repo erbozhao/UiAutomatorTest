@@ -15,7 +15,7 @@ class FpsThread(
     override fun run() {
         while (!isEnd) {
             CommonUtil.sleep(2000)
-            FileUtil.writeStrToFile(FpsInfo(device, pkgName).getFps().toString() + "\n", resultFile)
+            FileUtil.writeStrToFile("${FpsInfo(device, pkgName).getFps()}\n", resultFile)
         }
     }
 
